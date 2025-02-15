@@ -24,6 +24,10 @@ I have other projects that perform complex text processing and in some cases hav
 
 `wreck` is available as a Maven artifact from [Clojars](https://clojars.org/com.github.pmonks/wreck).
 
+## Usage
+
+[API documentation is available here](https://pmonks.github.io/wreck/), or [here on cljdoc](https://cljdoc.org/d/com.github.pmonks/wreck/), and the [unit tests](https://github.com/pmonks/wreck/blob/release/test/wreck/api_test.clj) are also worth perusing to see worked examples.
+
 ### Trying it Out
 
 #### Clojure CLI
@@ -76,7 +80,7 @@ $ deps-try com.github.pmonks/wreck
 
 ; Because ClojureJVM doesn't implement equality for regexes, even though
 ; ClojureScript does...  🙄
-(re/=' #"ab" (re/join #"ab"))
+(re/=' #"ab" (re/join #"a" #"b"))
 ;=> true
 
 
@@ -87,6 +91,9 @@ $ deps-try com.github.pmonks/wreck
 
 (re/zom-grp #"foo")
 ;=> #"(?:foo)*"  ; That's more like it!
+
+(re/zom-grp #"foo" #"bar")  ; Can pass in as many regexes as you like to -grp fns
+;=> #"(?:foobar)*"
 
 (re/oom-grp #"foo")  ; oom = one or more
 ;=> #"(?:foo)+"
@@ -155,10 +162,6 @@ $ deps-try com.github.pmonks/wreck
 
 ; Which would you rather maintain?  😉
 ```
-
-## Usage
-
-[API documentation is available here](https://pmonks.github.io/wreck/), or [here on cljdoc](https://cljdoc.org/d/com.github.pmonks/wreck/), and the [unit tests](https://github.com/pmonks/wreck/blob/release/test/wreck/api_test.clj) are also worth perusing to see worked examples.
 
 ## Contributor Information
 
