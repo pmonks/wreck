@@ -134,16 +134,17 @@ $ deps-try com.github.pmonks/wreck
 (re/or-grp #"foo" #"bar")
 ;=> #"(?:foo)(?:bar)|(?:bar)(?:foo)|(?:foo)|(?:bar)"
 
-(re/or-grp #"foo" #"bar" #"\s+")
+(re/or-grp #"foo" #"bar" #"\s+")  ; Logical operations also support separators
 ;=> #"(?:foo)(?:\s+)(?:bar)|(?:bar)(?:\s+)(?:foo)|(?:foo)|(?:bar)"
 
 
 ;; Complex example that composes a medium sized regex from just a few
 ;; easy-to-read statements (from the unit tests)
 
-(def lorl-re (re/grp (re/or' #"Lesser" #"Library" #"\s+or\s+")))  ; "Lesser or Library", but
+(def lorl-re (re/grp (re/or' #"Lesser" #"Library" #"\s+or\s+")))  ; "Lesser" or "Library", but
                                                                   ; in any order, or either
-                                                                  ; word by itself
+                                                                  ; word by itself, with the
+                                                                  ; word "or" as a separator
 ;=> #"(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)"
 
 (def lgpl-re (re/join #"(?iuU)(?<!\w)"                   ; Prefix fragment
