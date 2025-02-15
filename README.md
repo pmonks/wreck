@@ -12,9 +12,9 @@
 
 A micro-library for Clojure(Script) that provides a selection of regular expression construction functions.  It has no dependencies, other than on Clojure(Script), and emits standard Clojure(Script) regular expression objects, so is fully compatible with Clojure(Script)'s built-in regular expression functions (it does not use any JVM-specific or JavaScript-specific regex syntax, though it can be used with platform-specific regular expression fragments to produce platform-specific regular expressions, if that's what you want).
 
-The library is _not_ intended to provide a comprehensive functional alternative for constructing regular expressions - knowledge of regular expression syntax and literals remains necessary.  The library is instead intended to assist in constructing syntactically valid Clojure(Script) regular expressions by combining smaller regular expressions fragments.
+The library is _not_ intended to provide a comprehensive functional alternative for constructing regular expressions - knowledge of regular expression syntax and literals remains necessary.  The library is instead intended to assist in constructing syntactically valid Clojure(Script) regular expressions by combining smaller regular expression fragments.
 
-It also pairs very nicely with [`rencg`](https://github.com/pmonks/rencg).
+It also pairs very nicely with [`rencg`](https://github.com/pmonks/rencg) - this library provides first class support for named capturing groups to Clojure (albeit the JVM flavour only).
 
 #### Why?
 
@@ -73,10 +73,10 @@ $ deps-try com.github.pmonks/wreck
 ;=> #"(?:ab)"  ; Default group is non-capturing
 
 (re/cg #"a" #"b")
-;=> #"(ab)"  ; But we can also do capturing
+;=> #"(ab)"  ; But we can also do capturing groups
 
 (re/ncg "ab" #"a" #"b")
-;=> #"(?<ab>ab)"  ; And named capturing (much more useful, especially with rencg!)
+;=> #"(?<ab>ab)"  ; And named capturing groups (much more useful, especially with rencg!)
 
 ; Because ClojureJVM doesn't implement equality for regexes, even though
 ; ClojureScript does...  🙄
