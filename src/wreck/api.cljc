@@ -22,7 +22,7 @@
   considered equal.
 
   Note: this is only needed in ClojureJVM (ClojureScript correctly implements
-  equals on regexes)."
+  equality for regexes)."
   ([_]       true)
   ([re1 re2] (= (str re1) (str re2)))
   ([re1 re2 & more]
