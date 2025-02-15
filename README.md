@@ -60,7 +60,9 @@ $ deps-try com.github.pmonks/wreck
 (re/join #"a" #"b")
 ;=> #"ab"
 
-(re/join "[" #"\p{Punct}" #"\p{Space}" "]+")  ; join also supports strings, allowing syntactically invalid fragments to be used to build up a valid expression
+(re/join "[" #"\p{Punct}" #"\p{Space}" "]+")  ; join also supports strings, allowing
+                                              ; syntactically invalid fragments to be used to
+                                              ; build up a valid expression
 ;=> #"[\p{Punct}\p{Space}]+"
 
 (re/grp #"a" #"b")
@@ -80,23 +82,25 @@ $ deps-try com.github.pmonks/wreck
 
 ;; Cardinality
 
-(re/zom #"foo")
+(re/zom #"foo")  ; zom = zero or more
 ;=> #"foo*"  ; Probably not what we want, so...
 
 (re/zom-grp #"foo")
 ;=> #"(?:foo)*"  ; That's more like it!
 
-(re/oom-grp #"foo")
+(re/oom-grp #"foo")  ; oom = one or more
 ;=> #"(?:foo)+"
 
-(re/exn-grp 2 #"foo")
+(re/exn-grp 2 #"foo")  ; exn = exactly n
 ;=> #"(?:foo){2}"
 
-(re/nom-grp 4 #"foo")
+(re/nom-grp 4 #"foo")  ; nom = n or more
 ;=> #"(?:foo){4,}"
 
-(re/n2m-grp 12 17 #"foo")
+(re/n2m-grp 12 17 #"foo")  ; n2m = n to m
 ;=> #"(?:foo){12,17}"
+
+; There are -cg and -ncg versions of all of these fns as well
 
 
 ;; Alternation
@@ -104,7 +108,8 @@ $ deps-try com.github.pmonks/wreck
 (re/alt #"foo" #"bar")
 ;=> #"foo|bar"
 
-(re/alt-grp #"foo" #"bar")  ; In case the alternates are themselves complex regexes
+(re/alt-grp #"foo" #"bar")  ; In case the alternates are themselves complex regexes that might
+                            ; cause precedence order problems
 ;=> #"(?:foo)|(?:bar)"
 
 
@@ -127,18 +132,26 @@ $ deps-try com.github.pmonks/wreck
 
 
 ;; Complex example that composes a medium sized regex from just a few
-;; easy-to-read statements (taken from the unit tests)
+;; easy-to-read statements (from the unit tests)
 
-(def lorl-re (re/grp (re/or' #"Lesser" #"Library" #"\s+or\s+")))  ; "Lesser or Library", but in any order, or either word by itself
+(def lorl-re (re/grp (re/or' #"Lesser" #"Library" #"\s+or\s+")))  ; "Lesser or Library", but
+                                                                  ; in any order, or either
+                                                                  ; word by itself
 ;=> #"(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)"
 
 (def lgpl-re (re/join #"(?iuU)(?<!\w)"                   ; Prefix fragment
-                      (re/ncg "lgpl"                     ; Define a named capture group called "lgpl"
+                      (re/ncg "lgpl"                     ; Define a named capture group
+                                                         ; called "lgpl"
                         (re/or-grp                       ; Outer 'or' (with elements grouped)
                           (re/join #"GNU\s+" lorl-re)    ; GNU <Lesser or library regex>
                           (re/join lorl-re #"\s+GPL")))  ; <Lesser or library regex> or GPL
                       #"(?!\w)"))                        ; Suffix fragment
-;=> #"(?iuU)(?<!\w)(?<lgpl>(?:GNU\s+(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library))(?:(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)\s+GPL)|(?:(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)\s+GPL)(?:GNU\s+(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library))|(?:GNU\s+(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library))|(?:(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)\s+GPL))(?!\w)"
+;=> #"(?iuU)(?<!\w)(?<lgpl>(?:GNU\s+(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|
+;=> Library))(?:(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)\s+GPL)|(?:
+;=> (?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)\s+GPL)(?:GNU\s+(?:Lesser\s+
+;=> or\s+Library|Library\s+or\s+Lesser|Lesser|Library))|(?:GNU\s+(?:Lesser\s+or\s+Library|
+;=> Library\s+or\s+Lesser|Lesser|Library))|(?:(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|
+;=> Lesser|Library)\s+GPL))(?!\w)"
 
 ; Which would you rather maintain?  😉
 ```
