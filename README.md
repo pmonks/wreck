@@ -70,7 +70,7 @@ $ deps-try com.github.pmonks/wreck
 ;=> #"(ab)"  ; But we can also do capturing
 
 (re/ncg "ab" #"a" #"b")
-;=> #"(?<ab>ab)"  ; And named capturing (much more useful, with rencg!)
+;=> #"(?<ab>ab)"  ; And named capturing (much more useful, especially with rencg!)
 
 ; Because ClojureJVM doesn't implement equality for regexes, even though
 ; ClojureScript does...  🙄
