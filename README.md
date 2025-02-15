@@ -120,7 +120,7 @@ $ deps-try com.github.pmonks/wreck
 ;=> #"(?:foo)|(?:bar)"
 
 
-;; Logical operations
+;; Logical operators
 
 (re/and' #"foo" #"bar")
 ;=> #"foobar|barfoo"
@@ -134,7 +134,7 @@ $ deps-try com.github.pmonks/wreck
 (re/or-grp #"foo" #"bar")
 ;=> #"(?:foobar)|(?:barfoo)|(?:foo)|(?:bar)"
 
-(re/or-grp #"foo" #"bar" #"\s+")  ; Logical operations also support separators
+(re/or-grp #"foo" #"bar" #"\s+")  ; Logical operators also support separators
 ;=> #"(?:foo\s+bar)|(?:bar\s+foo)|(?:foo)|(?:bar)"
 
 
