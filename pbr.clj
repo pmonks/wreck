@@ -17,7 +17,7 @@
          :prod-branch  "release"
          :write-pom    true
          :validate-pom true
-         :pom          {:description      "A micro-library for Clojure that provides regular expression construction functions."
+         :pom          {:description      "A micro-library for Clojure(Script) that provides regular expression construction functions."
                         :url              "https://github.com/pmonks/wreck"
                         :licenses         [:license   {:name "MPL-2.0" :url "https://www.mozilla.org/en-US/MPL/2.0/"}]
                         :developers       [:developer {:id "pmonks" :name "Peter Monks" :email "pmonks+wreck@gmail.com"}]
