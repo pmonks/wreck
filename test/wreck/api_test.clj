@@ -52,13 +52,18 @@
     (is (=' #".*" (join #".*" #"")))
     (is (=' #".*" (join #"" #".*")))
     (is (=' #".*" (join #"" #"" #".*"))))
-  (testing "join - string"
-    (is (=' #".*" (join ".*" "")))
-    (is (=' #".*" (join "" ".*")))
-    (is (=' #".*" (join "" "" ".*"))))
-  (testing "join - mixed"
+  (testing "join - other types"
+    (is (=' #".*"   (join ".*" "")))
+    (is (=' #".*"   (join "" ".*")))
+    (is (=' #".*"   (join "" "" ".*")))
+    (is (=' #".*"   (join "" "" ".*")))
+    (is (=' #"123"  (join 1 2 3)))
+    (is (=' #"2.0a" (join 2.0 "a"))))  ; Note that escaping is _not_ automatic
+  (testing "join - mixed types"
     (is (=' #"(.*)"                        (join "(" #".*" ")")))
-    (is (=' #"Apache(\s+Software)?License" (join "Apache" #"(\s+Software)?" "License")))))
+    (is (=' #"Apache(\s+Software)?License" (join "Apache" #"(\s+Software)?" "License"))))
+  (testing "join - nested"
+    (is (=' #"Apache(\s+Software)?License(\s+v2\.0)?" (join "Apache" #"(\s+Software)?" "License" (join "(" #"\s+" (esc "v2.0") ")?"))))))
 
 (deftest esc-tests
   (testing "esc - nil, empty or blank"
@@ -355,12 +360,12 @@
     (is (=' #"ab|ba"       (and' #"a" #"b" nil)))
     (is (=' #"a\s+b|b\s+a" (and' #"a" #"b" #"\s+"))))
   (testing "and-grp"
-    (is (nil?                                      (and-grp nil nil)))
-    (is (nil?                                      (and-grp nil nil nil)))
-    (is (nil?                                      (and-grp #"a" nil)))
-    (is (=' #"(?:a)(?:b)|(?:b)(?:a)"               (and-grp #"a" #"b")))
-    (is (=' #"(?:a)(?:b)|(?:b)(?:a)"               (and-grp #"a" #"b" nil)))
-    (is (=' #"(?:a)(?:\s+)(?:b)|(?:b)(?:\s+)(?:a)" (and-grp #"a" #"b" #"\s+")))))
+    (is (nil?                      (and-grp nil nil)))
+    (is (nil?                      (and-grp nil nil nil)))
+    (is (nil?                      (and-grp #"a" nil)))
+    (is (=' #"(?:ab)|(?:ba)"       (and-grp #"a" #"b")))
+    (is (=' #"(?:ab)|(?:ba)"       (and-grp #"a" #"b" nil)))
+    (is (=' #"(?:a\s+b)|(?:b\s+a)" (and-grp #"a" #"b" #"\s+")))))
 
 (deftest or-variant-tests
   (testing "or'"
@@ -371,12 +376,12 @@
     (is (=' #"ab|ba|a|b"       (or' #"a" #"b" nil)))
     (is (=' #"a\s+b|b\s+a|a|b" (or' #"a" #"b" #"\s+"))))
   (testing "or-grp"
-    (is (nil?                                                  (or-grp nil nil)))
-    (is (nil?                                                  (or-grp nil nil nil)))
-    (is (nil?                                                  (or-grp #"a" nil)))
-    (is (=' #"(?:a)(?:b)|(?:b)(?:a)|(?:a)|(?:b)"               (or-grp #"a" #"b")))
-    (is (=' #"(?:a)(?:b)|(?:b)(?:a)|(?:a)|(?:b)"               (or-grp #"a" #"b" nil)))
-    (is (=' #"(?:a)(?:\s+)(?:b)|(?:b)(?:\s+)(?:a)|(?:a)|(?:b)" (or-grp #"a" #"b" #"\s+")))))
+    (is (nil?                                  (or-grp nil nil)))
+    (is (nil?                                  (or-grp nil nil nil)))
+    (is (nil?                                  (or-grp #"a" nil)))
+    (is (=' #"(?:ab)|(?:ba)|(?:a)|(?:b)"       (or-grp #"a" #"b")))
+    (is (=' #"(?:ab)|(?:ba)|(?:a)|(?:b)"       (or-grp #"a" #"b" nil)))
+    (is (=' #"(?:a\s+b)|(?:b\s+a)|(?:a)|(?:b)" (or-grp #"a" #"b" #"\s+")))))
 
 (defn- matches?
   [re s]

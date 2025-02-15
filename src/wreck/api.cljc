@@ -325,11 +325,16 @@
           (join b s a)))))
 
 (defn and-grp
-  "[grp] on `a`, `b` and `s`, then [and']."
+  "[grp] around `a`, `b` and `s`, then [and']."
   ([a b] (and-grp a b nil))
   ([a b s]
    (when (and a b)
-     (and' (grp a) (grp b) (when s (grp s))))))
+     (alt (grp a s b)
+          (grp b s a)))))
+
+; Note: capturing group versions don't make much sense for 'and' - a more
+; typical pattern would be to wrap the entire expression in a (single) capturing
+; group
 
 (defn or'
   "Returns an 'inclusive or' regex that will match `a` or `b`, or both, in any
@@ -346,11 +351,15 @@
           b))))
 
 (defn or-grp
-  "[grp] on `a`, `b` and `s`, then [or']."
+  "[grp] around `a`, `b` and `s`, then [or']."
   ([a b] (or-grp a b nil))
   ([a b s]
    (when (and a b)
-     (or' (grp a) (grp b) (when s (grp s))))))
+     (alt (grp a s b)
+          (grp b s a)
+          (grp a)
+          (grp b)))))
 
-
-; Note: capturing group versions don't make sense for ior
+; Note: capturing group versions don't make much sense for 'or' - a more
+; typical pattern would be to wrap the entire expression in a (single) capturing
+; group
