@@ -315,8 +315,8 @@
 (defn and'
   "Returns an 'and' regex that will match `a` and `b` in any order, and with the
   `s`eparator regex (if provided) between them.  This is implemented as
-  `ASB|BSA`, which means that A and B must be distinct (must not match each
-  other).  Does not perform any grouping, ether on `a`, `b`, or `s` - for that
+  `ASB|BSA`, which means that A and B must be distinct (must not match the same
+  text).  Does not perform any grouping, ether on `a`, `b`, or `s` - for that
   use [and-grp]."
   ([a b] (and' a b nil))
   ([a b s]
@@ -325,23 +325,24 @@
           (join b s a)))))
 
 (defn and-grp
-  "[grp] around `a`, `b` and `s`, then [and']."
+  "[grp] around `a`, `s` and `b`, then [and']."
   ([a b] (and-grp a b nil))
   ([a b s]
    (when (and a b)
      (alt (grp a s b)
           (grp b s a)))))
 
-; Note: capturing group versions don't make much sense for 'and' - a more
-; typical pattern would be to wrap the entire expression in a (single) capturing
-; group
+; Note: capturing group versions don't make much sense for and', and so are not
+; provided.  A more typical pattern would be to wrap an entire and'/and-grp
+; expression in a (single) capturing group.  If you do in fact need this, please
+; don't hesitate to raise an issue: https://github.com/pmonks/wreck/issues/new?template=Feature_request.md
 
 (defn or'
   "Returns an 'inclusive or' regex that will match `a` or `b`, or both, in any
   order, and with the `s`eparator regex (if provided) between them.  This is
   implemented as `ASB|BSA|A|B`, which means that A and B must be distinct (must
-  not match each other).  Does not perform any grouping, either on `a`, `b`, or
-  `s` - for that use [or-grp]."
+  not match the same text).  Does not perform any grouping, either on `a`, `b`,
+  or `s` - for that use [or-grp]."
   ([a b] (or' a b nil))
   ([a b s]
    (when (and a b)
@@ -351,7 +352,7 @@
           b))))
 
 (defn or-grp
-  "[grp] around `a`, `b` and `s`, then [or']."
+  "[grp] around `a`, `s` and `b`, then [or']."
   ([a b] (or-grp a b nil))
   ([a b s]
    (when (and a b)
@@ -360,6 +361,7 @@
           (grp a)
           (grp b)))))
 
-; Note: capturing group versions don't make much sense for 'or' - a more
-; typical pattern would be to wrap the entire expression in a (single) capturing
-; group
+; Note: capturing group versions don't make much sense for or', and so are not
+; provided.  A more typical pattern would be to wrap an entire or'/or expression
+; in a (single) capturing group.  If you do in fact need this, please don't
+; hesitate to raise an issue: https://github.com/pmonks/wreck/issues/new?template=Feature_request.md
