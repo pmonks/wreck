@@ -60,6 +60,9 @@ $ deps-try com.github.pmonks/wreck
 (re/join #"a" #"b")
 ;=> #"ab"
 
+(re/join "[" #"\p{Punct}" #"\p{Space}" "]+")  ; join also supports strings, allowing syntactically invalid fragments to be used to build up a valid expression
+;=> #"[\p{Punct}\p{Space}]+"
+
 (re/grp #"a" #"b")
 ;=> #"(?:ab)"  ; Default group is non-capturing
 
