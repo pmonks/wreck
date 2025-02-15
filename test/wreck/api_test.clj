@@ -52,13 +52,18 @@
     (is (=' #".*" (join #".*" #"")))
     (is (=' #".*" (join #"" #".*")))
     (is (=' #".*" (join #"" #"" #".*"))))
-  (testing "join - string"
-    (is (=' #".*" (join ".*" "")))
-    (is (=' #".*" (join "" ".*")))
-    (is (=' #".*" (join "" "" ".*"))))
-  (testing "join - mixed"
+  (testing "join - other types"
+    (is (=' #".*"   (join ".*" "")))
+    (is (=' #".*"   (join "" ".*")))
+    (is (=' #".*"   (join "" "" ".*")))
+    (is (=' #".*"   (join "" "" ".*")))
+    (is (=' #"123"  (join 1 2 3)))
+    (is (=' #"2.0a" (join 2.0 "a"))))  ; Note that escaping is _not_ automatic
+  (testing "join - mixed types"
     (is (=' #"(.*)"                        (join "(" #".*" ")")))
-    (is (=' #"Apache(\s+Software)?License" (join "Apache" #"(\s+Software)?" "License")))))
+    (is (=' #"Apache(\s+Software)?License" (join "Apache" #"(\s+Software)?" "License"))))
+  (testing "join - nested"
+    (is (=' #"Apache(\s+Software)?License(\s+v2\.0)?" (join "Apache" #"(\s+Software)?" "License" (join "(" #"\s+" (esc "v2.0") ")?"))))))
 
 (deftest esc-tests
   (testing "esc - nil, empty or blank"
