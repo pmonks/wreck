@@ -26,7 +26,7 @@ I have other projects that perform complex text processing and in some cases hav
 
 ## Usage
 
-[API documentation is available here](https://pmonks.github.io/wreck/), or [here on cljdoc](https://cljdoc.org/d/com.github.pmonks/wreck/), and the [unit tests](https://github.com/pmonks/wreck/blob/release/test/wreck/api_test.clj) are also worth perusing to see worked examples.
+[API documentation is available here](https://pmonks.github.io/wreck/), or [here on cljdoc](https://cljdoc.org/d/com.github.pmonks/wreck/), and the [unit tests](https://github.com/pmonks/wreck/blob/dev/test/wreck/api_test.clj) are also worth perusing to see worked examples.
 
 ### Trying it Out
 
