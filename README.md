@@ -8,13 +8,13 @@
 [![Latest Version](https://img.shields.io/clojars/v/com.github.pmonks/wreck)](https://clojars.org/com.github.pmonks/wreck/) [![Open Issues](https://img.shields.io/github/issues/pmonks/wreck.svg)](https://github.com/pmonks/wreck/issues) [![License](https://img.shields.io/github/license/pmonks/wreck.svg)](https://github.com/pmonks/wreck/blob/release/LICENSE) [![Vulnerabilities](https://github.com/pmonks/wreck/actions/workflows/vulnerabilities.yml/badge.svg?branch=dev)](https://github.com/pmonks/wreck/actions?query=workflow%3Avulnerabilities+branch%3Adev)
 
 
-# wreck - the "Whackadoodle Regular Expression Construction Kit"
+# wreck - the "Whacky Regular Expression Construction Kit"
 
-A micro-library for Clojure(Script) that provides regular expression construction functions.  It has no dependencies, other than on Clojure(Script), and emits standard Clojure(Script) regular expression objects, so is fully compatible with Clojure(Script)'s built-in regular expression functions (it does not use any JVM-specific or JavaScript-specific regex syntax, though of course it can be used to construct platform-specific regexes if you wish).
+A micro-library for Clojure(Script) that provides a selection of regular expression construction functions.  It has no dependencies, other than on Clojure(Script), and emits standard Clojure(Script) regular expression objects, so is fully compatible with Clojure(Script)'s built-in regular expression functions (it does not use any JVM-specific or JavaScript-specific regex syntax, though it can be used with platform-specific regular expression fragments to produce platform-specific regular expressions).
 
-The library is _not_ intended to provide an entirely new syntax for constructing regular expressions - knowledge of regular expression syntax is still necessary, and the library is intended to be used with Clojure(Script)'s regular expression literals as components of larger regular expressions (which might be built partly or entirely using the functions in this library).
+The library is _not_ intended to provide a comprehensive functional alternative for constructing regular expressions - knowledge of regular expression syntax and literals is still necessary.  The library is instead intended to assist in constructing syntactically valid Clojure(Script) regular expressions by combining smaller regular expressions fragments.
 
-It also pairs very nicely with one of my other micro-libraries, [`rencg`](https://github.com/pmonks/rencg).
+It also pairs very nicely with [`rencg`](https://github.com/pmonks/rencg).
 
 #### Why?
 
