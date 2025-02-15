@@ -346,7 +346,7 @@
     (is (=' #"(?:foo)|(?:bar)"                                             (alt-grp #"foo" #"bar")))
     (is (=' #"(?:0)|(?:1)|(?:2)|(?:3)|(?:4)|(?:5)|(?:6)|(?:7)|(?:8)|(?:9)" (apply alt-grp (range 10))))))
 
-(deftest and'-variant-tests
+(deftest and-variant-tests
   (testing "and'"
     (is (nil?              (and' nil nil)))
     (is (nil?              (and' nil nil nil)))
@@ -362,7 +362,7 @@
     (is (=' #"(?:a)(?:b)|(?:b)(?:a)"               (and-grp #"a" #"b" nil)))
     (is (=' #"(?:a)(?:\s+)(?:b)|(?:b)(?:\s+)(?:a)" (and-grp #"a" #"b" #"\s+")))))
 
-(deftest or'-variant-tests
+(deftest or-variant-tests
   (testing "or'"
     (is (nil?                  (or' nil nil)))
     (is (nil?                  (or' nil nil nil)))
@@ -389,60 +389,60 @@
 (deftest composite-tests
   ; The following regex ends up being ~450 characters long, partly because of the sheer number of times the words
   ; "Lesser" and "Library" appear in it (in order to implement the nested "or"s)
-  (let [lorl (grp (or' #"Lesser" #"Library" #"\s+or\s+"))
-        re   (join #"(?iuU)(?<!\w)"
-                   (ncg "lgpl"
-                     (or-grp
-                       (join #"GNU\s+" lorl)
-                       (join lorl #"\s+GPL")))
-                   #"(?!\w)")]
+  (let [lorl-re (grp (or' #"Lesser" #"Library" #"\s+or\s+"))
+        lgpl-re (join #"(?iuU)(?<!\w)"
+                      (ncg "lgpl"
+                        (or-grp
+                          (join #"GNU\s+" lorl-re)
+                          (join lorl-re #"\s+GPL")))
+                      #"(?!\w)")]
     (testing "Matching tests"
       ; Matches
-      (is (true?  (matches? re "GNU Lesser")))
-      (is (true?  (matches? re "GNU Library")))
-      (is (true?  (matches? re "gnu lesser or library")))
-      (is (true?  (matches? re "GNU LIBRARY OR LESSER")))
-      (is (true?  (matches? re "Lesser GPL")))
-      (is (true?  (matches? re "Library GPL")))
-      (is (true?  (matches? re "Lesser or Library GPL")))
-      (is (true?  (matches? re "lIBRARY oR lESSER gpl")))
+      (is (true?  (matches? lgpl-re "GNU Lesser")))
+      (is (true?  (matches? lgpl-re "GNU Library")))
+      (is (true?  (matches? lgpl-re "gnu lesser or library")))
+      (is (true?  (matches? lgpl-re "GNU LIBRARY OR LESSER")))
+      (is (true?  (matches? lgpl-re "Lesser GPL")))
+      (is (true?  (matches? lgpl-re "Library GPL")))
+      (is (true?  (matches? lgpl-re "Lesser or Library GPL")))
+      (is (true?  (matches? lgpl-re "lIBRARY oR lESSER gpl")))
       ; Non matches
-      (is (false? (matches? re "GNU")))
-      (is (false? (matches? re "GPL")))
-      (is (false? (matches? re "Lesser")))
-      (is (false? (matches? re "Library")))
-      (is (false? (matches? re "or")))
-      (is (false? (matches? re "Lesser or Library")))
-      (is (false? (matches? re "Library or Lesser")))
-      (is (false? (matches? re "GPL Library or Lesser")))
-      (is (false? (matches? re "Library or Lesser GNU"))))
+      (is (false? (matches? lgpl-re "GNU")))
+      (is (false? (matches? lgpl-re "GPL")))
+      (is (false? (matches? lgpl-re "Lesser")))
+      (is (false? (matches? lgpl-re "Library")))
+      (is (false? (matches? lgpl-re "or")))
+      (is (false? (matches? lgpl-re "Lesser or Library")))
+      (is (false? (matches? lgpl-re "Library or Lesser")))
+      (is (false? (matches? lgpl-re "GPL Library or Lesser")))
+      (is (false? (matches? lgpl-re "Library or Lesser GNU"))))
     (testing "Finding tests"
       ; Finds
-      (is (true?  (finds? re "some text GNU Lesser or more text")))
-      (is (true?  (finds? re "some text GNU Library or more text")))
-      (is (true?  (finds? re "some text gnu lesser or library or more text")))
-      (is (true?  (finds? re "some text GNU LIBRARY OR LESSER or more text")))
-      (is (true?  (finds? re "some text Lesser GPL or more text")))
-      (is (true?  (finds? re "some text Library GPL or more text")))
-      (is (true?  (finds? re "some text Lesser or Library GPL or more text")))
-      (is (true?  (finds? re "some text lIBRARY oR lESSER gpl or more text")))
+      (is (true?  (finds? lgpl-re "some text GNU Lesser or more text")))
+      (is (true?  (finds? lgpl-re "some text GNU Library or more text")))
+      (is (true?  (finds? lgpl-re "some text gnu lesser or library or more text")))
+      (is (true?  (finds? lgpl-re "some text GNU LIBRARY OR LESSER or more text")))
+      (is (true?  (finds? lgpl-re "some text Lesser GPL or more text")))
+      (is (true?  (finds? lgpl-re "some text Library GPL or more text")))
+      (is (true?  (finds? lgpl-re "some text Lesser or Library GPL or more text")))
+      (is (true?  (finds? lgpl-re "some text lIBRARY oR lESSER gpl or more text")))
       ; Finds, but tricky - the re finds a subset of the entire phrase
-      (is (true?  (finds? re "some text GNU LIBRARY OR LESSERor more text")))  ; finds "GNU LIBRARY"
-      (is (true?  (finds? re "some textLesser or Library GPL or more text")))  ; finds "Library GPL"
+      (is (true?  (finds? lgpl-re "some text GNU LIBRARY OR LESSERor more text")))  ; finds "GNU LIBRARY"
+      (is (true?  (finds? lgpl-re "some textLesser or Library GPL or more text")))  ; finds "Library GPL"
       ; Non finds due to concatenated leading or trailing text
-      (is (false? (finds? re "some textGNU Lesser or more text")))
-      (is (false? (finds? re "some text GNU Libraryor more text")))
-      (is (false? (finds? re "some textgnu lesser or library or more text")))
-      (is (false? (finds? re "some textLesser GPL or more text")))
-      (is (false? (finds? re "some text Library GPLor more text")))
-      (is (false? (finds? re "some text lIBRARY oR lESSER gplor more text")))
+      (is (false? (finds? lgpl-re "some textGNU Lesser or more text")))
+      (is (false? (finds? lgpl-re "some text GNU Libraryor more text")))
+      (is (false? (finds? lgpl-re "some textgnu lesser or library or more text")))
+      (is (false? (finds? lgpl-re "some textLesser GPL or more text")))
+      (is (false? (finds? lgpl-re "some text Library GPLor more text")))
+      (is (false? (finds? lgpl-re "some text lIBRARY oR lESSER gplor more text")))
       ; Non finds
-      (is (false? (finds? re "some text GNU or more text")))
-      (is (false? (finds? re "some text GPL or more text")))
-      (is (false? (finds? re "some text Lesser or more text")))
-      (is (false? (finds? re "some text Library or more text")))
-      (is (false? (finds? re "some text or or more text")))
-      (is (false? (finds? re "some text Lesser or Library or more text")))
-      (is (false? (finds? re "some text Library or Lesser or more text")))
-      (is (false? (finds? re "some text GPL Library or Lesser or more text")))
-      (is (false? (finds? re "some text Library or Lesser GNU or more text"))))))
+      (is (false? (finds? lgpl-re "some text GNU or more text")))
+      (is (false? (finds? lgpl-re "some text GPL or more text")))
+      (is (false? (finds? lgpl-re "some text Lesser or more text")))
+      (is (false? (finds? lgpl-re "some text Library or more text")))
+      (is (false? (finds? lgpl-re "some text or or more text")))
+      (is (false? (finds? lgpl-re "some text Lesser or Library or more text")))
+      (is (false? (finds? lgpl-re "some text Library or Lesser or more text")))
+      (is (false? (finds? lgpl-re "some text GPL Library or Lesser or more text")))
+      (is (false? (finds? lgpl-re "some text Library or Lesser GNU or more text"))))))
