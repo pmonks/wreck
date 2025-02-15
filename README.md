@@ -10,9 +10,9 @@
 
 # wreck - the "Whacky Regular Expression Construction Kit"
 
-A micro-library for Clojure(Script) that provides a selection of regular expression construction functions.  It has no dependencies, other than on Clojure(Script), and emits standard Clojure(Script) regular expression objects, so is fully compatible with Clojure(Script)'s built-in regular expression functions (it does not use any JVM-specific or JavaScript-specific regex syntax, though it can be used with platform-specific regular expression fragments to produce platform-specific regular expressions).
+A micro-library for Clojure(Script) that provides a selection of regular expression construction functions.  It has no dependencies, other than on Clojure(Script), and emits standard Clojure(Script) regular expression objects, so is fully compatible with Clojure(Script)'s built-in regular expression functions (it does not use any JVM-specific or JavaScript-specific regex syntax, though it can be used with platform-specific regular expression fragments to produce platform-specific regular expressions, if that's what you want).
 
-The library is _not_ intended to provide a comprehensive functional alternative for constructing regular expressions - knowledge of regular expression syntax and literals is still necessary.  The library is instead intended to assist in constructing syntactically valid Clojure(Script) regular expressions by combining smaller regular expressions fragments.
+The library is _not_ intended to provide a comprehensive functional alternative for constructing regular expressions - knowledge of regular expression syntax and literals remains necessary.  The library is instead intended to assist in constructing syntactically valid Clojure(Script) regular expressions by combining smaller regular expressions fragments.
 
 It also pairs very nicely with [`rencg`](https://github.com/pmonks/rencg).
 
@@ -49,10 +49,95 @@ $ deps-try com.github.pmonks/wreck
 ```clojure
 (require '[wreck.api :as re])
 
+;; Basics
 
-;####TODO!!!!
+(re/esc ".*")
+;=> "\\.\\*"  ; Note: a String - most other fns return regexes
+
+(re/qot ".*")
+;=> #"\Q.*\E"
+
+(re/join #"a" #"b")
+;=> #"ab"
+
+(re/grp #"a" #"b")
+;=> #"(?:ab)"  ; Default group is non-capturing
+
+(re/cg #"a" #"b")
+;=> #"(ab)"  ; But we can also do capturing
+
+(re/ncg "ab" #"a" #"b")
+;=> #"(?<ab>ab)"  ; And named capturing (much more useful, with rencg!)
+
+; Because ClojureJVM doesn't implement equality for regexes, even though
+; ClojureScript does...  🙄
+(re/=' #"ab" (re/join #"ab"))
+;=> true
 
 
+;; Cardinality
+
+(re/zom #"foo")
+;=> #"foo*"  ; Probably not what we want, so...
+
+(re/zom-grp #"foo")
+;=> #"(?:foo)*"  ; That's more like it!
+
+(re/oom-grp #"foo")
+;=> #"(?:foo)+"
+
+(re/exn-grp 2 #"foo")
+;=> #"(?:foo){2}"
+
+(re/nom-grp 4 #"foo")
+;=> #"(?:foo){4,}"
+
+(re/n2m-grp 12 17 #"foo")
+;=> #"(?:foo){12,17}"
+
+
+;; Alternation
+
+(re/alt #"foo" #"bar")
+;=> #"foo|bar"
+
+(re/alt-grp #"foo" #"bar")  ; In case the alternates are themselves complex regexes
+;=> #"(?:foo)|(?:bar)"
+
+
+;; Logical operations
+
+(re/and' #"foo" #"bar")
+;=> #"foobar|barfoo"
+
+(re/and-grp #"foo" #"bar")
+;=> #"(?:foo)(?:bar)|(?:bar)(?:foo)"
+
+(re/or' #"foo" #"bar")
+;=> #"foobar|barfoo|foo|bar"
+
+(re/or-grp #"foo" #"bar")
+;=> #"(?:foo)(?:bar)|(?:bar)(?:foo)|(?:foo)|(?:bar)"
+
+(re/or-grp #"foo" #"bar" #"\s+")
+;=> #"(?:foo)(?:\s+)(?:bar)|(?:bar)(?:\s+)(?:foo)|(?:foo)|(?:bar)"
+
+
+;; Complex example that composes a medium sized regex from just a few
+;; easy-to-read statements (taken from the unit tests)
+
+(def lorl-re (re/grp (re/or' #"Lesser" #"Library" #"\s+or\s+")))  ; "Lesser or Library", but in any order, or either word by itself
+;=> #"(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)"
+
+(def lgpl-re (re/join #"(?iuU)(?<!\w)"                   ; Prefix fragment
+                      (re/ncg "lgpl"                     ; Define a named capture group called "lgpl"
+                        (re/or-grp                       ; Outer 'or' (with elements grouped)
+                          (re/join #"GNU\s+" lorl-re)    ; GNU <Lesser or library regex>
+                          (re/join lorl-re #"\s+GPL")))  ; <Lesser or library regex> or GPL
+                      #"(?!\w)"))                        ; Suffix fragment
+;=> #"(?iuU)(?<!\w)(?<lgpl>(?:GNU\s+(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library))(?:(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)\s+GPL)|(?:(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)\s+GPL)(?:GNU\s+(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library))|(?:GNU\s+(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library))|(?:(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)\s+GPL))(?!\w)"
+
+; Which would you rather maintain?  😉
 ```
 
 ## Usage
