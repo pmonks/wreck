@@ -126,16 +126,16 @@ $ deps-try com.github.pmonks/wreck
 ;=> #"foobar|barfoo"
 
 (re/and-grp #"foo" #"bar")
-;=> #"(?:foo)(?:bar)|(?:bar)(?:foo)"
+;=> #"(?:foobar)|(?:barfoo)"
 
 (re/or' #"foo" #"bar")
 ;=> #"foobar|barfoo|foo|bar"
 
 (re/or-grp #"foo" #"bar")
-;=> #"(?:foo)(?:bar)|(?:bar)(?:foo)|(?:foo)|(?:bar)"
+;=> #"(?:foobar)|(?:barfoo)|(?:foo)|(?:bar)"
 
 (re/or-grp #"foo" #"bar" #"\s+")  ; Logical operations also support separators
-;=> #"(?:foo)(?:\s+)(?:bar)|(?:bar)(?:\s+)(?:foo)|(?:foo)|(?:bar)"
+;=> #"(?:foo\s+bar)|(?:bar\s+foo)|(?:foo)|(?:bar)"
 
 
 ;; Complex example that composes a medium sized regex from just a few
@@ -154,11 +154,11 @@ $ deps-try com.github.pmonks/wreck
                           (re/join lorl-re #"\s+GPL")))  ; <lesser or library regex> GPL
                       #"(?!\w)"))                        ; Suffix fragment
 ;=> #"(?iuU)(?<!\w)(?<lgpl>(?:GNU\s+(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|
-;=> Library))(?:(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)\s+GPL)|(?:
-;=> (?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)\s+GPL)(?:GNU\s+(?:Lesser\s+
-;=> or\s+Library|Library\s+or\s+Lesser|Lesser|Library))|(?:GNU\s+(?:Lesser\s+or\s+Library|
-;=> Library\s+or\s+Lesser|Lesser|Library))|(?:(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|
-;=> Lesser|Library)\s+GPL))(?!\w)"
+;=> Library)(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)\s+GPL)|
+;=> (?:(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)\s+GPLGNU\s+
+;=> (?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library))|(?:GNU\s+
+;=> (?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library))|
+;=> (?:(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)\s+GPL))(?!\w)"
 
 ; Which would you rather maintain?  😉
 ```
