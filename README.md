@@ -151,7 +151,7 @@ $ deps-try com.github.pmonks/wreck
                                                          ; called "lgpl"
                         (re/or-grp                       ; Outer 'or' (with elements grouped)
                           (re/join #"GNU\s+" lorl-re)    ; GNU <Lesser or library regex>
-                          (re/join lorl-re #"\s+GPL")))  ; <Lesser or library regex> or GPL
+                          (re/join lorl-re #"\s+GPL")))  ; <Lesser or library regex> GPL
                       #"(?!\w)"))                        ; Suffix fragment
 ;=> #"(?iuU)(?<!\w)(?<lgpl>(?:GNU\s+(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|
 ;=> Library))(?:(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)\s+GPL)|(?:
