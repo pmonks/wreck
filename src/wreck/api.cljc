@@ -23,8 +23,9 @@
     `java.util.regex.PatternSyntaxException` class.
   * On JavaScript, these will typically be a `SyntaxError`s.
   * Platform specific behaviour is particularly notable for short / empty
-    regular expressions, such as `#\"{}\"` (error on JVM, fine but nonsencial on
-    JS) and `#\"{1}\"` (fine but nonsensical on JVM, but error on JS)."
+    regular expressions, such as `#\"{}\"` (an error on the JVM, fine but
+    nonsensical on JS) and `#\"{1}\"` (ironically, fine but nonsensical on the
+    JVM, but an error on JS).  🤡"
   (:require [clojure.string :as s]))
 
 
@@ -35,8 +36,10 @@
   means that _equivalent_ regexes (e.g. `#\"...\"` and `#\".{3}\"` will _not_ be
   considered equal.
 
-  Notes: this is only needed in ClojureJVM (ClojureScript correctly implements
-  equality for regexes)."
+  Notes:
+
+  * Some JavaScript runtimes that ClojureScript runs on correctly implement
+    equality for regexes, but the JVM does not."
   ([_]       true)
   ([re1 re2] (= (str re1) (str re2)))
   ([re1 re2 & more]
