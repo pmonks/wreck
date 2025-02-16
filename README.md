@@ -10,6 +10,9 @@
 
 # wreck - the "Whacky Regular Expression Construction Kit"
 
+> [!WARNING]  
+> Prior to v1.0 the library will be undergoing extensive development based on its used elsewhere.  APIs and behaviour may change in backwards incompatible ways without warning.  Feedback during this period is very welcome however, either here in the form of [issues](https://github.com/pmonks/wreck/issues)], or on [the Clojure Discord server](https://discord.gg/discljord).
+
 A micro-library for Clojure(Script) that provides a selection of regular expression construction functions.  It has no dependencies, other than on Clojure, and emits standard Clojure regular expression objects, so is fully compatible with Clojure's built-in regular expression functions (it does not use any JVM-specific or JavaScript-specific regex syntax, though it can be used with platform-specific regular expression fragments to produce platform-specific regular expressions, if that's what you want).
 
 The library is _not_ intended to provide a comprehensive functional alternative for constructing regular expressions - knowledge of regular expression syntax and literals remains necessary.  The library is instead intended to assist in constructing syntactically valid regular expressions by combining smaller regular expression fragments.
@@ -78,8 +81,6 @@ $ deps-try com.github.pmonks/wreck
 (re/ncg "ab" #"a" #"b")
 ;=> #"(?<ab>ab)"  ; And named capturing groups (much more useful, especially with rencg!)
 
-; Because ClojureJVM doesn't implement equality for regexes, even though
-; ClojureScript does...  🙄
 (re/=' #"ab" (re/join #"a" #"b"))
 ;=> true
 
