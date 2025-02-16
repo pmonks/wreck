@@ -19,10 +19,10 @@
                                     nom  nom-grp nom-cg nom-ncg
                                     exn  exn-grp exn-cg exn-ncg
                                     n2m  n2m-grp n2m-cg n2m-ncg
-                                    alt  alt-grp
-                                    and' and-grp
-                                    or'  or-grp
-                                    xor' xor-grp]]))
+                                    alt  alt-grp alt-cg alt-ncg
+                                    and' and-grp and-cg and-ncg
+                                    or'  or-grp  or-cg  or-ncg
+                                    xor' xor-grp xor-cg xor-ncg]]))
 
 (deftest equality-tests
   (testing "Equal"
@@ -246,7 +246,7 @@
   (testing "nom-grp"
     (is (nil?                                               (nom-grp nil nil)))
     (is (nil?                                               (nom-grp 3 nil)))
-    (is (=' #"{246,}"                                       (nom-grp 246 #""))))  ; Because of optimisation of empty non-capturing groups
+    (is (=' #"{246,}"                                       (nom-grp 246 #""))))  ; Optimisation of empty non-capturing groups
     (is (=' #"(?:x){0,}"                                    (nom-grp 0 #"x")))
     (is (=' #"(?:.*){7,}"                                   (nom-grp 7 #".*")))
     (is (=' #"(?:foo){42,}"                                 (nom-grp 42 #"foo")))
@@ -284,7 +284,7 @@
   (testing "exn-grp"
     (is (nil?                                              (exn-grp nil nil)))
     (is (nil?                                              (exn-grp 3 nil)))
-    (is (=' #"{246}"                                       (exn-grp 246 #""))))  ; Because of optimisation of empty non-capturing groups
+    (is (=' #"{246}"                                       (exn-grp 246 #""))))  ; Optimisation of empty non-capturing groups
     (is (=' #"(?:x){0}"                                    (exn-grp 0 #"x")))
     (is (=' #"(?:.*){7}"                                   (exn-grp 7 #".*")))
     (is (=' #"(?:foo){42}"                                 (exn-grp 42 #"foo")))
@@ -361,19 +361,40 @@
     (is (=' #"0"                   (alt 0 "0" #"0")))    ; Deduplication optimisation
     (is (=' #"0|1|2|3|4|5|6|7|8|9" (apply alt (range 10)))))
   (testing "alt-grp"
-    (is (nil?                                                              (alt-grp nil)))
-    (is (nil?                                                              (alt-grp nil nil)))
-    (is (=' #"(?:)"                                                        (alt-grp #"")))
-    (is (=' #"(?:a)"                                                       (alt-grp #"a")))
-    (is (=' #"(?:)"                                                        (alt-grp #"" #"")))  ; Nonsensical, but ensure we have well defined behaviour anyway
-    (is (=' #"(?:foo)|(?:bar)"                                             (alt-grp #"foo" #"bar")))
-    (is (=' #"(?:0)|(?:1)|(?:2)|(?:3)|(?:4)|(?:5)|(?:6)|(?:7)|(?:8)|(?:9)" (apply alt-grp (range 10))))
-    (is (=' #"(?:0)|(?:1)|(?:2)|(?:3)|(?:4)|(?:5)|(?:6)|(?:7)|(?:8)|(?:9)" (apply alt-grp (concat (range 10) (range 10)))))))  ; Deduplication optimisation
+    (is (nil?                          (alt-grp nil)))
+    (is (nil?                          (alt-grp nil nil)))
+    (is (=' #""                        (alt-grp #"")))  ; Optimisation of empty non-capturing groups
+    (is (=' #"(?:a)"                   (alt-grp #"a")))
+    (is (=' #""                        (alt-grp #"" #"")))  ; Optimisation of empty non-capturing groups
+    (is (=' #"(?:foo|bar)"             (alt-grp #"foo" #"bar")))
+    (is (=' #"(?:0|1|2|3|4|5|6|7|8|9)" (apply alt-grp (range 10))))
+    (is (=' #"(?:0|1|2|3|4|5|6|7|8|9)" (apply alt-grp (concat (range 10) (range 10))))))  ; Deduplication optimisation
+  (testing "alt-cg"
+    (is (nil?                        (alt-cg nil)))
+    (is (nil?                        (alt-cg nil nil)))
+    (is (=' #"()"                    (alt-cg #"")))
+    (is (=' #"(a)"                   (alt-cg #"a")))
+    (is (=' #"()"                    (alt-cg #"" #"")))  ; Nonsensical, but ensure we have well defined behaviour anyway
+    (is (=' #"(foo|bar)"             (alt-cg #"foo" #"bar")))
+    (is (=' #"(0|1|2|3|4|5|6|7|8|9)" (apply alt-cg (range 10))))
+    (is (=' #"(0|1|2|3|4|5|6|7|8|9)" (apply alt-cg (concat (range 10) (range 10))))))  ; Deduplication optimisation
+  (testing "alt-ncg"
+    (is (nil?                                  (alt-ncg nil nil)))
+    (is (nil?                                  (alt-ncg nil nil)))
+    (is (nil?                                  (alt-ncg nil nil nil)))
+    (is (nil?                                  (alt-ncg "groupName" nil)))
+    (is (=' #"(?<groupName>)"                  (alt-ncg "groupName" #"")))
+    (is (=' #"(?<groupName>a)"                 (alt-ncg "groupName" #"a")))
+    (is (=' #"(?<groupName>)"                  (alt-ncg "groupName" #"" #"")))  ; Nonsensical, but ensure we have well defined behaviour anyway
+    (is (=' #"(?<groupName>foo|bar)"           (alt-ncg "groupName" #"foo" #"bar")))
+    (is (=' #"(?<numbers>0|1|2|3|4|5|6|7|8|9)" (apply (partial alt-ncg "numbers") (range 10))))
+    (is (=' #"(?<numbers>0|1|2|3|4|5|6|7|8|9)" (apply (partial alt-ncg "numbers") (concat (range 10) (range 10)))))))  ; Deduplication optimisation
 
 (deftest and-variant-tests
   (testing "and'"
     (is (nil?              (and' nil nil)))
     (is (nil?              (and' nil nil nil)))
+    (is (nil?              (and' nil nil #"\s+")))
     (is (=' #"a"           (and' #"a" nil)))
     (is (=' #"b"           (and' nil #"b")))
     (is (=' #"b"           (and' nil #"b" nil)))
@@ -386,20 +407,41 @@
     (is (=' #"ab|ba"       (and' #"a" #"b" nil)))
     (is (=' #"a\s+b|b\s+a" (and' #"a" #"b" #"\s+"))))
   (testing "and-grp"
-    (is (nil?                      (and-grp nil nil)))
-    (is (nil?                      (and-grp nil nil nil)))
-    (is (=' #"(?:a)"               (and-grp #"a" nil)))
-    (is (=' #"(?:a)"               (and-grp #"a" #"")))  ; Optimisation
-    (is (=' #"(?:b)"               (and-grp #"" #"b")))  ; Optimisation
-    (is (=' #"(?:aa)"              (and-grp #"a" #"a")))  ; Optimisation
-    (is (=' #"(?:ab)|(?:ba)"       (and-grp #"a" #"b")))
-    (is (=' #"(?:ab)|(?:ba)"       (and-grp #"a" #"b" nil)))
-    (is (=' #"(?:a\s+b)|(?:b\s+a)" (and-grp #"a" #"b" #"\s+")))))
+    (is (nil?                  (and-grp nil nil)))
+    (is (nil?                  (and-grp nil nil nil)))
+    (is (=' #"(?:a)"           (and-grp #"a" nil)))
+    (is (=' #"(?:a)"           (and-grp #"a" #"")))  ; Optimisation
+    (is (=' #"(?:b)"           (and-grp #"" #"b")))  ; Optimisation
+    (is (=' #"(?:aa)"          (and-grp #"a" #"a")))  ; Optimisation
+    (is (=' #"(?:ab|ba)"       (and-grp #"a" #"b")))
+    (is (=' #"(?:ab|ba)"       (and-grp #"a" #"b" nil)))
+    (is (=' #"(?:a\s+b|b\s+a)" (and-grp #"a" #"b" #"\s+"))))
+  (testing "and-cg"
+    (is (nil?                (and-cg nil nil)))
+    (is (nil?                (and-cg nil nil nil)))
+    (is (=' #"(a)"           (and-cg #"a" nil)))
+    (is (=' #"(a)"           (and-cg #"a" #"")))  ; Optimisation
+    (is (=' #"(b)"           (and-cg #"" #"b")))  ; Optimisation
+    (is (=' #"(aa)"          (and-cg #"a" #"a")))  ; Optimisation
+    (is (=' #"(ab|ba)"       (and-cg #"a" #"b")))
+    (is (=' #"(ab|ba)"       (and-cg #"a" #"b" nil)))
+    (is (=' #"(a\s+b|b\s+a)" (and-cg #"a" #"b" #"\s+"))))
+  (testing "and-ncg"
+    (is (nil?                            (and-ncg nil nil nil)))
+    (is (nil?                            (and-ncg nil nil nil nil)))
+    (is (=' #"(?<groupName>a)"           (and-ncg "groupName" #"a" nil)))
+    (is (=' #"(?<groupName>a)"           (and-ncg "groupName" #"a" #"")))  ; Optimisation
+    (is (=' #"(?<groupName>b)"           (and-ncg "groupName" #"" #"b")))  ; Optimisation
+    (is (=' #"(?<groupName>aa)"          (and-ncg "groupName" #"a" #"a")))  ; Optimisation
+    (is (=' #"(?<groupName>ab|ba)"       (and-ncg "groupName" #"a" #"b")))
+    (is (=' #"(?<groupName>ab|ba)"       (and-ncg "groupName" #"a" #"b" nil)))
+    (is (=' #"(?<groupName>a\s+b|b\s+a)" (and-ncg "groupName" #"a" #"b" #"\s+")))))
 
 (deftest or-variant-tests
   (testing "or'"
     (is (nil?                  (or' nil nil)))
     (is (nil?                  (or' nil nil nil)))
+    (is (nil?                  (or' nil nil #"\s+")))
     (is (=' #"a"               (or' #"a" nil)))
     (is (=' #"b"               (or' nil #"b")))
     (is (=' #"b"               (or' nil #"b" nil)))
@@ -412,15 +454,36 @@
     (is (=' #"ab|ba|a|b"       (or' #"a" #"b" nil)))
     (is (=' #"a\s+b|b\s+a|a|b" (or' #"a" #"b" #"\s+"))))
   (testing "or-grp"
-    (is (nil?                                  (or-grp nil nil)))
-    (is (nil?                                  (or-grp nil nil nil)))
-    (is (=' #"(?:a)"                           (or-grp #"a" nil)))
-    (is (=' #"(?:a)|"                          (or-grp #"a" #"")))  ; Optimisation
-    (is (=' #"(?:b)|"                          (or-grp #"" #"b")))  ; Note how order is not what we might expect (but it is correct!)
-    (is (=' #"(?:aa)|(?:a)"                    (or-grp #"a" #"a")))  ; Optimisation
-    (is (=' #"(?:ab)|(?:ba)|(?:a)|(?:b)"       (or-grp #"a" #"b")))
-    (is (=' #"(?:ab)|(?:ba)|(?:a)|(?:b)"       (or-grp #"a" #"b" nil)))
-    (is (=' #"(?:a\s+b)|(?:b\s+a)|(?:a)|(?:b)" (or-grp #"a" #"b" #"\s+")))))
+    (is (nil?                      (or-grp nil nil)))
+    (is (nil?                      (or-grp nil nil nil)))
+    (is (=' #"(?:a)"               (or-grp #"a" nil)))
+    (is (=' #"(?:a|)"              (or-grp #"a" #"")))  ; Optimisation
+    (is (=' #"(?:b|)"              (or-grp #"" #"b")))  ; Note how order is not what we might expect (but it is correct!)
+    (is (=' #"(?:aa|a)"            (or-grp #"a" #"a")))  ; Optimisation
+    (is (=' #"(?:ab|ba|a|b)"       (or-grp #"a" #"b")))
+    (is (=' #"(?:ab|ba|a|b)"       (or-grp #"a" #"b" nil)))
+    (is (=' #"(?:a\s+b|b\s+a|a|b)" (or-grp #"a" #"b" #"\s+"))))
+  (testing "or-cg"
+    (is (nil?                    (or-cg nil nil)))
+    (is (nil?                    (or-cg nil nil nil)))
+    (is (=' #"(a)"               (or-cg #"a" nil)))
+    (is (=' #"(a|)"              (or-cg #"a" #"")))  ; Optimisation
+    (is (=' #"(b|)"              (or-cg #"" #"b")))  ; Note how order is not what we might expect (but it is correct!)
+    (is (=' #"(aa|a)"            (or-cg #"a" #"a")))  ; Optimisation
+    (is (=' #"(ab|ba|a|b)"       (or-cg #"a" #"b")))
+    (is (=' #"(ab|ba|a|b)"       (or-cg #"a" #"b" nil)))
+    (is (=' #"(a\s+b|b\s+a|a|b)" (or-cg #"a" #"b" #"\s+"))))
+  (testing "or-ncg"
+    (is (nil?                                (or-ncg nil nil nil)))
+    (is (nil?                                (or-ncg nil nil nil nil)))
+    (is (nil?                                (or-ncg "groupName" nil nil nil)))
+    (is (=' #"(?<groupName>a)"               (or-ncg "groupName" #"a" nil)))
+    (is (=' #"(?<groupName>a|)"              (or-ncg "groupName" #"a" #"")))  ; Optimisation
+    (is (=' #"(?<groupName>b|)"              (or-ncg "groupName" #"" #"b")))  ; Note how order is not what we might expect (but it is correct!)
+    (is (=' #"(?<groupName>aa|a)"            (or-ncg "groupName" #"a" #"a")))  ; Optimisation
+    (is (=' #"(?<groupName>ab|ba|a|b)"       (or-ncg "groupName" #"a" #"b")))
+    (is (=' #"(?<groupName>ab|ba|a|b)"       (or-ncg "groupName" #"a" #"b" nil)))
+    (is (=' #"(?<groupName>a\s+b|b\s+a|a|b)" (or-ncg "groupName" #"a" #"b" #"\s+")))))
 
 (deftest xor-variant-tests
   (testing "xor'"
@@ -432,12 +495,27 @@
     (is (=' #"a"   (xor' #"a" #"a")))  ; Optimisation
     (is (=' #"a|b" (xor' #"a" #"b"))))
   (testing "xor-grp"
-    (is (nil?              (xor-grp nil nil)))
-    (is (=' #"(?:a)"       (xor-grp #"a" nil)))
-    (is (=' #"(?:a)|"      (xor-grp #"a" #"")))
-    (is (=' #"|(?:b)"      (xor-grp #"" #"b")))
-    (is (=' #"(?:a)"       (xor-grp #"a" #"a")))  ; Optimisation
-    (is (=' #"(?:a)|(?:b)" (xor-grp #"a" #"b")))))
+    (is (nil?          (xor-grp nil nil)))
+    (is (=' #"(?:a)"   (xor-grp #"a" nil)))
+    (is (=' #"(?:a|)"  (xor-grp #"a" #"")))
+    (is (=' #"(?:|b)"  (xor-grp #"" #"b")))
+    (is (=' #"(?:a)"   (xor-grp #"a" #"a")))  ; Optimisation
+    (is (=' #"(?:a|b)" (xor-grp #"a" #"b"))))
+  (testing "xor-cg"
+    (is (nil?        (xor-cg nil nil)))
+    (is (=' #"(a)"   (xor-cg #"a" nil)))
+    (is (=' #"(a|)"  (xor-cg #"a" #"")))
+    (is (=' #"(|b)"  (xor-cg #"" #"b")))
+    (is (=' #"(a)"   (xor-cg #"a" #"a")))  ; Optimisation
+    (is (=' #"(a|b)" (xor-cg #"a" #"b"))))
+  (testing "xor-ncg"
+    (is (nil?                    (xor-ncg nil nil nil)))
+    (is (nil?                    (xor-ncg "groupName" nil nil)))
+    (is (=' #"(?<groupName>a)"   (xor-ncg "groupName" #"a" nil)))
+    (is (=' #"(?<groupName>a|)"  (xor-ncg "groupName" #"a" #"")))
+    (is (=' #"(?<groupName>|b)"  (xor-ncg "groupName" #"" #"b")))
+    (is (=' #"(?<groupName>a)"   (xor-ncg "groupName" #"a" #"a")))  ; Optimisation
+    (is (=' #"(?<groupName>a|b)" (xor-ncg "groupName" #"a" #"b")))))
 
 (defn- matches?
   [re s]

@@ -10,6 +10,9 @@
 
 # wreck - the "Whacky Regular Expression Construction Kit"
 
+> [!WARNING]  
+> Prior to v1.0 the library will be undergoing extensive development based on its use elsewhere.  APIs and behaviour may change in backwards incompatible ways without warning.  Feedback during this period is very welcome however, either here in the form of [issues](https://github.com/pmonks/wreck/issues), or on [the Clojure Discord server](https://discord.gg/discljord).
+
 A micro-library for Clojure(Script) that provides a selection of regular expression construction functions.  It has no dependencies, other than on Clojure, and emits standard Clojure regular expression objects, so is fully compatible with Clojure's built-in regular expression functions (it does not use any JVM-specific or JavaScript-specific regex syntax, though it can be used with platform-specific regular expression fragments to produce platform-specific regular expressions, if that's what you want).
 
 The library is _not_ intended to provide a comprehensive functional alternative for constructing regular expressions - knowledge of regular expression syntax and literals remains necessary.  The library is instead intended to assist in constructing syntactically valid regular expressions by combining smaller regular expression fragments.
@@ -53,6 +56,7 @@ $ deps-try com.github.pmonks/wreck
 ```clojure
 (require '[wreck.api :as re])
 
+
 ;; Basics
 
 (re/esc ".*")
@@ -69,6 +73,10 @@ $ deps-try com.github.pmonks/wreck
                                               ; build up a valid expression
 ;=> #"[\p{Punct}\p{Space}]+"
 
+; Because equality isn't defined for regexes in Clojure
+(re/=' #"ab" (re/join #"a" #"b"))
+;=> true
+
 (re/grp #"a" #"b")
 ;=> #"(?:ab)"  ; Default group is non-capturing
 
@@ -77,11 +85,6 @@ $ deps-try com.github.pmonks/wreck
 
 (re/ncg "ab" #"a" #"b")
 ;=> #"(?<ab>ab)"  ; And named capturing groups (much more useful, especially with rencg!)
-
-; Because ClojureJVM doesn't implement equality for regexes, even though
-; ClojureScript does...  🙄
-(re/=' #"ab" (re/join #"a" #"b"))
-;=> true
 
 
 ;; Cardinality
@@ -92,8 +95,8 @@ $ deps-try com.github.pmonks/wreck
 (re/zom-grp #"foo")
 ;=> #"(?:foo)*"  ; That's more like it!
 
-(re/zom-grp #"foo" #"bar")  ; Can pass in as many regexes as you like to most -grp fns
-;=> #"(?:foobar)*"
+(re/zom-grp #"foo" #"bar" #"blah")  ; Can pass in as many regexes as you like to most -grp fns
+;=> #"(?:foobarblah)*"
 
 (re/oom-grp #"foo")  ; oom = one or more
 ;=> #"(?:foo)+"
@@ -115,9 +118,10 @@ $ deps-try com.github.pmonks/wreck
 (re/alt #"foo" #"bar")
 ;=> #"foo|bar"
 
-(re/alt-grp #"foo" #"bar")  ; In case the alternates are themselves complex regexes that might
-                            ; cause precedence order problems
-;=> #"(?:foo)|(?:bar)"
+(re/alt-grp #"foo" #"bar")
+;=> #"(?:foo|bar)"
+
+; There are -cg and -ncg versions of this fn as well
 
 
 ;; Logical operators
@@ -126,43 +130,43 @@ $ deps-try com.github.pmonks/wreck
 ;=> #"foobar|barfoo"
 
 (re/and-grp #"foo" #"bar")
-;=> #"(?:foobar)|(?:barfoo)"
+;=> #"(?:foobar|barfoo)"
 
 (re/or' #"foo" #"bar")
 ;=> #"foobar|barfoo|foo|bar"
 
 (re/or-grp #"foo" #"bar")
-;=> #"(?:foobar)|(?:barfoo)|(?:foo)|(?:bar)"
+;=> #"(?:foobar|barfoo|foo|bar)"
 
 (re/or-grp #"foo" #"bar" #"\s+")  ; Logical operators also support separators
-;=> #"(?:foo\s+bar)|(?:bar\s+foo)|(?:foo)|(?:bar)"
+;=> #"(?:foo\s+bar|bar\s+foo|foo|bar)"
 
 (re/xor' #"foo" #"bar")  ; The same as alt, but provided for ease of comprehension in lengthy
                          ; regex composition expressions that use the logical operators
 ;=> #"foo|bar"
 
 (re/xor-grp #"foo" #"bar")
-;=> #"(?:foo)|(?:bar)"
+;=> #"(?:foo|bar)"
+
+; There are -cg and -ncg versions of all of these fns as well
 
 
 
 ;; A more complex example that composes a longer regex from just a few easy-to-read statements
 ;; (from the unit tests)
 
-(def lorl-re (re/grp (re/or' #"Lesser" #"Library" #"\s+or\s+")))  ; "Lesser" or "Library", but
-                                                                  ; in any order, or either
-                                                                  ; word by itself, with the
-                                                                  ; word "or" as a separator
+(def lorl-re (re/or-grp "Lesser" "Library" #"\s+or\s+"))  ; "Lesser" or "Library", but in any
+                                                          ; order, or either word by itself,
+                                                          ; with the word "or" as a separator
 ;=> #"(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)"
 
 (def lgpl-re (re/join #"(?iuU)(?<!\w)"                   ; Prefix fragment
-                      (re/ncg "lgpl"                     ; Define a named capturing group
-                        (re/alt-grp                      ; Outer 'alt' (with elements grouped)
-                          (re/join #"GNU\s+" lorl-re)    ; GNU <lesser or library regex>
-                          (re/join lorl-re #"\s+GPL")))  ; <lesser or library regex> GPL
+                      (re/alt-ncg "lgpl"                 ; Alternations in a named capture grp
+                        (re/join "GNU" #"\s+" lorl-re)   ; GNU <lesser or library regex>
+                        (re/join lorl-re #"\s+" "GPL"))  ; <lesser or library regex> GPL
                       #"(?!\w)"))                        ; Suffix fragment
-;=> #"(?iuU)(?<!\w)(?<lgpl>(?:GNU\s+(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|
-;=> Library))|(?:(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)\s+GPL))(?!\w)"
+;=> #"(?iuU)(?<!\w)(?<lgpl>GNU\s+(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|
+;=> Library)|(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)\s+GPL)(?!\w)"
 
 ; Which would you rather maintain?  😉
 ```

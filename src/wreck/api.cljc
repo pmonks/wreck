@@ -23,8 +23,9 @@
     `java.util.regex.PatternSyntaxException` class.
   * On JavaScript, these will typically be a `SyntaxError`s.
   * Platform specific behaviour is particularly notable for short / empty
-    regular expressions, such as `#\"{}\"` (error on JVM, fine but nonsencial on
-    JS) and `#\"{1}\"` (fine but nonsensical on JVM, but error on JS)."
+    regular expressions, such as `#\"{}\"` (an error on the JVM, fine but
+    nonsensical on JS) and `#\"{1}\"` (ironically, fine but nonsensical on the
+    JVM, but an error on JS).  🤡"
   (:require [clojure.string :as s]))
 
 
@@ -35,8 +36,10 @@
   means that _equivalent_ regexes (e.g. `#\"...\"` and `#\".{3}\"` will _not_ be
   considered equal.
 
-  Notes: this is only needed in ClojureJVM (ClojureScript correctly implements
-  equality for regexes)."
+  Notes:
+
+  * Some JavaScript runtimes that ClojureScript runs on correctly implement
+    equality for regexes, but the JVM does not."
   ([_]       true)
   ([re1 re2] (= (str re1) (str re2)))
   ([re1 re2 & more]
@@ -336,15 +339,19 @@
     (apply join (interpose "|" res))))
 
 (defn alt-grp
-  "[grp] on each element in `res`, then [alt]."
+  "[alt] then [grp]."
   [& res]
-  (when-let [res (distinct' (filter identity res))]
-    (apply alt (map #(join "(?:" % ")") res))))
+   (grp (apply alt res)))
 
-; Note: capturing group versions don't make much sense for alt, and so are not
-; provided.  A more typical pattern would be to wrap an entire alt'/alt-grp
-; expression in a (single) capturing group.  If you do in fact need this, please
-; don't hesitate to raise an issue: https://github.com/pmonks/wreck/issues/new?template=Feature_request.md
+(defn alt-cg
+  "[alt] then [cg]."
+  [& res]
+   (cg (apply alt res)))
+
+(defn alt-ncg
+  "[alt] then [ncg]."
+  [nm & res]
+  (ncg nm (apply alt res)))
 
 
 ;; LOGICAL OPERATORS
@@ -360,10 +367,11 @@
   * May optimise the expression (via de-duplication in [alt])."
   ([a b] (and' a b nil))
   ([a b s]
-    (alt (join a s b) (join b s a))))
+   (when-not (and (empty?' a) (empty?' b))
+     (alt (join a s b) (join b s a)))))
 
 (defn and-grp
-  "As for [and'], but each element in the alternation is grouped with [grp].
+  "[and'] then [grp].
 
   Notes:
 
@@ -371,12 +379,29 @@
   * May optimise the expression (via de-duplication in [alt])."
   ([a b] (and-grp a b nil))
   ([a b s]
-    (alt (grp a s b) (grp b s a))))
+   (grp (and' a b s))))
 
-; Note: capturing group versions don't make much sense for and', and so are not
-; provided.  A more typical pattern would be to wrap an entire and'/and-grp
-; expression in a (single) capturing group.  If you do in fact need this, please
-; don't hesitate to raise an issue: https://github.com/pmonks/wreck/issues/new?template=Feature_request.md
+(defn and-cg
+  "[and'] then [cg].
+
+  Notes:
+
+  * Unlike most other `-grp` fns, this one does _not_ accept any number of res.
+  * May optimise the expression (via de-duplication in [alt])."
+  ([a b] (and-cg a b nil))
+  ([a b s]
+   (cg (and' a b s))))
+
+(defn and-ncg
+  "[and'] then [ncg].
+
+  Notes:
+
+  * Unlike most other `-grp` fns, this one does _not_ accept any number of res.
+  * May optimise the expression (via de-duplication in [alt])."
+  ([nm a b] (and-ncg nm a b nil))
+  ([nm a b s]
+   (ncg nm (and' a b s))))
 
 (defn or'
   "Returns an 'inclusive or' regex that will match `a` or `b`, or both, in any
@@ -389,10 +414,11 @@
   * May optimise the expression (via de-duplication in [alt])."
   ([a b] (or' a b nil))
   ([a b s]
-    (alt (join a s b) (join b s a) a b)))
+   (when-not (and (empty?' a) (empty?' b))
+     (alt (join a s b) (join b s a) a b))))
 
 (defn or-grp
-  "As for [or'], but each element in the alternation is grouped with [grp].
+  "[or'] then [grp].
 
   Notes:
 
@@ -400,12 +426,29 @@
   * May optimise the expression (via de-duplication in [alt])."
   ([a b] (or-grp a b nil))
   ([a b s]
-    (alt (grp a s b) (grp b s a) (grp a) (grp b))))
+   (grp (or' a b s))))
 
-; Note: capturing group versions don't make much sense for or', and so are not
-; provided.  A more typical pattern would be to wrap an entire or'/or-grp
-; expression in a (single) capturing group.  If you do in fact need this, please
-; don't hesitate to raise an issue: https://github.com/pmonks/wreck/issues/new?template=Feature_request.md
+(defn or-cg
+  "[or'] then [cg].
+
+  Notes:
+
+  * Unlike most other `-grp` fns, this one does _not_ accept any number of res.
+  * May optimise the expression (via de-duplication in [alt])."
+  ([a b] (or-cg a b nil))
+  ([a b s]
+   (cg (or' a b s))))
+
+(defn or-ncg
+  "[or'] then [ncg].
+
+  Notes:
+
+  * Unlike most other `-grp` fns, this one does _not_ accept any number of res.
+  * May optimise the expression (via de-duplication in [alt])."
+  ([nm a b] (or-ncg nm a b nil))
+  ([nm a b s]
+   (ncg nm (or' a b s))))
 
 (defn xor'
   "Returns an 'exclusive or' regex that will match `a` or `b`, but _not_ both.
@@ -420,16 +463,31 @@
   (alt a b))
 
 (defn xor-grp
-  "As for [xor'], but each element in the alternation is grouped with [grp].
+  "[xor'] then [grp].
 
   Notes:
 
   * Unlike most other `-grp` fns, this one does _not_ accept any number of res.
   * May optimise the expression (via de-duplication in [alt])."
   [a b]
-  (alt (grp a) (grp b)))
+  (grp (xor' a b)))
 
-; Note: capturing group versions don't make much sense for xor', and so are not
-; provided.  A more typical pattern would be to wrap an entire xor'/xor-grp
-; expression in a (single) capturing group.  If you do in fact need this, please
-; don't hesitate to raise an issue: https://github.com/pmonks/wreck/issues/new?template=Feature_request.md
+(defn xor-cg
+  "[xor'] then [cg].
+
+  Notes:
+
+  * Unlike most other `-grp` fns, this one does _not_ accept any number of res.
+  * May optimise the expression (via de-duplication in [alt])."
+  [a b]
+  (cg (xor' a b)))
+
+(defn xor-ncg
+  "[xor'] then [ncg].
+
+  Notes:
+
+  * Unlike most other `-grp` fns, this one does _not_ accept any number of res.
+  * May optimise the expression (via de-duplication in [alt])."
+  [nm a b]
+  (ncg nm (xor' a b)))
