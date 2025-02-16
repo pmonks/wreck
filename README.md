@@ -146,8 +146,8 @@ $ deps-try com.github.pmonks/wreck
 
 
 
-;; Complex example that composes a medium sized regex from just a few
-;; easy-to-read statements (from the unit tests)
+;; A more complex example that composes a longer regex from just a few easy-to-read statements
+;; (from the unit tests)
 
 (def lorl-re (re/grp (re/or' #"Lesser" #"Library" #"\s+or\s+")))  ; "Lesser" or "Library", but
                                                                   ; in any order, or either
