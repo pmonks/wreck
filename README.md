@@ -92,7 +92,7 @@ $ deps-try com.github.pmonks/wreck
 (re/zom-grp #"foo")
 ;=> #"(?:foo)*"  ; That's more like it!
 
-(re/zom-grp #"foo" #"bar")  ; Can pass in as many regexes as you like to -grp fns
+(re/zom-grp #"foo" #"bar")  ; Can pass in as many regexes as you like to most -grp fns
 ;=> #"(?:foobar)*"
 
 (re/oom-grp #"foo")  ; oom = one or more
@@ -137,6 +137,14 @@ $ deps-try com.github.pmonks/wreck
 (re/or-grp #"foo" #"bar" #"\s+")  ; Logical operators also support separators
 ;=> #"(?:foo\s+bar)|(?:bar\s+foo)|(?:foo)|(?:bar)"
 
+(re/xor' #"foo" #"bar")  ; The same as alt, but provided for ease of comprehension in lengthy
+                         ; regex composition expressions that use the logical operators
+;=> #"foo|bar"
+
+(re/xor-grp #"foo" #"bar")
+;=> #"(?:foo)|(?:bar)"
+
+
 
 ;; Complex example that composes a medium sized regex from just a few
 ;; easy-to-read statements (from the unit tests)
@@ -149,16 +157,12 @@ $ deps-try com.github.pmonks/wreck
 
 (def lgpl-re (re/join #"(?iuU)(?<!\w)"                   ; Prefix fragment
                       (re/ncg "lgpl"                     ; Define a named capturing group
-                        (re/or-grp                       ; Outer 'or' (with elements grouped)
+                        (re/alt-grp                      ; Outer 'alt' (with elements grouped)
                           (re/join #"GNU\s+" lorl-re)    ; GNU <lesser or library regex>
                           (re/join lorl-re #"\s+GPL")))  ; <lesser or library regex> GPL
                       #"(?!\w)"))                        ; Suffix fragment
 ;=> #"(?iuU)(?<!\w)(?<lgpl>(?:GNU\s+(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|
-;=> Library)(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)\s+GPL)|
-;=> (?:(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)\s+GPLGNU\s+
-;=> (?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library))|(?:GNU\s+
-;=> (?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library))|
-;=> (?:(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)\s+GPL))(?!\w)"
+;=> Library))|(?:(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)\s+GPL))(?!\w)"
 
 ; Which would you rather maintain?  😉
 ```

@@ -11,7 +11,7 @@
 (ns wreck.api-test
   (:require [clojure.string :as s]
             [clojure.test   :refer [deftest testing is]]
-            [wreck.api      :refer [=' join esc qot
+            [wreck.api      :refer [=' empty?' join esc qot
                                     grp  cg      ncg
                                     opt  opt-grp opt-cg opt-ncg
                                     zom  zom-grp zom-cg zom-ncg
@@ -21,7 +21,8 @@
                                     n2m  n2m-grp n2m-cg n2m-ncg
                                     alt  alt-grp
                                     and' and-grp
-                                    or'  or-grp]]))
+                                    or'  or-grp
+                                    xor' xor-grp]]))
 
 (deftest equality-tests
   (testing "Equal"
@@ -38,6 +39,15 @@
     (is (true?  (=' #"" #"" #"" #"" #"" #"" #"" #"")))
     (is (false? (=' #"." #"" #"" #"" #"" #"" #"" #"")))
     (is (false? (=' #"" #"" #"" #"" #"" #"" #"" #".")))))
+
+(deftest empty?'-tests
+  (testing "empty?'"
+    (is (true?  (empty?' nil)))
+    (is (true?  (empty?' #"")))
+    (is (false? (empty?' #" ")))
+    (is (false? (empty?' #"a")))
+    (is (false? (empty?' #".*")))
+    (is (false? (empty?' #"(?:abc)+")))))
 
 (deftest join-tests
   (testing "join - nil, empty or blank"
@@ -81,7 +91,7 @@
     (is (nil?        (qot nil)))
     (is (=' #"\Q\E"  (qot "")))
     (is (=' #"\Q \E" (qot " "))))
-    ; Note: whitespace literals (such as \n, \r and \t) act strangely in Clojure regex literals
+    ; Note: whitespace literals (such as \n, \r and \t) act strangely inside Clojure regex literals, so we don't test with them
   (testing "qot"
     (is (=' #"\Qfoo\E" (qot "foo")))
     (is (=' #"\Qfoo\E" (qot #"foo")))  ; Technically quoting regexes is a Bad Idea™, but we test a simple example just in case
@@ -119,12 +129,12 @@
     (is (thrown? java.util.regex.PatternSyntaxException (opt #"")))
     (is (=' #"x?"                                       (opt #"x")))
     (is (=' #".*?"                                      (opt #".*")))
-    (is (=' #"foo?"                                     (opt #"foo")))  ; Note how this doesn't result in optionality being applied to the entirety of the input - that's what opt-grp etc. are for
+    (is (=' #"foo?"                                     (opt #"foo")))
     (is (=' #"Apache?"                                  (opt "Apache"))))
   (testing "opt-grp"
     (is (nil?                                            (opt-grp)))
     (is (nil?                                            (opt-grp nil)))
-    (is (=' #"(?:)?"                                     (opt-grp #"")))
+    (is (thrown? java.util.regex.PatternSyntaxException  (opt-grp #"")))  ; Throws because of optimisation of empty non-capturing groups
     (is (=' #"(?:x)?"                                    (opt-grp #"x")))
     (is (=' #"(?:.*)?"                                   (opt-grp #".*")))
     (is (=' #"(?:foo)?"                                  (opt-grp #"foo")))
@@ -156,12 +166,12 @@
     (is (thrown? java.util.regex.PatternSyntaxException (zom #"")))
     (is (=' #"x*")                                      (zom #"x"))
     (is (thrown? java.util.regex.PatternSyntaxException (zom #".*")))
-    (is (=' #"foo*"                                     (zom #"foo")))  ; Note how this doesn't result in optionality being applied to the entirety of the input - that's what zom-grp etc. are for
+    (is (=' #"foo*"                                     (zom #"foo")))
     (is (=' #"Apache*"                                  (zom "Apache"))))
   (testing "zom-grp"
     (is (nil?                                            (zom-grp)))
     (is (nil?                                            (zom-grp nil)))
-    (is (=' #"(?:)*"                                     (zom-grp #"")))
+    (is (thrown? java.util.regex.PatternSyntaxException  (zom-grp #"")))  ; Throws because of optimisation of empty non-capturing groups
     (is (=' #"(?:x)*"                                    (zom-grp #"x")))
     (is (=' #"(?:.*)*"                                   (zom-grp #".*")))
     (is (=' #"(?:foo)*"                                  (zom-grp #"foo")))
@@ -192,13 +202,13 @@
     (is (nil?                                           (oom nil)))
     (is (thrown? java.util.regex.PatternSyntaxException (oom #"")))
     (is (=' #"x+")                                      (oom #"x"))
-;    (is (thrown? java.util.regex.PatternSyntaxException (oom #".*")))  ; Note: valid (but nonsensical) on ClojureJVM, but _not_ valid on ClojureScript, so we don't test this
-    (is (=' #"foo+"                                     (oom #"foo")))  ; Note how this doesn't result in optionality being applied to the entirety of the input - that's what oom-grp etc. are for
+    (is (=' #".*+"                                      (oom #".*")))  ; Note: platform specific behaviour - valid (but nonsensical) on ClojureJVM, but _not_ valid on ClojureScript
+    (is (=' #"foo+"                                     (oom #"foo")))
     (is (=' #"Apache+"                                  (oom "Apache"))))
   (testing "oom-grp"
     (is (nil?                                            (oom-grp)))
     (is (nil?                                            (oom-grp nil)))
-    (is (=' #"(?:)+"                                     (oom-grp #"")))
+    (is (thrown? java.util.regex.PatternSyntaxException  (oom-grp #"")))  ; Throws because of optimisation of empty non-capturing groups
     (is (=' #"(?:x)+"                                    (oom-grp #"x")))
     (is (=' #"(?:.*)+"                                   (oom-grp #".*")))
     (is (=' #"(?:foo)+"                                  (oom-grp #"foo")))
@@ -226,17 +236,17 @@
 
 (deftest nom-variant-tests
   (testing "nom"
-    (is (nil?                                           (nom nil nil)))
-    (is (nil?                                           (nom nil #"")))
-    (is (nil?                                           (nom 2 nil)))
-    (is (=' #"x{5,}"                                    (nom 5 #"x")))
-;    (is (thrown? java.util.regex.PatternSyntaxException (nom 3 #".*")))  ; Note: valid (but nonsensical) on ClojureJVM, but _not_ valid on ClojureScript, so we don't test this
-    (is (=' #"foo{2,}"                                  (nom 2 #"foo")))  ; Note how this doesn't result in optionality being applied to the entirety of the input - that's what nom-grp etc. are for
-    (is (=' #"Apache{17,}"                              (nom 17 "Apache"))))
+    (is (nil?              (nom nil nil)))
+    (is (nil?              (nom nil #"")))
+    (is (nil?              (nom 2 nil)))
+    (is (=' #"x{5,}"       (nom 5 #"x")))
+    (is (=' #".*{3,}"      (nom 3 #".*")))  ; Note: platform specific behaviour - valid (but nonsensical) on ClojureJVM, but _not_ valid on ClojureScript
+    (is (=' #"foo{2,}"     (nom 2 #"foo")))  ; Note how this doesn't result in optionality being applied to the entirety of the input - that's what nom-grp etc. are for
+    (is (=' #"Apache{17,}" (nom 17 "Apache"))))
   (testing "nom-grp"
     (is (nil?                                               (nom-grp nil nil)))
     (is (nil?                                               (nom-grp 3 nil)))
-    (is (=' #"(?:){246,}"                                   (nom-grp 246 #""))))
+    (is (=' #"{246,}"                                       (nom-grp 246 #""))))  ; Because of optimisation of empty non-capturing groups
     (is (=' #"(?:x){0,}"                                    (nom-grp 0 #"x")))
     (is (=' #"(?:.*){7,}"                                   (nom-grp 7 #".*")))
     (is (=' #"(?:foo){42,}"                                 (nom-grp 42 #"foo")))
@@ -263,17 +273,18 @@
 
 (deftest exn-variant-tests
   (testing "exn"
-    (is (nil?                                          (exn nil nil)))
-    (is (nil?                                          (exn nil #"")))
-    (is (nil?                                          (exn 2 nil)))
-    (is (=' #"x{5}"                                    (exn 5 #"x")))
-;    (is (thrown? java.util.regex.PatternSyntaxException (exn 3 #".*")))  ; Note: valid (but nonsensical) on ClojureJVM, but _not_ valid on ClojureScript, so we don't test this
-    (is (=' #"foo{2}"                                  (exn 2 #"foo")))  ; Note how this doesn't result in optionality being applied to the entirety of the input - that's what nom-grp etc. are for
-    (is (=' #"Apache{17}"                              (exn 17 "Apache"))))
+    (is (nil?             (exn nil nil)))
+    (is (nil?             (exn nil #"")))
+    (is (nil?             (exn 2 nil)))
+    (is (=' #"{2}"        (exn 2 #"")))
+    (is (=' #"x{5}"       (exn 5 #"x")))
+    (is (=' #".*{3}"      (exn 3 #".*")))  ; Note: platform specific behaviour - valid (but nonsensical) on ClojureJVM, but _not_ valid on ClojureScript
+    (is (=' #"foo{2}"     (exn 2 #"foo")))  ; Note how this doesn't result in optionality being applied to the entirety of the input - that's what nom-grp etc. are for
+    (is (=' #"Apache{17}" (exn 17 "Apache"))))
   (testing "exn-grp"
     (is (nil?                                              (exn-grp nil nil)))
     (is (nil?                                              (exn-grp 3 nil)))
-    (is (=' #"(?:){246}"                                   (exn-grp 246 #""))))
+    (is (=' #"{246}"                                       (exn-grp 246 #""))))  ; Because of optimisation of empty non-capturing groups
     (is (=' #"(?:x){0}"                                    (exn-grp 0 #"x")))
     (is (=' #"(?:.*){7}"                                   (exn-grp 7 #".*")))
     (is (=' #"(?:foo){42}"                                 (exn-grp 42 #"foo")))
@@ -281,6 +292,7 @@
     (is (=' #"(?:Apache(\s+Software)?(\s+Licen[cs]e)?){5}" (exn-grp 5 "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?")))
   (testing "exn-cg"
     (is (nil?                                            (exn-cg nil nil)))
+    (is (nil?                                            (exn-cg 3 nil)))
     (is (=' #"(){3}"                                     (exn-cg 3 #"")))
     (is (=' #"(x){4}"                                    (exn-cg 4 #"x")))
     (is (=' #"(.*){5}"                                   (exn-cg 5 #".*")))
@@ -300,17 +312,18 @@
 
 (deftest n2m-variant-tests
   (testing "n2m"
-    (is (nil?                                           (n2m nil nil nil)))
-    (is (nil?                                           (n2m nil nil #"")))
-    (is (nil?                                           (n2m 2 4 nil)))
-    (is (=' #"x{2,4}"                                   (n2m 2 4 #"x")))
-;    (is (thrown? java.util.regex.PatternSyntaxException (n2m 3 7 #".*")))  ; Note: valid (but nonsensical) on ClojureJVM, but _not_ valid on ClojureScript, so we don't test this
-    (is (=' #"foo{2,2}"                                 (n2m 2 2 #"foo")))  ; Note how this doesn't result in optionality being applied to the entirety of the input - that's what nom-grp etc. are for
-    (is (=' #"Apache{17,21}"                            (n2m 17 21 "Apache"))))
+    (is (nil?                (n2m nil nil nil)))
+    (is (nil?                (n2m nil nil #"")))
+    (is (=' #"{2,4}"         (n2m 2 4 nil)))
+    (is (=' #"{2,4}"         (n2m 2 4 #"")))
+    (is (=' #"x{2,4}"        (n2m 2 4 #"x")))
+    (is (=' #".*{3,7}"       (n2m 3 7 #".*")))  ; Note: platform specific behaviour - valid (but nonsensical) on ClojureJVM, but _not_ valid on ClojureScript
+    (is (=' #"foo{2,2}"      (n2m 2 2 #"foo")))  ; Note how this doesn't result in optionality being applied to the entirety of the input - that's what nom-grp etc. are for
+    (is (=' #"Apache{17,21}" (n2m 17 21 "Apache"))))
   (testing "n2m-grp"
     (is (nil?                                                 (n2m-grp nil nil nil)))
     (is (nil?                                                 (n2m-grp 3 100 nil)))
-    (is (=' #"(?:){246,250}"                                  (n2m-grp 246 250 #""))))
+    (is (=' #"{246,250}"                                      (n2m-grp 246 250 #""))))
     (is (=' #"(?:x){0,3}"                                     (n2m-grp 0 3 #"x")))
     (is (=' #"(?:.*){7,8}"                                    (n2m-grp 7 8 #".*")))
     (is (=' #"(?:foo){42,69}"                                 (n2m-grp 42 69 #"foo")))
@@ -340,29 +353,45 @@
     (is (nil?                      (alt nil)))
     (is (nil?                      (alt nil nil)))
     (is (=' #""                    (alt #"")))
-    (is (=' #"|"                   (alt #"" #"")))
+    (is (=' #"a"                   (alt #"a")))
+    (is (=' #""                    (alt #"" #"")))
     (is (=' #"foo|bar"             (alt #"foo" #"bar")))
+    (is (=' #"foo"                 (alt "foo" "foo")))   ; Deduplication optimisation
+    (is (=' #"foo"                 (alt "foo" #"foo")))  ; Deduplication optimisation
+    (is (=' #"0"                   (alt 0 "0" #"0")))    ; Deduplication optimisation
     (is (=' #"0|1|2|3|4|5|6|7|8|9" (apply alt (range 10)))))
   (testing "alt-grp"
     (is (nil?                                                              (alt-grp nil)))
     (is (nil?                                                              (alt-grp nil nil)))
     (is (=' #"(?:)"                                                        (alt-grp #"")))
-    (is (=' #"(?:)|(?:)"                                                   (alt-grp #"" #"")))
+    (is (=' #"(?:a)"                                                       (alt-grp #"a")))
+    (is (=' #"(?:)"                                                        (alt-grp #"" #"")))  ; Nonsensical, but ensure we have well defined behaviour anyway
     (is (=' #"(?:foo)|(?:bar)"                                             (alt-grp #"foo" #"bar")))
-    (is (=' #"(?:0)|(?:1)|(?:2)|(?:3)|(?:4)|(?:5)|(?:6)|(?:7)|(?:8)|(?:9)" (apply alt-grp (range 10))))))
+    (is (=' #"(?:0)|(?:1)|(?:2)|(?:3)|(?:4)|(?:5)|(?:6)|(?:7)|(?:8)|(?:9)" (apply alt-grp (range 10))))
+    (is (=' #"(?:0)|(?:1)|(?:2)|(?:3)|(?:4)|(?:5)|(?:6)|(?:7)|(?:8)|(?:9)" (apply alt-grp (concat (range 10) (range 10)))))))  ; Deduplication optimisation
 
 (deftest and-variant-tests
   (testing "and'"
     (is (nil?              (and' nil nil)))
     (is (nil?              (and' nil nil nil)))
-    (is (nil?              (and' #"a" nil)))
+    (is (=' #"a"           (and' #"a" nil)))
+    (is (=' #"b"           (and' nil #"b")))
+    (is (=' #"b"           (and' nil #"b" nil)))
+    (is (=' #"a\s+|\s+a"   (and' #"a" nil #"\s+")))  ; Optimisation
+    (is (=' #"\s+b|b\s+"   (and' nil #"b" #"\s+")))  ; Optimisation
+    (is (=' #"a"           (and' #"a" #"")))
+    (is (=' #"b"           (and' #"" #"b")))
+    (is (=' #"aa"          (and' #"a" #"a")))  ; Optimisation
     (is (=' #"ab|ba"       (and' #"a" #"b")))
     (is (=' #"ab|ba"       (and' #"a" #"b" nil)))
     (is (=' #"a\s+b|b\s+a" (and' #"a" #"b" #"\s+"))))
   (testing "and-grp"
     (is (nil?                      (and-grp nil nil)))
     (is (nil?                      (and-grp nil nil nil)))
-    (is (nil?                      (and-grp #"a" nil)))
+    (is (=' #"(?:a)"               (and-grp #"a" nil)))
+    (is (=' #"(?:a)"               (and-grp #"a" #"")))  ; Optimisation
+    (is (=' #"(?:b)"               (and-grp #"" #"b")))  ; Optimisation
+    (is (=' #"(?:aa)"              (and-grp #"a" #"a")))  ; Optimisation
     (is (=' #"(?:ab)|(?:ba)"       (and-grp #"a" #"b")))
     (is (=' #"(?:ab)|(?:ba)"       (and-grp #"a" #"b" nil)))
     (is (=' #"(?:a\s+b)|(?:b\s+a)" (and-grp #"a" #"b" #"\s+")))))
@@ -371,17 +400,44 @@
   (testing "or'"
     (is (nil?                  (or' nil nil)))
     (is (nil?                  (or' nil nil nil)))
-    (is (nil?                  (or' #"a" nil)))
+    (is (=' #"a"               (or' #"a" nil)))
+    (is (=' #"b"               (or' nil #"b")))
+    (is (=' #"b"               (or' nil #"b" nil)))
+    (is (=' #"a\s+|\s+a|a"     (or' #"a" nil #"\s+")))  ; Optimisation
+    (is (=' #"\s+b|b\s+|b"     (or' nil #"b" #"\s+")))  ; Optimisation
+    (is (=' #"a|"              (or' #"a" #"")))
+    (is (=' #"b|"              (or' #"" #"b")))   ; Note how order is not what we might expect (but it is correct!)
+    (is (=' #"aa|a"            (or' #"a" #"a")))  ; Optimisation
     (is (=' #"ab|ba|a|b"       (or' #"a" #"b")))
     (is (=' #"ab|ba|a|b"       (or' #"a" #"b" nil)))
     (is (=' #"a\s+b|b\s+a|a|b" (or' #"a" #"b" #"\s+"))))
   (testing "or-grp"
     (is (nil?                                  (or-grp nil nil)))
     (is (nil?                                  (or-grp nil nil nil)))
-    (is (nil?                                  (or-grp #"a" nil)))
+    (is (=' #"(?:a)"                           (or-grp #"a" nil)))
+    (is (=' #"(?:a)|"                          (or-grp #"a" #"")))  ; Optimisation
+    (is (=' #"(?:b)|"                          (or-grp #"" #"b")))  ; Note how order is not what we might expect (but it is correct!)
+    (is (=' #"(?:aa)|(?:a)"                    (or-grp #"a" #"a")))  ; Optimisation
     (is (=' #"(?:ab)|(?:ba)|(?:a)|(?:b)"       (or-grp #"a" #"b")))
     (is (=' #"(?:ab)|(?:ba)|(?:a)|(?:b)"       (or-grp #"a" #"b" nil)))
     (is (=' #"(?:a\s+b)|(?:b\s+a)|(?:a)|(?:b)" (or-grp #"a" #"b" #"\s+")))))
+
+(deftest xor-variant-tests
+  (testing "xor'"
+    (is (nil?      (xor' nil nil)))
+    (is (=' #"a"   (xor' #"a" nil)))
+    (is (=' #"b"   (xor' nil #"b")))
+    (is (=' #"a|"  (xor' #"a" #"")))
+    (is (=' #"|b"  (xor' #"" #"b")))
+    (is (=' #"a"   (xor' #"a" #"a")))  ; Optimisation
+    (is (=' #"a|b" (xor' #"a" #"b"))))
+  (testing "xor-grp"
+    (is (nil?              (xor-grp nil nil)))
+    (is (=' #"(?:a)"       (xor-grp #"a" nil)))
+    (is (=' #"(?:a)|"      (xor-grp #"a" #"")))
+    (is (=' #"|(?:b)"      (xor-grp #"" #"b")))
+    (is (=' #"(?:a)"       (xor-grp #"a" #"a")))  ; Optimisation
+    (is (=' #"(?:a)|(?:b)" (xor-grp #"a" #"b")))))
 
 (defn- matches?
   [re s]
@@ -397,9 +453,9 @@
   (let [lorl-re (grp (or' #"Lesser" #"Library" #"\s+or\s+"))
         lgpl-re (join #"(?iuU)(?<!\w)"
                       (ncg "lgpl"
-                        (or-grp
-                          (join #"GNU\s+" lorl-re)
-                          (join lorl-re #"\s+GPL")))
+                        (xor-grp
+                          (grp #"GNU\s+" lorl-re)
+                          (grp lorl-re #"\s+GPL")))
                       #"(?!\w)")]
     (testing "Matching tests"
       ; Matches
