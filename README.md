@@ -79,6 +79,7 @@ $ deps-try com.github.pmonks/wreck
 
 
 ;; Groups
+
 (re/grp #"a" #"b")
 ;=> #"(?:ab)"  ; Default group is non-capturing
 
@@ -89,7 +90,7 @@ $ deps-try com.github.pmonks/wreck
 ;=> #"(?<ab>ab)"  ; And named capturing groups (much more useful, especially with rencg!)
 
 (re/grp #"a" #"b" #"c" #"d" #"e" #"f" #"g" #"h" #"i" #"j" #"k" #"l" #"m" #"n" #"o" #"p" #"q" #"r" #"s" #"t" #"u" #"v" #"w" #"x" #"y" #"z")
-;=> #"(?:abcdefghijklmnopqrstuvwxyz)"  ; Group functions are variadic, including variants
+;=> #"(?:abcdefghijklmnopqrstuvwxyz)"  ; Group functions are variadic, including most variants
 
 
 ;; Cardinality
@@ -150,7 +151,8 @@ $ deps-try com.github.pmonks/wreck
 (re/xor-grp #"foo" #"bar")
 ;=> #"(?:foo|bar)"
 
-; There are -cg and -ncg variants of all of these fns as well
+; There are -cg and -ncg variants of all of these fns as well, but note that unlike the other
+; variants, none of the logical operator groups variants are variadic.
 
 
 ;; A more complex example that composes a longer regex from just a few easy-to-read statements
@@ -161,13 +163,16 @@ $ deps-try com.github.pmonks/wreck
                                                           ; with the word "or" as a separator
 ;=> #"(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)"
 
-(def lgpl-re (re/join #"(?iuU)(?<!\w)"                   ; Prefix fragment
-                      (re/alt-ncg "lgpl"                 ; Alternations in a named capture grp
-                        (re/join "GNU" #"\s+" lorl-re)   ; GNU <lesser or library regex>
-                        (re/join lorl-re #"\s+" "GPL"))  ; <lesser or library regex> GPL
-                      #"(?!\w)"))                        ; Suffix fragment
+(def lgpl-re (re/join #"(?iuU)(?<!\w)"                                ; Prefix fragment
+                      (re/alt-ncg "lgpl"                              ; Alternations, ncg'ed
+                        #"LGPL"                                       ; LGPL literal
+                        (re/join "GNU" #"\s+" lorl-re)                ; GNU <lorl regex>
+                        (re/join lorl-re #"\s+" "GPL")                ; <lorl regex> GPL
+                        (re/join "GNU" #"\s+" lorl-re #"\s+" "GPL"))  ; GNU <lorl> GPL
+                      #"(?!\w)"))                                     ; Suffix fragment
 ;=> #"(?iuU)(?<!\w)(?<lgpl>GNU\s+(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|
-;=> Library)|(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)\s+GPL)(?!\w)"
+;=> Library)|(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)\s+GPL|GNU\s+
+;=> (?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)\s+GPL)(?!\w)"
 
 ; Which would you rather maintain?  😉
 ```

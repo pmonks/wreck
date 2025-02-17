@@ -526,17 +526,19 @@
   (boolean (re-find re s)))
 
 (deftest composite-tests
-  ; The following regex ends up being ~450 characters long, partly because of the sheer number of times the words
-  ; "Lesser" and "Library" appear in it (in order to implement the nested "or"s)
-  (let [lorl-re (grp (or' #"Lesser" #"Library" #"\s+or\s+"))
+  ; The following regex ends up being ~250 characters long, partly because of the sheer number of times the words
+  ; "Lesser" and "Library" appear in it (in order to implement the nested alt/or)
+  (let [lorl-re (or-grp "Lesser" "Library" #"\s+or\s+")
         lgpl-re (join #"(?iuU)(?<!\w)"
-                      (ncg "lgpl"
-                        (xor-grp
-                          (grp #"GNU\s+" lorl-re)
-                          (grp lorl-re #"\s+GPL")))
+                      (alt-ncg "lgpl"
+                        #"LGPL"
+                        (join "GNU" #"\s+" lorl-re)
+                        (join lorl-re #"\s+" "GPL")
+                        (join "GNU" #"\s+" lorl-re #"\s+" "GPL"))
                       #"(?!\w)")]
     (testing "Matching tests"
       ; Matches
+      (is (true?  (matches? lgpl-re "LGPL")))
       (is (true?  (matches? lgpl-re "GNU Lesser")))
       (is (true?  (matches? lgpl-re "GNU Library")))
       (is (true?  (matches? lgpl-re "gnu lesser or library")))
@@ -545,7 +547,9 @@
       (is (true?  (matches? lgpl-re "Library GPL")))
       (is (true?  (matches? lgpl-re "Lesser or Library GPL")))
       (is (true?  (matches? lgpl-re "lIBRARY oR lESSER gpl")))
+      (is (true?  (matches? lgpl-re "GNU Lesser or Library GPL")))
       ; Non matches
+      (is (false? (matches? lgpl-re "L GPL")))
       (is (false? (matches? lgpl-re "GNU")))
       (is (false? (matches? lgpl-re "GPL")))
       (is (false? (matches? lgpl-re "Lesser")))
@@ -557,6 +561,7 @@
       (is (false? (matches? lgpl-re "Library or Lesser GNU"))))
     (testing "Finding tests"
       ; Finds
+      (is (true?  (finds? lgpl-re "some text LGPL or more text")))
       (is (true?  (finds? lgpl-re "some text GNU Lesser or more text")))
       (is (true?  (finds? lgpl-re "some text GNU Library or more text")))
       (is (true?  (finds? lgpl-re "some text gnu lesser or library or more text")))
@@ -569,6 +574,8 @@
       (is (true?  (finds? lgpl-re "some text GNU LIBRARY OR LESSERor more text")))  ; finds "GNU LIBRARY"
       (is (true?  (finds? lgpl-re "some textLesser or Library GPL or more text")))  ; finds "Library GPL"
       ; Non finds due to concatenated leading or trailing text
+      (is (false? (finds? lgpl-re "some textLGPL or more text")))
+      (is (false? (finds? lgpl-re "some text LGPLor more text")))
       (is (false? (finds? lgpl-re "some textGNU Lesser or more text")))
       (is (false? (finds? lgpl-re "some text GNU Libraryor more text")))
       (is (false? (finds? lgpl-re "some textgnu lesser or library or more text")))
