@@ -89,8 +89,10 @@ $ deps-try com.github.pmonks/wreck
 (re/ncg "ab" #"a" #"b")
 ;=> #"(?<ab>ab)"  ; And named capturing groups (much more useful, especially with rencg!)
 
-(re/grp #"a" #"b" #"c" #"d" #"e" #"f" #"g" #"h" #"i" #"j" #"k" #"l" #"m" #"n" #"o" #"p" #"q" #"r" #"s" #"t" #"u" #"v" #"w" #"x" #"y" #"z")
-;=> #"(?:abcdefghijklmnopqrstuvwxyz)"  ; Group functions are variadic, including most variants
+(re/grp "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" "y" "z")
+;=> #"(?:abcdefghijklmnopqrstuvwxyz)"  ; Group functions are variadic, including most of the
+                                       ; variants shown next. They also (like join) support
+                                       ; both regexes and strings.
 
 
 ;; Cardinality
@@ -165,7 +167,7 @@ $ deps-try com.github.pmonks/wreck
 
 (def lgpl-re (re/join #"(?iuU)(?<!\w)"                                ; Prefix fragment
                       (re/alt-ncg "lgpl"                              ; Alternations, ncg'ed
-                        #"LGPL"                                       ; LGPL literal
+                        "LGPL"                                        ; LGPL literal (string)
                         (re/join "GNU" #"\s+" lorl-re)                ; GNU <lorl regex>
                         (re/join lorl-re #"\s+" "GPL")                ; <lorl regex> GPL
                         (re/join "GNU" #"\s+" lorl-re #"\s+" "GPL"))  ; GNU <lorl> GPL
