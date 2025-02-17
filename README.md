@@ -113,7 +113,7 @@ $ deps-try com.github.pmonks/wreck
 (re/n2m-grp 12 17 #"foo")  ; n2m = n to m
 ;=> #"(?:foo){12,17}"
 
-; There are -cg and -ncg variants of all of these fns as well
+; There are -cg and -ncg variants of all of these fns as well, all variadic
 
 
 ;; Alternation
@@ -124,7 +124,7 @@ $ deps-try com.github.pmonks/wreck
 (re/alt-grp #"foo" #"bar")
 ;=> #"(?:foo|bar)"
 
-; There are -cg and -ncg variants of this fn as well
+; There are -cg and -ncg variants of this fn as well, all variadic
 
 
 ;; Logical operators
@@ -152,7 +152,7 @@ $ deps-try com.github.pmonks/wreck
 ;=> #"(?:foo|bar)"
 
 ; There are -cg and -ncg variants of all of these fns as well, but note that unlike the other
-; variants, none of the logical operator groups variants are variadic.
+; variants, none of the logical operator grouping variants are variadic
 
 
 ;; A more complex example that composes a longer regex from just a few easy-to-read statements
