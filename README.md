@@ -13,15 +13,15 @@
 > [!WARNING]  
 > Prior to v1.0 the library will be undergoing extensive development based on its use elsewhere.  APIs and behaviour may change in backwards incompatible ways without warning.  Feedback during this period is very welcome however, either here in the form of [issues](https://github.com/pmonks/wreck/issues), or on [the Clojure Discord server](https://discord.gg/discljord).
 
-A micro-library for Clojure(Script) that provides a selection of regular expression construction functions.  It has no dependencies, other than on Clojure, and emits standard Clojure regular expression objects, so is fully compatible with Clojure's built-in regular expression functions (it does not use any JVM-specific or JavaScript-specific regex syntax, though it can be used with platform-specific regular expression fragments to produce platform-specific regular expressions, if that's what you want).
+A micro-library for Clojure(Script) that provides a selection of regular expression construction functions.  It has no dependencies, other than on Clojure, and emits standard Clojure regular expression objects, so is fully compatible with Clojure's built-in regular expression functions (it does not use any JVM-specific or JavaScript-specific regex syntax, though it can be used with platform-specific regular expressions to produce platform-specific regular expressions, if that's what you need).
 
-The library is _not_ intended to provide a comprehensive functional alternative for constructing regular expressions - knowledge of regular expression syntax and literals remains necessary.  The library is instead intended to assist in constructing syntactically valid regular expressions by combining smaller regular expression fragments.
+The library is _not_ intended to provide a comprehensive functional alternative for constructing regular expressions - knowledge of regular expression syntax remains necessary.  Instead it is intended to assist in constructing syntactically valid large regular expressions by composing smaller regular expressions together in well-defined ways.
 
 It also pairs very nicely with [`rencg`](https://github.com/pmonks/rencg) - that library adds first class support for named capturing groups to Clojure (albeit the JVM flavour only).
 
 #### Why?
 
-I have other projects that perform complex text processing and in some cases have ended up writing very large regular expressions (as large as ~10KB), and maintaining huge regular expressions while keeping them syntactically and functionally correct using nothing but regular expression literals, is... ..."challenging".  As a result I'd started using some helper functions so that I could modularise those regular expressions and test and construct them in pieces, and before long I realised that these functions were independently useful, despite not being complex or novel.
+I have other projects that perform complex text processing and in some cases have ended up writing very large regular expressions (as large as ~10KB), and writing and maintaining huge regular expressions while keeping them syntactically and functionally correct using regular expression literals, is... ..."challenging".  As a result I'd written some helper functions that let me modularise those regular expressions, and test and construct them in pieces, and before long I realised that these functions were independently useful, despite not being complex or novel.  Hence this library.
 
 ## Installation
 
@@ -77,6 +77,8 @@ $ deps-try com.github.pmonks/wreck
 (re/=' #"ab" (re/join #"a" #"b"))
 ;=> true
 
+
+;; Groups
 (re/grp #"a" #"b")
 ;=> #"(?:ab)"  ; Default group is non-capturing
 
@@ -86,6 +88,9 @@ $ deps-try com.github.pmonks/wreck
 (re/ncg "ab" #"a" #"b")
 ;=> #"(?<ab>ab)"  ; And named capturing groups (much more useful, especially with rencg!)
 
+(re/grp #"a" #"b" #"c" #"d" #"e" #"f" #"g" #"h" #"i" #"j" #"k" #"l" #"m" #"n" #"o" #"p" #"q" #"r" #"s" #"t" #"u" #"v" #"w" #"x" #"y" #"z")
+;=> #"(?:abcdefghijklmnopqrstuvwxyz)"  ; Group functions are variadic, including variants
+
 
 ;; Cardinality
 
@@ -94,9 +99,6 @@ $ deps-try com.github.pmonks/wreck
 
 (re/zom-grp #"foo")
 ;=> #"(?:foo)*"  ; That's more like it!
-
-(re/zom-grp #"foo" #"bar" #"blah")  ; Can pass in as many regexes as you like to most -grp fns
-;=> #"(?:foobarblah)*"
 
 (re/oom-grp #"foo")  ; oom = one or more
 ;=> #"(?:foo)+"
@@ -110,7 +112,7 @@ $ deps-try com.github.pmonks/wreck
 (re/n2m-grp 12 17 #"foo")  ; n2m = n to m
 ;=> #"(?:foo){12,17}"
 
-; There are -cg and -ncg versions of all of these fns as well
+; There are -cg and -ncg variants of all of these fns as well
 
 
 ;; Alternation
@@ -121,7 +123,7 @@ $ deps-try com.github.pmonks/wreck
 (re/alt-grp #"foo" #"bar")
 ;=> #"(?:foo|bar)"
 
-; There are -cg and -ncg versions of this fn as well
+; There are -cg and -ncg variants of this fn as well
 
 
 ;; Logical operators
@@ -148,8 +150,7 @@ $ deps-try com.github.pmonks/wreck
 (re/xor-grp #"foo" #"bar")
 ;=> #"(?:foo|bar)"
 
-; There are -cg and -ncg versions of all of these fns as well
-
+; There are -cg and -ncg variants of all of these fns as well
 
 
 ;; A more complex example that composes a longer regex from just a few easy-to-read statements
