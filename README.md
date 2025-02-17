@@ -168,12 +168,12 @@ $ deps-try com.github.pmonks/wreck
 (def lgpl-re (re/join #"(?iuU)(?<!\w)"                                ; Prefix fragment
                       (re/alt-ncg "lgpl"                              ; Alternations, ncg'ed
                         "LGPL"                                        ; LGPL literal (string)
+                        (re/join "GNU" #"\s+" lorl-re #"\s+" "GPL")   ; GNU <lorl regex> GPL
                         (re/join "GNU" #"\s+" lorl-re)                ; GNU <lorl regex>
-                        (re/join lorl-re #"\s+" "GPL")                ; <lorl regex> GPL
-                        (re/join "GNU" #"\s+" lorl-re #"\s+" "GPL"))  ; GNU <lorl> GPL
+                        (re/join lorl-re #"\s+" "GPL"))               ; <lorl regex> GPL
                       #"(?!\w)"))                                     ; Suffix fragment
-;=> #"(?iuU)(?<!\w)(?<lgpl>GNU\s+(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|
-;=> Library)|(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)\s+GPL|GNU\s+
+;=> #"(?iuU)(?<!\w)(?<lgpl>LGPL|GNU\s+(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|
+;=> Library)\s+GPL|GNU\s+(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)|
 ;=> (?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)\s+GPL)(?!\w)"
 
 ; Which would you rather maintain?  😉

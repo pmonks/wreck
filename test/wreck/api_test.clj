@@ -532,9 +532,9 @@
         lgpl-re (join #"(?iuU)(?<!\w)"
                       (alt-ncg "lgpl"
                         #"LGPL"
+                        (join "GNU" #"\s+" lorl-re #"\s+" "GPL")
                         (join "GNU" #"\s+" lorl-re)
-                        (join lorl-re #"\s+" "GPL")
-                        (join "GNU" #"\s+" lorl-re #"\s+" "GPL"))
+                        (join lorl-re #"\s+" "GPL"))
                       #"(?!\w)")]
     (testing "Matching tests"
       ; Matches
