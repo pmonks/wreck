@@ -4,6 +4,9 @@
 set -e
 set -o pipefail
 
+# Delete target because shadow-cljs doesn't seem to do a good job of cache management
+rm -rf target/cljs
+
 echo "ℹ️ Compiling ClojureScript tests..."
 npx shadow-cljs compile test
 

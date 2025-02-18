@@ -26,27 +26,42 @@
     regular expressions, such as `#\"{}\"` (an error on the JVM, fine but
     nonsensical on JS) and `#\"{1}\"` (ironically, fine but nonsensical on the
     JVM, but an error on JS).  🤡"
-  (:require [clojure.string :as s]))
-
-
-;; INTERNALS
-
-; Because JavaScript suxx
-#?(:clj  (def ^:private str' str)
-   :cljs (defn- str'
-           [o]
-           (let [s (str o)]
-             (if (not= (type o) js/RegExp)
-               s
-               ; We have to do this chicanery because (str #"regex") in JavaScript returns "/regex/"  🙄
-               (if (= s "/(?:)/")   ; Because (str #"") -> "/(?:)/"  🤡
-                 ""
-                 (-> s
-                     (s/replace #"^/" "")        ; Leading "/"
-                     (s/replace #"/$" "")))))))  ; Trailing "/"
+  (:require [clojure.string :as s]
+   #?(:cljs [goog.object])))
 
 
 ;; FUNDAMENTAL PRIMITIVES
+
+; We have to do this chicanery because regexes and strings don't round-trip in JavaScript  🙄
+; This awful code is a best effort to handle this lunacy.
+;
+; Some examples of how much of a 🤡show JavaScript regexes are:
+;
+;   (str (re-pattern #""))                    =>  "/(?:)/"
+;   (str (re-pattern "foo"))                  =>  "/foo/"
+;   (str (re-pattern "foo/bar"))              =>  "/foo\\/bar/"
+;   (str (re-pattern "foo\\/bar"))            =>  "/foo\\/bar/"
+;   (str (re-pattern (str (re-pattern ""))))  =>  "/\\/(?:)\\//"
+
+#?(:clj
+(def ^{:doc
+  "Similar to 1-arg `clojure.core/str`, but on ClojureScript attempts to correct
+  JavaScript's **APPALLING** stringification of RegExp objects."
+  :arglists '([o])}
+  str' str)
+
+   :cljs
+(defn str'
+  "Similar to 1-arg `clojure.core/str`, but on ClojureScript attempts to correct
+  JavaScript's **APPALLING** stringification of RegExp objects."
+  [o]
+  (if (not= (type o) js/RegExp)
+    (str o)
+    (let [s (goog.object/get o "source")]  ; This gets rid of leading and trailing "/" and any flags, but doesn't solve the problem of "/" being automatically escaped interior to a regex
+      (if (= s "(?:)")  ; Remove empty capturing group (inserted by JavaScript's idiotic regex engine when a regex is blank)
+        ""
+        s))))
+)
 
 (defn ='
   "Equality for regexes, defined by having equal `String` representations.  This

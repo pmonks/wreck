@@ -13,6 +13,9 @@
 > [!WARNING]  
 > Prior to v1.0 the library will be undergoing extensive development based on its use elsewhere.  APIs and behaviour may change in backwards incompatible ways without warning.  Feedback during this period is very welcome however, either here in the form of [issues](https://github.com/pmonks/wreck/issues), or on [the Clojure Discord server](https://discord.gg/discljord).
 
+> [!WARNING]  
+> I've discovered that JavaScript fundamentally can't support round-tripping of RegExp objects to strings and back - specifically the "/" character is automatically escaped when a RegExp object is constructed and there's no way (that I've found) to reverse that escaping on the way back out.  Because this library fundamentally relies on being able to round-trip regexes to strings (and does so repeatedly), the use of this character in ClojureScript regexes will change the semantics of those regexes - a violation of the Principle of Least Surprise (something I consider a major issue in any code).  I may end up dropping ClojureScript support if this proves to be intractable, but in the meantime - suggestions are welcome!
+
 A micro-library for Clojure(Script) that provides a selection of regular expression construction functions.  It has no dependencies, other than on Clojure, and emits standard Clojure regular expression objects, so is fully compatible with Clojure's built-in regular expression functions (it does not use any JVM-specific or JavaScript-specific regex syntax itself, though is compatible with platform-specific regular expressions, if you're using those).
 
 The library is _not_ intended to provide a comprehensive functional alternative for constructing regular expressions - knowledge of regular expression syntax remains necessary.  Instead it is intended to assist in constructing syntactically valid large regular expressions by composing smaller regular expressions together in well-defined ways.

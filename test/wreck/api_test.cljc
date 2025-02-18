@@ -12,7 +12,7 @@
   (:require [clojure.string :as s]
    #?(:clj  [clojure.test   :refer [deftest testing is]]
       :cljs [cljs.test      :refer-macros [deftest testing is]])
-            [wreck.api      :refer [=' empty?' join esc qot
+            [wreck.api      :refer [str' =' empty?' join esc qot
                                     grp  cg      ncg
                                     opt  opt-grp opt-cg opt-ncg
                                     zom  zom-grp zom-cg zom-ncg
@@ -26,6 +26,20 @@
                                     xor' xor-grp xor-cg xor-ncg]]))
 
 #?(:cljs (enable-console-print!))
+
+(deftest str'-tests
+  (testing "Basic cases"
+    (is (= ""                      (str' (re-pattern ""))))
+    (is (= " "                     (str' (re-pattern " "))))
+    (is (= "foo"                   (str' (re-pattern "foo"))))
+    (is (= "foobar"                (str' (re-pattern "foobar"))))
+    (is (= "foo|bar"               (str' (re-pattern "foo|bar"))))
+    (is (= "(foo|bar)"             (str' (re-pattern "(foo|bar)"))))
+    (is (= "(?:foo|bar)"           (str' (re-pattern "(?:foo|bar)"))))
+    (is (= "(?<groupName>foo|bar)" (str' (re-pattern "(?<groupName>foo|bar)")))))
+  (testing "Messed up cases"
+#?(:clj  (is (= "foo/bar"   (str' (re-pattern "foo/bar"))))
+   :cljs (is (= "foo\\/bar" (str' (re-pattern "foo/bar")))))))  ; 🤡 - sorry ClojureScript fans - you're on your own with this one!
 
 (deftest equality-tests
   (testing "Equal"
@@ -72,7 +86,7 @@
     (is (=' #".*"   (join "" "" ".*")))
     (is (=' #"123"  (join 1 2 3)))
 #?(:clj  (is (=' #"2.0a" (join 2.0 "a")))    ; JVM works as expected, but note that escaping is _not_ automatic
-   :cljs (is (=' #"2a"   (join 2.0 "a")))))  ; JavaScript is a 🤡 show
+   :cljs (is (=' #"2a"   (join 2.0 "a")))))  ; JavaScript is such a 🤡 show
   (testing "join - mixed types"
     (is (=' #"(.*)"                        (join "(" #".*" ")")))
     (is (=' #"Apache(\s+Software)?License" (join "Apache" #"(\s+Software)?" "License"))))
