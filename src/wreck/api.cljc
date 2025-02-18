@@ -21,11 +21,16 @@
     exceptions if the resulting regular expression is syntactically invalid.
   * On the JVM, these will typically be instances of the
     `java.util.regex.PatternSyntaxException` class.
-  * On JavaScript, these will typically be a `SyntaxError`s.
+  * On JavaScript, these will typically be a `js/SyntaxError`.
   * Platform specific behaviour is particularly notable for short / empty
     regular expressions, such as `#\"{}\"` (an error on the JVM, fine but
     nonsensical on JS) and `#\"{1}\"` (ironically, fine but nonsensical on the
-    JVM, but an error on JS).  🤡"
+    JVM, but an error on JS).  🤡
+  * Furthemore, JavaScript performs automatic escaping of the '/' character when
+    a RegExp object is constructed, and (to my knowledge) there is no way to get
+    the original source string back out.  This is a problem as `wreck` is
+    fundamentally dependent on full fidelity regex <-> string round-tripping in
+    order to function, and JavaScript does not support that."
   (:require [clojure.string :as s]
    #?(:cljs [goog.object])))
 
