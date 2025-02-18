@@ -29,6 +29,23 @@
   (:require [clojure.string :as s]))
 
 
+;; INTERNALS
+
+; Because JavaScript suxx
+#?(:clj  (def ^:private str' str)
+   :cljs (defn- str'
+           [o]
+           (let [s (str o)]
+             (if (not= (type o) js/RegExp)
+               s
+               ; We have to do this chicanery because (str #"regex") in JavaScript returns "/regex/"  🙄
+               (if (= s "/(?:)/")   ; Because (str #"") -> "/(?:)/"  🤡
+                 ""
+                 (-> s
+                     (s/replace #"^/" "")        ; Leading "/"
+                     (s/replace #"/$" "")))))))  ; Trailing "/"
+
+
 ;; FUNDAMENTAL PRIMITIVES
 
 (defn ='
@@ -41,12 +58,12 @@
   * Some JavaScript runtimes that ClojureScript runs on correctly implement
     equality for regexes, but the JVM does not."
   ([_]       true)
-  ([re1 re2] (= (str re1) (str re2)))
+  ([re1 re2] (= (str' re1) (str' re2)))
   ([re1 re2 & more]
-    (if (= (str re1) (str re2))
+    (if (= (str' re1) (str' re2))
       (if (next more)
         (recur re2 (first more) (rest more))
-        (= (str re2) (str (first more))))
+        (= (str' re2) (str' (first more))))
       false)))
 
 (defn empty?'
@@ -56,14 +73,14 @@
       (=' #"" re)))
 
 (defn join
-  "Returns a regex that is all of the ` res` joined together. Each element in
+  "Returns a regex that is all of the `res` joined together. Each element in
   `res` can be a regex, a `String` or something that can be turned into a
   `String` (including numbers, etc.).  Returns `nil` when no `res` are provided,
   or they're all `nil`."
   [& res]
   (let [res (seq (filter identity res))]
     (when res
-      (re-pattern (s/join res)))))
+      (re-pattern (s/join (map str' res))))))
 
 (defn esc
   "Escapes `s` (a `String`) for use in a regex, returning a `String`.  Note that
@@ -115,7 +132,7 @@
            seen    #{}]
       (if-not f
         (seq result)
-        (let [f-str      (str f)
+        (let [f-str      (str' f)
               new-result (if (contains? seen f-str) result (conj result f))]
           (recur r new-result (conj seen f-str)))))))
 
@@ -301,7 +318,7 @@
 (defn n2m
   "Returns a regex where `re` will match from `n` to `m` times."
   [n m re]
-  (when (and n m)
+  (when (and n m re)
     (join re "{" n "," m "}")))
 
 (defn n2m-grp

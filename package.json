@@ -1,0 +1,26 @@
+{
+  "name": "wreck",
+  "version": "0.1.x",
+  "description": "A micro-library for Clojure(Script) that provides regular expression construction functions. ",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pmonks/wreck.git"
+  },
+  "keywords": ["clojure", "clojurescript", "regex", "regular-expressions"],
+  "author": "Peter Monks",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/pmonks/wreck/issues"
+  },
+  "homepage": "https://github.com/pmonks/wreck#readme",
+  "devDependencies": {
+    "shadow-cljs": "^2.28.20"
+  }
+}
