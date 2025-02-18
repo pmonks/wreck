@@ -10,8 +10,9 @@
 
 (ns wreck.api-test
   (:require [clojure.string :as s]
-            [clojure.test   :refer [deftest testing is]]
-            [wreck.api      :refer [=' empty?' join esc qot
+   #?(:clj  [clojure.test   :refer [deftest testing is]]
+      :cljs [cljs.test      :refer-macros [deftest testing is]])
+            [wreck.api      :refer [str' =' empty?' join esc qot
                                     grp  cg      ncg
                                     opt  opt-grp opt-cg opt-ncg
                                     zom  zom-grp zom-cg zom-ncg
@@ -23,6 +24,22 @@
                                     and' and-grp and-cg and-ncg
                                     or'  or-grp  or-cg  or-ncg
                                     xor' xor-grp xor-cg xor-ncg]]))
+
+#?(:cljs (enable-console-print!))
+
+(deftest str'-tests
+  (testing "Basic cases"
+    (is (= ""                      (str' (re-pattern ""))))
+    (is (= " "                     (str' (re-pattern " "))))
+    (is (= "foo"                   (str' (re-pattern "foo"))))
+    (is (= "foobar"                (str' (re-pattern "foobar"))))
+    (is (= "foo|bar"               (str' (re-pattern "foo|bar"))))
+    (is (= "(foo|bar)"             (str' (re-pattern "(foo|bar)"))))
+    (is (= "(?:foo|bar)"           (str' (re-pattern "(?:foo|bar)"))))
+    (is (= "(?<groupName>foo|bar)" (str' (re-pattern "(?<groupName>foo|bar)")))))
+  (testing "Messed up cases"
+#?(:clj  (is (= "foo/bar"   (str' (re-pattern "foo/bar"))))
+   :cljs (is (= "foo\\/bar" (str' (re-pattern "foo/bar")))))))  ; 🤡 - sorry ClojureScript fans - you're on your own with this one!
 
 (deftest equality-tests
   (testing "Equal"
@@ -68,7 +85,8 @@
     (is (=' #".*"   (join "" "" ".*")))
     (is (=' #".*"   (join "" "" ".*")))
     (is (=' #"123"  (join 1 2 3)))
-    (is (=' #"2.0a" (join 2.0 "a"))))  ; Note that escaping is _not_ automatic
+#?(:clj  (is (=' #"2.0a" (join 2.0 "a")))    ; JVM works as expected, but note that escaping is _not_ automatic
+   :cljs (is (=' #"2a"   (join 2.0 "a")))))  ; JavaScript is such a 🤡 show
   (testing "join - mixed types"
     (is (=' #"(.*)"                        (join "(" #".*" ")")))
     (is (=' #"Apache(\s+Software)?License" (join "Apache" #"(\s+Software)?" "License"))))
@@ -126,7 +144,8 @@
 (deftest opt-variant-tests
   (testing "opt"
     (is (nil?                                           (opt nil)))
-    (is (thrown? java.util.regex.PatternSyntaxException (opt #"")))
+    (is (thrown? #?(:clj  java.util.regex.PatternSyntaxException
+                    :cljs js/SyntaxError)               (opt #"")))
     (is (=' #"x?"                                       (opt #"x")))
     (is (=' #".*?"                                      (opt #".*")))
     (is (=' #"foo?"                                     (opt #"foo")))
@@ -134,7 +153,8 @@
   (testing "opt-grp"
     (is (nil?                                            (opt-grp)))
     (is (nil?                                            (opt-grp nil)))
-    (is (thrown? java.util.regex.PatternSyntaxException  (opt-grp #"")))  ; Throws because of optimisation of empty non-capturing groups
+    (is (thrown? #?(:clj  java.util.regex.PatternSyntaxException
+                    :cljs js/SyntaxError)                (opt-grp #"")))  ; Throws because of optimisation of empty non-capturing groups
     (is (=' #"(?:x)?"                                    (opt-grp #"x")))
     (is (=' #"(?:.*)?"                                   (opt-grp #".*")))
     (is (=' #"(?:foo)?"                                  (opt-grp #"foo")))
@@ -163,15 +183,18 @@
 (deftest zom-variant-tests
   (testing "zom"
     (is (nil?                                           (zom nil)))
-    (is (thrown? java.util.regex.PatternSyntaxException (zom #"")))
+    (is (thrown? #?(:clj  java.util.regex.PatternSyntaxException
+                    :cljs js/SyntaxError)               (zom #"")))
     (is (=' #"x*")                                      (zom #"x"))
-    (is (thrown? java.util.regex.PatternSyntaxException (zom #".*")))
+    (is (thrown? #?(:clj  java.util.regex.PatternSyntaxException
+                    :cljs js/SyntaxError)               (zom #".*")))
     (is (=' #"foo*"                                     (zom #"foo")))
     (is (=' #"Apache*"                                  (zom "Apache"))))
   (testing "zom-grp"
     (is (nil?                                            (zom-grp)))
     (is (nil?                                            (zom-grp nil)))
-    (is (thrown? java.util.regex.PatternSyntaxException  (zom-grp #"")))  ; Throws because of optimisation of empty non-capturing groups
+    (is (thrown? #?(:clj  java.util.regex.PatternSyntaxException
+                    :cljs js/SyntaxError)                (zom-grp #"")))  ; Throws because of optimisation of empty non-capturing groups
     (is (=' #"(?:x)*"                                    (zom-grp #"x")))
     (is (=' #"(?:.*)*"                                   (zom-grp #".*")))
     (is (=' #"(?:foo)*"                                  (zom-grp #"foo")))
@@ -200,15 +223,18 @@
 (deftest oom-variant-tests
   (testing "oom"
     (is (nil?                                           (oom nil)))
-    (is (thrown? java.util.regex.PatternSyntaxException (oom #"")))
+    (is (thrown? #?(:clj  java.util.regex.PatternSyntaxException
+                    :cljs js/SyntaxError)               (oom #"")))
     (is (=' #"x+")                                      (oom #"x"))
-    (is (=' #".*+"                                      (oom #".*")))  ; Note: platform specific behaviour - valid (but nonsensical) on ClojureJVM, but _not_ valid on ClojureScript
+#?(:clj  (is (=' #".*+"                                 (oom #".*")))   ; Valid (but nonsensical) regex on ClojureJVM
+   :cljs (is (thrown? js/SyntaxError                    (oom #".*"))))  ; Invalid regex on ClojureScript
     (is (=' #"foo+"                                     (oom #"foo")))
     (is (=' #"Apache+"                                  (oom "Apache"))))
   (testing "oom-grp"
     (is (nil?                                            (oom-grp)))
     (is (nil?                                            (oom-grp nil)))
-    (is (thrown? java.util.regex.PatternSyntaxException  (oom-grp #"")))  ; Throws because of optimisation of empty non-capturing groups
+    (is (thrown? #?(:clj  java.util.regex.PatternSyntaxException
+                    :cljs js/SyntaxError)                (oom-grp #"")))  ; Throws because of optimisation of empty non-capturing groups
     (is (=' #"(?:x)+"                                    (oom-grp #"x")))
     (is (=' #"(?:.*)+"                                   (oom-grp #".*")))
     (is (=' #"(?:foo)+"                                  (oom-grp #"foo")))
@@ -236,22 +262,24 @@
 
 (deftest nom-variant-tests
   (testing "nom"
-    (is (nil?              (nom nil nil)))
-    (is (nil?              (nom nil #"")))
-    (is (nil?              (nom 2 nil)))
-    (is (=' #"x{5,}"       (nom 5 #"x")))
-    (is (=' #".*{3,}"      (nom 3 #".*")))  ; Note: platform specific behaviour - valid (but nonsensical) on ClojureJVM, but _not_ valid on ClojureScript
-    (is (=' #"foo{2,}"     (nom 2 #"foo")))  ; Note how this doesn't result in optionality being applied to the entirety of the input - that's what nom-grp etc. are for
-    (is (=' #"Apache{17,}" (nom 17 "Apache"))))
+    (is (nil?                        (nom nil nil)))
+    (is (nil?                        (nom nil #"")))
+    (is (nil?                        (nom 2 nil)))
+    (is (=' #"x{5,}"                 (nom 5 #"x")))
+#?(:clj  (is (=' #".*{3,}"           (nom 3 #".*")))   ; Valid (but nonsensical) regex on ClojureJVM
+   :cljs (is (thrown? js/SyntaxError (nom 3 #".*"))))  ; Invalid regex on ClojureScript
+    (is (=' #"foo{2,}"               (nom 2 #"foo")))  ; Note how this doesn't result in optionality being applied to the entirety of the input - that's what nom-grp etc. are for
+    (is (=' #"Apache{17,}"           (nom 17 "Apache"))))
   (testing "nom-grp"
     (is (nil?                                               (nom-grp nil nil)))
     (is (nil?                                               (nom-grp 3 nil)))
-    (is (=' #"{246,}"                                       (nom-grp 246 #""))))  ; Optimisation of empty non-capturing groups
+#?(:clj  (is (=' #"{246,}"                                  (nom-grp 246 #"")))   ; Valid (but nonsensical) regex on ClojureJVM
+   :cljs (is (thrown? js/SyntaxError                        (nom-grp 246 #""))))  ; Invalid regex on ClojureScript
     (is (=' #"(?:x){0,}"                                    (nom-grp 0 #"x")))
     (is (=' #"(?:.*){7,}"                                   (nom-grp 7 #".*")))
     (is (=' #"(?:foo){42,}"                                 (nom-grp 42 #"foo")))
     (is (=' #"(?:Apache){12,}"                              (nom-grp 12 "Apache")))
-    (is (=' #"(?:Apache(\s+Software)?(\s+Licen[cs]e)?){5,}" (nom-grp 5 "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?")))
+    (is (=' #"(?:Apache(\s+Software)?(\s+Licen[cs]e)?){5,}" (nom-grp 5 "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
   (testing "nom-cg"
     (is (nil?                                             (nom-cg nil nil)))
     (is (=' #"(){3,}"                                     (nom-cg 3 #"")))
@@ -273,27 +301,30 @@
 
 (deftest exn-variant-tests
   (testing "exn"
-    (is (nil?             (exn nil nil)))
-    (is (nil?             (exn nil #"")))
-    (is (nil?             (exn 2 nil)))
-    (is (=' #"{2}"        (exn 2 #"")))
-    (is (=' #"x{5}"       (exn 5 #"x")))
-    (is (=' #".*{3}"      (exn 3 #".*")))  ; Note: platform specific behaviour - valid (but nonsensical) on ClojureJVM, but _not_ valid on ClojureScript
-    (is (=' #"foo{2}"     (exn 2 #"foo")))  ; Note how this doesn't result in optionality being applied to the entirety of the input - that's what nom-grp etc. are for
-    (is (=' #"Apache{17}" (exn 17 "Apache"))))
+    (is (nil?                        (exn nil nil)))
+    (is (nil?                        (exn nil #"")))
+    (is (nil?                        (exn 2 nil)))
+#?(:clj  (is (=' #"{2}"              (exn 2 #"")))   ; Valid (but nonsensical) regex on ClojureJVM
+   :cljs (is (thrown? js/SyntaxError (exn 2 #""))))  ; Invalid regex on ClojureScript
+    (is (=' #"x{5}"                  (exn 5 #"x")))
+#?(:clj  (is (=' #".*{3}"            (exn 3 #".*")))   ; Valid (but nonsensical) regex on ClojureJVM
+   :cljs (is (thrown? js/SyntaxError (exn 3 #".*"))))  ; Invalid regex on ClojureScript
+    (is (=' #"foo{2}"                (exn 2 #"foo")))  ; Note how this doesn't result in optionality being applied to the entirety of the input - that's what nom-grp etc. are for
+    (is (=' #"Apache{17}"            (exn 17 "Apache"))))
   (testing "exn-grp"
     (is (nil?                                              (exn-grp nil nil)))
     (is (nil?                                              (exn-grp 3 nil)))
-    (is (=' #"{246}"                                       (exn-grp 246 #""))))  ; Optimisation of empty non-capturing groups
+#?(:clj  (is (=' #"{246}"                                  (exn-grp 246 #"")))   ; Valid (but nonsensical) regex on ClojureJVM
+   :cljs (is (thrown? js/SyntaxError                       (exn-grp 246 #""))))  ; Invalid regex on ClojureScript
     (is (=' #"(?:x){0}"                                    (exn-grp 0 #"x")))
     (is (=' #"(?:.*){7}"                                   (exn-grp 7 #".*")))
     (is (=' #"(?:foo){42}"                                 (exn-grp 42 #"foo")))
     (is (=' #"(?:Apache){12}"                              (exn-grp 12 "Apache")))
-    (is (=' #"(?:Apache(\s+Software)?(\s+Licen[cs]e)?){5}" (exn-grp 5 "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?")))
+    (is (=' #"(?:Apache(\s+Software)?(\s+Licen[cs]e)?){5}" (exn-grp 5 "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
   (testing "exn-cg"
     (is (nil?                                            (exn-cg nil nil)))
     (is (nil?                                            (exn-cg 3 nil)))
-    (is (=' #"(){3}"                                     (exn-cg 3 #"")))
+    (is (=' #"(){3}"                                     (exn-cg 3 #"")))  ; Note: empty capturing groups are _not_ optimised out, since doing so could break code that indexes into the matched groups
     (is (=' #"(x){4}"                                    (exn-cg 4 #"x")))
     (is (=' #"(.*){5}"                                   (exn-cg 5 #".*")))
     (is (=' #"(foo){6}"                                  (exn-cg 6 #"foo")))
@@ -312,23 +343,26 @@
 
 (deftest n2m-variant-tests
   (testing "n2m"
-    (is (nil?                (n2m nil nil nil)))
-    (is (nil?                (n2m nil nil #"")))
-    (is (=' #"{2,4}"         (n2m 2 4 nil)))
-    (is (=' #"{2,4}"         (n2m 2 4 #"")))
-    (is (=' #"x{2,4}"        (n2m 2 4 #"x")))
-    (is (=' #".*{3,7}"       (n2m 3 7 #".*")))  ; Note: platform specific behaviour - valid (but nonsensical) on ClojureJVM, but _not_ valid on ClojureScript
-    (is (=' #"foo{2,2}"      (n2m 2 2 #"foo")))  ; Note how this doesn't result in optionality being applied to the entirety of the input - that's what nom-grp etc. are for
-    (is (=' #"Apache{17,21}" (n2m 17 21 "Apache"))))
+    (is (nil?                        (n2m nil nil nil)))
+    (is (nil?                        (n2m nil nil #"")))
+    (is (nil?                        (n2m 2 4 nil)))
+#?(:clj  (is (=' #"{2,4}"            (n2m 2 4 #"")))   ; Valid (but nonsensical) regex on ClojureJVM
+   :cljs (is (thrown? js/SyntaxError (n2m 2 4 #""))))  ; Invalid regex on ClojureScript
+    (is (=' #"x{2,4}"                (n2m 2 4 #"x")))
+#?(:clj  (is (=' #".*{3,7}"          (n2m 3 7 #".*")))   ; Valid (but nonsensical) regex on ClojureJVM
+   :cljs (is (thrown? js/SyntaxError (n2m 3 7 #".*"))))  ; Invalid regex on ClojureScript
+    (is (=' #"foo{2,2}"              (n2m 2 2 #"foo")))  ; Note how this doesn't result in optionality being applied to the entirety of the input - that's what nom-grp etc. are for
+    (is (=' #"Apache{17,21}"         (n2m 17 21 "Apache"))))
   (testing "n2m-grp"
     (is (nil?                                                 (n2m-grp nil nil nil)))
     (is (nil?                                                 (n2m-grp 3 100 nil)))
-    (is (=' #"{246,250}"                                      (n2m-grp 246 250 #""))))
+#?(:clj  (is (=' #"{246,250}"                                 (n2m-grp 246 250 #"")))   ; Valid (but nonsensical) regex on ClojureJVM
+   :cljs (is (thrown? js/SyntaxError                          (n2m-grp 246 250 #""))))  ; Invalid regex on ClojureScript
     (is (=' #"(?:x){0,3}"                                     (n2m-grp 0 3 #"x")))
     (is (=' #"(?:.*){7,8}"                                    (n2m-grp 7 8 #".*")))
     (is (=' #"(?:foo){42,69}"                                 (n2m-grp 42 69 #"foo")))
     (is (=' #"(?:Apache){12,13}"                              (n2m-grp 12 13 "Apache")))
-    (is (=' #"(?:Apache(\s+Software)?(\s+Licen[cs]e)?){5,99}" (n2m-grp 5 99 "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?")))
+    (is (=' #"(?:Apache(\s+Software)?(\s+Licen[cs]e)?){5,99}" (n2m-grp 5 99 "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
   (testing "n2m-cg"
     (is (nil?                                              (n2m-cg nil nil nil)))
     (is (=' #"(){3,4}"                                     (n2m-cg 3 4 #"")))
@@ -525,18 +559,22 @@
   [re s]
   (boolean (re-find re s)))
 
+; From here on down we only test on ClojureJVM, as JavaScript's regex support is rubbish (e.g. no inline modifiers)
+#?(:clj
 (deftest composite-tests
-  ; The following regex ends up being ~450 characters long, partly because of the sheer number of times the words
-  ; "Lesser" and "Library" appear in it (in order to implement the nested "or"s)
-  (let [lorl-re (grp (or' #"Lesser" #"Library" #"\s+or\s+"))
+  ; The following regex ends up being ~250 characters long, partly because of the sheer number of times the words
+  ; "Lesser" and "Library" appear in it (in order to implement the nested alt/or)
+  (let [lorl-re (or-grp "Lesser" "Library" #"\s+or\s+")
         lgpl-re (join #"(?iuU)(?<!\w)"
-                      (ncg "lgpl"
-                        (xor-grp
-                          (grp #"GNU\s+" lorl-re)
-                          (grp lorl-re #"\s+GPL")))
+                      (alt-ncg "lgpl"
+                        #"LGPL"
+                        (join "GNU" #"\s+" lorl-re #"\s+" "GPL")
+                        (join "GNU" #"\s+" lorl-re)
+                        (join lorl-re #"\s+" "GPL"))
                       #"(?!\w)")]
     (testing "Matching tests"
       ; Matches
+      (is (true?  (matches? lgpl-re "LGPL")))
       (is (true?  (matches? lgpl-re "GNU Lesser")))
       (is (true?  (matches? lgpl-re "GNU Library")))
       (is (true?  (matches? lgpl-re "gnu lesser or library")))
@@ -545,7 +583,9 @@
       (is (true?  (matches? lgpl-re "Library GPL")))
       (is (true?  (matches? lgpl-re "Lesser or Library GPL")))
       (is (true?  (matches? lgpl-re "lIBRARY oR lESSER gpl")))
+      (is (true?  (matches? lgpl-re "GNU Lesser or Library GPL")))
       ; Non matches
+      (is (false? (matches? lgpl-re "L GPL")))
       (is (false? (matches? lgpl-re "GNU")))
       (is (false? (matches? lgpl-re "GPL")))
       (is (false? (matches? lgpl-re "Lesser")))
@@ -557,6 +597,7 @@
       (is (false? (matches? lgpl-re "Library or Lesser GNU"))))
     (testing "Finding tests"
       ; Finds
+      (is (true?  (finds? lgpl-re "some text LGPL or more text")))
       (is (true?  (finds? lgpl-re "some text GNU Lesser or more text")))
       (is (true?  (finds? lgpl-re "some text GNU Library or more text")))
       (is (true?  (finds? lgpl-re "some text gnu lesser or library or more text")))
@@ -569,6 +610,8 @@
       (is (true?  (finds? lgpl-re "some text GNU LIBRARY OR LESSERor more text")))  ; finds "GNU LIBRARY"
       (is (true?  (finds? lgpl-re "some textLesser or Library GPL or more text")))  ; finds "Library GPL"
       ; Non finds due to concatenated leading or trailing text
+      (is (false? (finds? lgpl-re "some textLGPL or more text")))
+      (is (false? (finds? lgpl-re "some text LGPLor more text")))
       (is (false? (finds? lgpl-re "some textGNU Lesser or more text")))
       (is (false? (finds? lgpl-re "some text GNU Libraryor more text")))
       (is (false? (finds? lgpl-re "some textgnu lesser or library or more text")))
@@ -585,3 +628,4 @@
       (is (false? (finds? lgpl-re "some text Library or Lesser or more text")))
       (is (false? (finds? lgpl-re "some text GPL Library or Lesser or more text")))
       (is (false? (finds? lgpl-re "some text Library or Lesser GNU or more text"))))))
+)
