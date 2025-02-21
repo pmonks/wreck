@@ -370,7 +370,12 @@
 
   Notes:
 
-  * Duplicate elements in `res` will only appear once in the result."
+  * Duplicate elements in `res` will only appear once in the result.
+  * Does _not_ wrap the result in a group, which, [because alternation has the
+    lowest precedence in regexes](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_04_08),
+    runs the risk of behaving unexpectedly if the result is then combined with
+    further regexes.
+    tl;dr - one of the grouping variants should _almost always_ be preferred."
   [& res]
   (when-let [res (distinct' (filter identity res))]
     (apply join (interpose "|" res))))
@@ -401,7 +406,12 @@
 
   Notes:
 
-  * May optimise the expression (via de-duplication in [[alt]])."
+  * May optimise the expression (via de-duplication in [[alt]]).
+  * Does _not_ wrap the result in a group, which, [because alternation has the
+    lowest precedence in regexes](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_04_08),
+    runs the risk of behaving unexpectedly if the result is then combined with
+    further regexes.
+    tl;dr - one of the grouping variants should _almost always_ be preferred."
   ([a b] (and' a b nil))
   ([a b s]
    (when-not (and (empty?' a) (empty?' b))
@@ -448,7 +458,12 @@
 
   Notes:
 
-  * May optimise the expression (via de-duplication in [[alt]])."
+  * May optimise the expression (via de-duplication in [[alt]]).
+  * Does _not_ wrap the result in a group, which, [because alternation has the
+    lowest precedence in regexes](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_04_08),
+    runs the risk of behaving unexpectedly if the result is then combined with
+    further regexes.
+    tl;dr - one of the grouping variants should _almost always_ be preferred."
   ([a b] (or' a b nil))
   ([a b s]
    (when-not (and (empty?' a) (empty?' b))
@@ -495,7 +510,12 @@
 
   Notes:
 
-  * May optimise the expression (via de-duplication in [[alt]])."
+  * May optimise the expression (via de-duplication in [[alt]]).
+  * Does _not_ wrap the result in a group, which, [because alternation has the
+    lowest precedence in regexes](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_04_08),
+    runs the risk of behaving unexpectedly if the result is then combined with
+    further regexes.
+    tl;dr - one of the grouping variants should _almost always_ be preferred."
   [a b]
   (alt a b))
 
