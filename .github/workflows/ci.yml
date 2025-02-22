@@ -48,7 +48,9 @@ jobs:
         with:
           node-version: 'lts/*'
       - name: Compile unit tests
-        run: npx shadow-cljs compile test
+        run: |
+          npm install source-map-support
+          npx shadow-cljs compile test
       - name: Run unit tests (ClojureScript)
         run: node --enable-source-maps target/cljs/api-test-node.js
 
