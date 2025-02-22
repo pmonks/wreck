@@ -29,7 +29,6 @@
 
 (deftest str'-tests
   (testing "Basic cases"
-    (is (= ""                      (str' (re-pattern ""))))
     (is (= " "                     (str' (re-pattern " "))))
     (is (= "foo"                   (str' (re-pattern "foo"))))
     (is (= "foobar"                (str' (re-pattern "foobar"))))
@@ -37,9 +36,14 @@
     (is (= "(foo|bar)"             (str' (re-pattern "(foo|bar)"))))
     (is (= "(?:foo|bar)"           (str' (re-pattern "(?:foo|bar)"))))
     (is (= "(?<groupName>foo|bar)" (str' (re-pattern "(?<groupName>foo|bar)")))))
-  (testing "Messed up cases"
-#?(:clj  (is (= "foo/bar"   (str' (re-pattern "foo/bar"))))
-   :cljs (is (= "foo\\/bar" (str' (re-pattern "foo/bar")))))))  ; 🤡 - sorry ClojureScript fans - you're on your own with this one!
+  (testing "Messed up cases (due to the JavaScript RegExp class's idiotic stringification)"
+    (is (= "foo/bar"               (str' (re-pattern "foo/bar"))))
+#?(:clj  (is (= "foo\\/bar"        (str' (re-pattern "foo\\/bar"))))   ; JVM is sane
+   :cljs (is (= "foo/bar"          (str' (re-pattern "foo\\/bar")))))  ; JavaScript is 🤡🤡🤡
+    (is (= ""                      (str' (re-pattern ""))))
+#?(:clj  (is (= "(?:)"             (str' (re-pattern "(?:)"))))        ; JVM is sane
+   :cljs (is (= ""                 (str' (re-pattern "(?:)")))))       ; JavaScript is 🤡🤡🤡
+    (is (= "foo/bar/blah"          (str' (re-pattern "foo/bar/blah"))))))
 
 (deftest equality-tests
   (testing "Equal"
@@ -85,8 +89,8 @@
     (is (=' #".*"   (join "" "" ".*")))
     (is (=' #".*"   (join "" "" ".*")))
     (is (=' #"123"  (join 1 2 3)))
-#?(:clj  (is (=' #"2.0a" (join 2.0 "a")))    ; JVM works as expected, but note that escaping is _not_ automatic
-   :cljs (is (=' #"2a"   (join 2.0 "a")))))  ; JavaScript is such a 🤡 show
+#?(:clj  (is (=' #"2.0a" (join 2.0 "a")))    ; JVM is sane
+   :cljs (is (=' #"2a"   (join 2.0 "a")))))  ; JavaScript is 🤡🤡🤡
   (testing "join - mixed types"
     (is (=' #"(.*)"                        (join "(" #".*" ")")))
     (is (=' #"Apache(\s+Software)?License" (join "Apache" #"(\s+Software)?" "License"))))
@@ -559,7 +563,7 @@
   [re s]
   (boolean (re-find re s)))
 
-; From here on down we only test on ClojureJVM, as JavaScript's regex support is rubbish (e.g. no inline modifiers)
+; From here on down we only test on ClojureJVM, as JavaScript's regex engine is rubbish (e.g. no inline modifiers)
 #?(:clj
 (deftest composite-tests
   ; The following regex ends up being ~250 characters long, partly because of the sheer number of times the words
