@@ -20,6 +20,7 @@ uberjar/
 attic
 resources/logback-test.xml
 .clj-kondo/.cache
-node_modules
+node_modules/
+package.json
 package-lock.json
 .shadow-cljs
