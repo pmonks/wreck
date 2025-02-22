@@ -11,7 +11,7 @@ jobs:
       - id: skip_check
         uses: fkirc/skip-duplicate-actions@master
 
-  run_ci_matrix:
+  run_cljvm_matrix:
     needs: skip_check
     if: ${{ needs.skip_check.outputs.should_skip != 'true' }}
     runs-on: ubuntu-latest
@@ -56,7 +56,7 @@ jobs:
 
   # Adapted from https://brunoscheufler.com/blog/2022-04-09-the-required-github-status-check-that-wasnt
   after_ci_matrix:
-    needs: [run_ci_matrix, run_cljs]
+    needs: [run_cljvm_matrix, run_cljs]
     runs-on: ubuntu-latest
     if: success()
     outputs:
