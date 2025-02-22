@@ -68,7 +68,7 @@ jobs:
   CI:
     runs-on: ubuntu-latest
     if: always()
-    needs: [skip_check, run_ci_matrix, after_ci_matrix]
+    needs: [skip_check, after_ci_matrix]
     steps:
       - run: |
           skipped="${{ needs.skip_check.outputs.should_skip }}"
