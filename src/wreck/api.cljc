@@ -9,7 +9,7 @@
 ;
 
 (ns wreck.api
-  "The public API of `wreck`.
+  "The public API of [`wreck`](https://github.com/pmonks/wreck).
 
   Notes:
 
