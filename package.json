@@ -13,7 +13,12 @@
     "type": "git",
     "url": "git+https://github.com/pmonks/wreck.git"
   },
-  "keywords": ["clojure", "clojurescript", "regex", "regular-expressions"],
+  "keywords": [
+    "clojure",
+    "clojurescript",
+    "regex",
+    "regular-expressions"
+  ],
   "author": "Peter Monks",
   "license": "MPL-2.0",
   "bugs": {
@@ -21,6 +26,7 @@
   },
   "homepage": "https://github.com/pmonks/wreck#readme",
   "devDependencies": {
-    "shadow-cljs": "^2.28.20"
+    "shadow-cljs": "^2.28.20",
+    "source-map-support": "^0.5.21"
   }
 }
