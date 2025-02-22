@@ -48,24 +48,25 @@
 ;   (str (re-pattern "foo\\/bar"))            =>  "/foo\\/bar/"
 ;   (str (re-pattern (str (re-pattern ""))))  =>  "/\\/(?:)\\//"
 
-#?(:clj
-(def ^{:doc
-  "Similar to 1-arg `clojure.core/str`, but on ClojureScript attempts to correct
-  JavaScript's **APPALLING** stringification of RegExp objects."
+#?(
+:clj (def ^{:doc
+  "Returns the `String` representation of `o`, with special handling for
+  `RegExp` objects on ClojureScript in an attempt to correct JavaScript's
+  **APPALLING** default stringification."
   :arglists '([o])}
   str' str)
 
-   :cljs
-(defn str'
-  "Similar to 1-arg `clojure.core/str`, but on ClojureScript attempts to correct
-  JavaScript's **APPALLING** stringification of RegExp objects."
+:cljs (defn str'
+  "Returns the `String` representation of `o`, with special handling for
+  `RegExp` objects on ClojureScript in an attempt to correct JavaScript's
+  **APPALLING** default stringification."
   [o]
   (if (not= (type o) js/RegExp)
     (str o)
-    (let [s (goog.object/get o "source")]  ; This gets rid of leading and trailing "/" and any flags, but doesn't solve the problem of "/" being automatically escaped interior to a regex
-      (if (= s "(?:)")  ; Remove empty capturing group (inserted by JavaScript's idiotic regex engine when a regex is blank)
-        ""
-        s))))
+    (let [s (goog.object/get o "source")]  ; Remove leading and trailing "/" and any flags
+      (-> s
+          (s/replace "(?:)" "")            ; Remove redundant capturing groups (inserted by JavaScript's idiotic RegExp class when a regex is blank)
+          (s/replace "\\/"  "/")))))       ; Remove redundant escapings of "/" (inserted by JavaScript's idiotic RegExp class)
 )
 
 (defn ='
