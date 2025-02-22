@@ -26,11 +26,12 @@
     regular expressions, such as `#\"{}\"` (an error on the JVM, fine but
     nonsensical on JS) and `#\"{1}\"` (ironically, fine but nonsensical on the
     JVM, but an error on JS).  🤡
-  * Furthemore, JavaScript performs automatic escaping of the '/' character when
-    a RegExp object is constructed, and (to my knowledge) there is no way to get
-    the original source string back out.  This is a problem as `wreck` is
-    fundamentally dependent on full fidelity regex <-> string round-tripping in
-    order to function, and JavaScript does not appear to support that."
+  * Furthemore, JavaScript fundamentally doesn't support lossless round-tripping
+    of `RegExp` objects to `String`s and back, something this library relies
+    upon and does extensively.  The library makes a best effort to correct
+    JavaScript's problematic implementation, but because it's fundamentally
+    lossy there are some cases that (on ClojureScript only) may change your
+    regexes in unexpected (though not semantically significant) ways."
   (:require [clojure.string :as s]
    #?(:cljs [goog.object])))
 
