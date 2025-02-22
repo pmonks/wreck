@@ -9,7 +9,7 @@
 ;
 
 (ns wreck.api
-  "The public API of `wreck`.
+  "The public API of [`wreck`](https://github.com/pmonks/wreck).
 
   Notes:
 
@@ -21,11 +21,16 @@
     exceptions if the resulting regular expression is syntactically invalid.
   * On the JVM, these will typically be instances of the
     `java.util.regex.PatternSyntaxException` class.
-  * On JavaScript, these will typically be a `SyntaxError`s.
+  * On JavaScript, these will typically be a `js/SyntaxError`.
   * Platform specific behaviour is particularly notable for short / empty
     regular expressions, such as `#\"{}\"` (an error on the JVM, fine but
     nonsensical on JS) and `#\"{1}\"` (ironically, fine but nonsensical on the
-    JVM, but an error on JS).  🤡"
+    JVM, but an error on JS).  🤡
+  * Furthemore, JavaScript performs automatic escaping of the '/' character when
+    a RegExp object is constructed, and (to my knowledge) there is no way to get
+    the original source string back out.  This is a problem as `wreck` is
+    fundamentally dependent on full fidelity regex <-> string round-tripping in
+    order to function, and JavaScript does not appear to support that."
   (:require [clojure.string :as s]
    #?(:cljs [goog.object])))
 
@@ -155,7 +160,7 @@
 ;; GROUPS
 
 (defn grp
-  "As for [join], but encloses the joined `res` into a single non-capturing
+  "As for [[join]], but encloses the joined `res` into a single non-capturing
   group."
   [& res]
   (let [res (seq (filter identity res))]
@@ -167,14 +172,14 @@
           (join "(?:" exp ")"))))))
 
 (defn cg
-  "As for [grp], but uses a capturing group."
+  "As for [[grp]], but uses a capturing group."
   [& res]
   (let [res (seq (filter identity res))]
     (when res
       (join "(" (apply join res) ")"))))  ; Note: don't optimise empty capturing groups, because that will throw out code that indexes into capturing groups
 
 (defn ncg
-  "As for [grp], but uses a named capturing group named `nm`.  Returns `nil` if
+  "As for [[grp]], but uses a named capturing group named `nm`.  Returns `nil` if
   `nm` is `nil` or blank. Throws if `nm` is an invalid name for a named capturing
   group (alphanumeric only, must start with an alphabetical character, must be
   unique within the regex)."
@@ -193,19 +198,19 @@
     (join re "?")))
 
 (defn opt-grp
-  "[grp] then [opt]."
+  "[[grp]] then [[opt]]."
   [& res]
   (when-let [res (seq (filter identity res))]
     (opt (apply grp res))))
 
 (defn opt-cg
-  "[cg] then [opt]."
+  "[[cg]] then [[opt]]."
   [& res]
   (when-let [res (seq (filter identity res))]
     (opt (apply cg res))))
 
 (defn opt-ncg
-  "[ncg] then [opt]."
+  "[[ncg]] then [[opt]]."
   [nm & res]
   (when-not (s/blank? nm)
     (when-let [res (seq (filter identity res))]
@@ -221,19 +226,19 @@
     (join re "*")))
 
 (defn zom-grp
-  "[grp] then [zom]."
+  "[[grp]] then [[zom]]."
   [& res]
   (when-let [res (seq (filter identity res))]
     (zom (apply grp res))))
 
 (defn zom-cg
-  "[cg] then [zom]."
+  "[[cg]] then [[zom]]."
   [& res]
   (when-let [res (seq (filter identity res))]
     (zom (apply cg res))))
 
 (defn zom-ncg
-  "[ncg] then [zom]."
+  "[[ncg]] then [[zom]]."
   [nm & res]
   (when-not (s/blank? nm)
     (when-let [res (seq (filter identity res))]
@@ -249,19 +254,19 @@
     (join re "+")))
 
 (defn oom-grp
-  "[grp] then [oom]."
+  "[[grp]] then [[oom]]."
   [& res]
   (when-let [res (seq (filter identity res))]
     (oom (apply grp res))))
 
 (defn oom-cg
-  "[cg] then [oom]."
+  "[[cg]] then [[oom]]."
   [& res]
   (when-let [res (seq (filter identity res))]
     (oom (apply cg res))))
 
 (defn oom-ncg
-  "[ncg] then [oom]."
+  "[[ncg]] then [[oom]]."
   [nm & res]
   (when-not (s/blank? nm)
     (when-let [res (seq (filter identity res))]
@@ -277,21 +282,21 @@
     (join re "{" n ",}")))
 
 (defn nom-grp
-  "[grp] then [nom]."
+  "[[grp]] then [[nom]]."
   [n & res]
   (when n
     (when-let [res (seq (filter identity res))]
       (nom n (apply grp res)))))
 
 (defn nom-cg
-  "[cg] then [nom]."
+  "[[cg]] then [[nom]]."
   [n & res]
   (when n
     (when-let [res (seq (filter identity res))]
       (nom n (apply cg res)))))
 
 (defn nom-ncg
-  "[ncg] then [nom]."
+  "[[ncg]] then [[nom]]."
   [nm n & res]
   (when (and (not (s/blank? nm)) n)
     (when-let [res (seq (filter identity res))]
@@ -307,21 +312,21 @@
     (join re "{" n "}")))
 
 (defn exn-grp
-  "[grp] then [exn]."
+  "[[grp]] then [[exn]]."
   [n & res]
   (when n
     (when-let [res (seq (filter identity res))]
       (exn n (apply grp res)))))
 
 (defn exn-cg
-  "[cg] then [exn]."
+  "[[cg]] then [[exn]]."
   [n & res]
   (when n
     (when-let [res (seq (filter identity res))]
       (exn n (apply cg res)))))
 
 (defn exn-ncg
-  "[ncg] then [exn]."
+  "[[ncg]] then [[exn]]."
   [nm n & res]
   (when (and (not (s/blank? nm)) n)
     (when-let [res (seq (filter identity res))]
@@ -337,21 +342,21 @@
     (join re "{" n "," m "}")))
 
 (defn n2m-grp
-  "[grp] then [n2m]."
+  "[[grp]] then [[n2m]]."
   [n m & res]
   (when (and n m)
     (when-let [res (seq (filter identity res))]
       (n2m n m (apply grp res)))))
 
 (defn n2m-cg
-  "[cg] then [n2m]."
+  "[[cg]] then [[n2m]]."
   [n m & res]
   (when (and n m)
     (when-let [res (seq (filter identity res))]
       (n2m n m (apply cg res)))))
 
 (defn n2m-ncg
-  "[ncg] then [n2m]."
+  "[[ncg]] then [[n2m]]."
   [nm n m & res]
   (when (and (not (s/blank? nm)) n m)
     (when-let [res (seq (filter identity res))]
@@ -365,23 +370,28 @@
 
   Notes:
 
-  * Duplicate elements in `res` will only appear once in the result."
+  * Duplicate elements in `res` will only appear once in the result.
+  * Does _not_ wrap the result in a group, which, [because alternation has the
+    lowest precedence in regexes](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_04_08),
+    runs the risk of behaving unexpectedly if the result is then combined with
+    further regexes.
+    tl;dr - one of the grouping variants should _almost always_ be preferred."
   [& res]
   (when-let [res (distinct' (filter identity res))]
     (apply join (interpose "|" res))))
 
 (defn alt-grp
-  "[alt] then [grp]."
+  "[[alt]] then [[grp]]."
   [& res]
    (grp (apply alt res)))
 
 (defn alt-cg
-  "[alt] then [cg]."
+  "[[alt]] then [[cg]]."
   [& res]
    (cg (apply alt res)))
 
 (defn alt-ncg
-  "[alt] then [ncg]."
+  "[[alt]] then [[ncg]]."
   [nm & res]
   (ncg nm (apply alt res)))
 
@@ -396,41 +406,46 @@
 
   Notes:
 
-  * May optimise the expression (via de-duplication in [alt])."
+  * May optimise the expression (via de-duplication in [[alt]]).
+  * Does _not_ wrap the result in a group, which, [because alternation has the
+    lowest precedence in regexes](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_04_08),
+    runs the risk of behaving unexpectedly if the result is then combined with
+    further regexes.
+    tl;dr - one of the grouping variants should _almost always_ be preferred."
   ([a b] (and' a b nil))
   ([a b s]
    (when-not (and (empty?' a) (empty?' b))
      (alt (join a s b) (join b s a)))))
 
 (defn and-grp
-  "[and'] then [grp].
+  "[[and']] then [[grp]].
 
   Notes:
 
   * Unlike most other `-grp` fns, this one does _not_ accept any number of res.
-  * May optimise the expression (via de-duplication in [alt])."
+  * May optimise the expression (via de-duplication in [[alt]])."
   ([a b] (and-grp a b nil))
   ([a b s]
    (grp (and' a b s))))
 
 (defn and-cg
-  "[and'] then [cg].
+  "[[and']] then [[cg]].
 
   Notes:
 
   * Unlike most other `-grp` fns, this one does _not_ accept any number of res.
-  * May optimise the expression (via de-duplication in [alt])."
+  * May optimise the expression (via de-duplication in [[alt]])."
   ([a b] (and-cg a b nil))
   ([a b s]
    (cg (and' a b s))))
 
 (defn and-ncg
-  "[and'] then [ncg].
+  "[[and']] then [[ncg]].
 
   Notes:
 
   * Unlike most other `-grp` fns, this one does _not_ accept any number of res.
-  * May optimise the expression (via de-duplication in [alt])."
+  * May optimise the expression (via de-duplication in [[alt]])."
   ([nm a b] (and-ncg nm a b nil))
   ([nm a b s]
    (ncg nm (and' a b s))))
@@ -443,83 +458,93 @@
 
   Notes:
 
-  * May optimise the expression (via de-duplication in [alt])."
+  * May optimise the expression (via de-duplication in [[alt]]).
+  * Does _not_ wrap the result in a group, which, [because alternation has the
+    lowest precedence in regexes](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_04_08),
+    runs the risk of behaving unexpectedly if the result is then combined with
+    further regexes.
+    tl;dr - one of the grouping variants should _almost always_ be preferred."
   ([a b] (or' a b nil))
   ([a b s]
    (when-not (and (empty?' a) (empty?' b))
      (alt (join a s b) (join b s a) a b))))
 
 (defn or-grp
-  "[or'] then [grp].
+  "[[or']] then [[grp]].
 
   Notes:
 
   * Unlike most other `-grp` fns, this one does _not_ accept any number of res.
-  * May optimise the expression (via de-duplication in [alt])."
+  * May optimise the expression (via de-duplication in [[alt]])."
   ([a b] (or-grp a b nil))
   ([a b s]
    (grp (or' a b s))))
 
 (defn or-cg
-  "[or'] then [cg].
+  "[[or']] then [[cg]].
 
   Notes:
 
   * Unlike most other `-grp` fns, this one does _not_ accept any number of res.
-  * May optimise the expression (via de-duplication in [alt])."
+  * May optimise the expression (via de-duplication in [[alt]])."
   ([a b] (or-cg a b nil))
   ([a b s]
    (cg (or' a b s))))
 
 (defn or-ncg
-  "[or'] then [ncg].
+  "[[or']] then [[ncg]].
 
   Notes:
 
   * Unlike most other `-grp` fns, this one does _not_ accept any number of res.
-  * May optimise the expression (via de-duplication in [alt])."
+  * May optimise the expression (via de-duplication in [[alt]])."
   ([nm a b] (or-ncg nm a b nil))
   ([nm a b s]
    (ncg nm (or' a b s))))
 
 (defn xor'
   "Returns an 'exclusive or' regex that will match `a` or `b`, but _not_ both.
-  This is identical to [alt] called with 2 arguments, and is provided as a
+  This is identical to [[alt]] called with 2 arguments, and is provided as a
   convenience for those who might be building up large logic based regexes and
   would prefer to use more easily understood logical operator names throughout.
 
   Notes:
 
-  * May optimise the expression (via de-duplication in [alt])."
+  * May optimise the expression (via de-duplication in [[alt]]).
+  * Does _not_ wrap the result in a group, which, [because alternation has the
+    lowest precedence in regexes](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_04_08),
+    runs the risk of behaving unexpectedly if the result is then combined with
+    further regexes.
+    tl;dr - one of the grouping variants should _almost always_ be preferred."
   [a b]
   (alt a b))
 
 (defn xor-grp
-  "[xor'] then [grp].
+  "[[xor']] then [[grp]].
 
   Notes:
 
   * Unlike most other `-grp` fns, this one does _not_ accept any number of res.
-  * May optimise the expression (via de-duplication in [alt])."
+  * May optimise the expression (via de-duplication in [[alt]])."
   [a b]
   (grp (xor' a b)))
 
 (defn xor-cg
-  "[xor'] then [cg].
+  "[[xor']] then [[cg]].
 
   Notes:
 
   * Unlike most other `-grp` fns, this one does _not_ accept any number of res.
-  * May optimise the expression (via de-duplication in [alt])."
+  * May optimise the expression (via de-duplication in [[alt]])."
   [a b]
   (cg (xor' a b)))
 
 (defn xor-ncg
-  "[xor'] then [ncg].
+  "[[xor']] then [[ncg]].
 
   Notes:
 
   * Unlike most other `-grp` fns, this one does _not_ accept any number of res.
-  * May optimise the expression (via de-duplication in [alt])."
+  * May optimise the expression (via de-duplication in [[alt]])."
   [nm a b]
   (ncg nm (xor' a b)))

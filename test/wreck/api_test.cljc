@@ -390,9 +390,9 @@
     (is (=' #"a"                   (alt #"a")))
     (is (=' #""                    (alt #"" #"")))
     (is (=' #"foo|bar"             (alt #"foo" #"bar")))
-    (is (=' #"foo"                 (alt "foo" "foo")))   ; Deduplication optimisation
-    (is (=' #"foo"                 (alt "foo" #"foo")))  ; Deduplication optimisation
-    (is (=' #"0"                   (alt 0 "0" #"0")))    ; Deduplication optimisation
+    (is (=' #"foo"                 (alt "foo" "foo")))   ; Deduplication
+    (is (=' #"foo"                 (alt "foo" #"foo")))  ; Deduplication
+    (is (=' #"0"                   (alt 0 "0" #"0")))    ; Deduplication
     (is (=' #"0|1|2|3|4|5|6|7|8|9" (apply alt (range 10)))))
   (testing "alt-grp"
     (is (nil?                          (alt-grp nil)))
@@ -402,7 +402,7 @@
     (is (=' #""                        (alt-grp #"" #"")))  ; Optimisation of empty non-capturing groups
     (is (=' #"(?:foo|bar)"             (alt-grp #"foo" #"bar")))
     (is (=' #"(?:0|1|2|3|4|5|6|7|8|9)" (apply alt-grp (range 10))))
-    (is (=' #"(?:0|1|2|3|4|5|6|7|8|9)" (apply alt-grp (concat (range 10) (range 10))))))  ; Deduplication optimisation
+    (is (=' #"(?:0|1|2|3|4|5|6|7|8|9)" (apply alt-grp (concat (range 10) (map str (range 10)))))))  ; Deduplication of equivalent regexes
   (testing "alt-cg"
     (is (nil?                        (alt-cg nil)))
     (is (nil?                        (alt-cg nil nil)))
@@ -411,7 +411,7 @@
     (is (=' #"()"                    (alt-cg #"" #"")))  ; Nonsensical, but ensure we have well defined behaviour anyway
     (is (=' #"(foo|bar)"             (alt-cg #"foo" #"bar")))
     (is (=' #"(0|1|2|3|4|5|6|7|8|9)" (apply alt-cg (range 10))))
-    (is (=' #"(0|1|2|3|4|5|6|7|8|9)" (apply alt-cg (concat (range 10) (range 10))))))  ; Deduplication optimisation
+    (is (=' #"(0|1|2|3|4|5|6|7|8|9)" (apply alt-cg (concat (range 10) (map str (range 10)))))))  ; Deduplication of equivalent regexes
   (testing "alt-ncg"
     (is (nil?                                  (alt-ncg nil nil)))
     (is (nil?                                  (alt-ncg nil nil)))
@@ -422,7 +422,7 @@
     (is (=' #"(?<groupName>)"                  (alt-ncg "groupName" #"" #"")))  ; Nonsensical, but ensure we have well defined behaviour anyway
     (is (=' #"(?<groupName>foo|bar)"           (alt-ncg "groupName" #"foo" #"bar")))
     (is (=' #"(?<numbers>0|1|2|3|4|5|6|7|8|9)" (apply (partial alt-ncg "numbers") (range 10))))
-    (is (=' #"(?<numbers>0|1|2|3|4|5|6|7|8|9)" (apply (partial alt-ncg "numbers") (concat (range 10) (range 10)))))))  ; Deduplication optimisation
+    (is (=' #"(?<numbers>0|1|2|3|4|5|6|7|8|9)" (apply (partial alt-ncg "numbers") (concat (range 10) (map str (range 10))))))))  ; Deduplication of equivalent regexes
 
 (deftest and-variant-tests
   (testing "and'"
