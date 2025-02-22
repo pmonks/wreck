@@ -35,12 +35,26 @@ jobs:
             ~/.clojure
             ~/.cpcache
           key: ${{ runner.os }}-${{ hashFiles('**/deps.edn') }}
-      - name: Run CI checks
+      - name: Run CI checks (ClojureJVM)
         run: clojure -Srepro -J-Dclojure.main.report=stderr -T:build ci
+
+  run_cljs:
+    needs: skip_check
+    if: ${{ needs.skip_check.outputs.should_skip != 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'lts'
+      - name: Compile unit tests
+        run: npx shadow-cljs compile test
+      - name: Run unit tests (ClojureScript)
+        run: node target/cljs/api-test-node.js
 
   # Adapted from https://brunoscheufler.com/blog/2022-04-09-the-required-github-status-check-that-wasnt
   after_ci_matrix:
-    needs: run_ci_matrix
+    needs: [run_ci_matrix, run_cljs]
     runs-on: ubuntu-latest
     if: success()
     outputs:
