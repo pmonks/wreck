@@ -19,12 +19,12 @@ The library is _not_ intended to provide a comprehensive functional alternative 
 
 It also pairs very nicely with [`rencg`](https://github.com/pmonks/rencg) - that library adds first class support for named capturing groups to Clojure (albeit the JVM flavour only).
 
-> [!WARNING]  
-> JavaScript's `RegExp` class fundamentally doesn't support lossless round-tripping of `RegExp` objects to `String`s and back, something this library relies upon and does extensively.  The library makes a best effort to correct JavaScript's problematic implementation, but because it's fundamentally lossy there are some cases that (on ClojureScript only) may change your regexes in unexpected (though not semantically significant) ways.  [See the unit tests for specific examples](https://github.com/pmonks/wreck/blob/dev/test/wreck/api_test.cljc).
-
 #### Why?
 
 I have other projects that perform complex text processing and in some cases have ended up writing very large regular expressions (as large as ~10KB), and writing and maintaining huge regular expressions while keeping them syntactically and functionally correct using regular expression literals, is... ..."challenging".  As a result I'd written some helper functions that let me modularise those regular expressions, and test and construct them in pieces, and before long I realised that these functions were independently useful, despite not being complex or novel.  Hence this library.
+
+> [!WARNING]  
+> JavaScript's `RegExp` class fundamentally doesn't support lossless round-tripping of `RegExp` objects to `String`s and back, something this library relies upon and does extensively.  The library makes a best effort to correct JavaScript's problematic implementation, but because it's fundamentally lossy there are some cases that (on ClojureScript only) may change your regexes in unexpected (though not semantically significant) ways.  [See the unit tests for specific examples](https://github.com/pmonks/wreck/blob/dev/test/wreck/api_test.cljc).
 
 ## Installation
 
