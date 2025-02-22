@@ -98,7 +98,13 @@
   "Returns a regex that is all of the `res` joined together. Each element in
   `res` can be a regex, a `String` or something that can be turned into a
   `String` (including numbers, etc.).  Returns `nil` when no `res` are provided,
-  or they're all `nil`."
+  or they're all `nil`.
+
+  Notes:
+
+  * In ClojureScript be cautious about using numbers in these calls, since
+    JavaScript's number handling is a 🤡show.  See [this unit test](https://github.com/pmonks/wreck/blob/dev/test/wreck/api_test.cljc#L93)
+    for a worked example of the types of problems that can occur."
   [& res]
   (let [res (seq (filter identity res))]
     (when res
