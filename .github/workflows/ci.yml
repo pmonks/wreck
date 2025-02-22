@@ -50,7 +50,7 @@ jobs:
       - name: Compile unit tests
         run: npx shadow-cljs compile test
       - name: Run unit tests (ClojureScript)
-        run: node target/cljs/api-test-node.js
+        run: node --enable-source-maps target/cljs/api-test-node.js
 
   # Adapted from https://brunoscheufler.com/blog/2022-04-09-the-required-github-status-check-that-wasnt
   after_ci_matrix:
