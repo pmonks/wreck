@@ -37,10 +37,10 @@
     (is (= "(?:foo|bar)"           (str' (re-pattern "(?:foo|bar)"))))
     (is (= "(?<groupName>foo|bar)" (str' (re-pattern "(?<groupName>foo|bar)")))))
   (testing "Messed up cases (due to the JavaScript RegExp class's idiotic stringification)"
-    (is (= ""                      (str' (re-pattern ""))))
     (is (= "foo/bar"               (str' (re-pattern "foo/bar"))))
 #?(:clj  (is (= "foo\\/bar"        (str' (re-pattern "foo\\/bar"))))   ; JVM is sane
    :cljs (is (= "foo/bar"          (str' (re-pattern "foo\\/bar")))))  ; JavaScript is 🤡🤡🤡
+    (is (= ""                      (str' (re-pattern ""))))
 #?(:clj  (is (= "(?:)"             (str' (re-pattern "(?:)"))))        ; JVM is sane
    :cljs (is (= ""                 (str' (re-pattern "(?:)")))))       ; JavaScript is 🤡🤡🤡
     (is (= "foo/bar/blah"          (str' (re-pattern "foo/bar/blah"))))))
