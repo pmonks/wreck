@@ -106,9 +106,8 @@
     JavaScript's number handling is a 🤡show.  See [this unit test](https://github.com/pmonks/wreck/blob/dev/test/wreck/api_test.cljc#L93)
     for a worked example of the types of problems that can occur."
   [& res]
-  (let [res (seq (filter identity res))]
-    (when res
-      (re-pattern (s/join (map str' res))))))
+  (when-let [res (seq (filter identity res))]
+    (re-pattern (s/join (map str' res)))))
 
 (defn esc
   "Escapes `s` (a `String`) for use in a regex, returning a `String`.  Note that
@@ -171,20 +170,18 @@
   "As for [[join]], but encloses the joined `res` into a single non-capturing
   group."
   [& res]
-  (let [res (seq (filter identity res))]
-    (when res
-      ; Here we optimise out an empty non-capturing group
-      (let [exp (apply join res)]
-        (if (empty?' exp)
-          #""
-          (join "(?:" exp ")"))))))
+  (when-let [res (seq (filter identity res))]
+    ; Here we optimise out an empty non-capturing group
+    (let [exp (apply join res)]
+      (if (empty?' exp)
+        #""
+        (join "(?:" exp ")")))))
 
 (defn cg
   "As for [[grp]], but uses a capturing group."
   [& res]
-  (let [res (seq (filter identity res))]
-    (when res
-      (join "(" (apply join res) ")"))))  ; Note: don't optimise empty capturing groups, because that will throw out code that indexes into capturing groups
+  (when-let [res (seq (filter identity res))]
+    (join "(" (apply join res) ")")))  ; Note: don't optimise empty capturing groups, because that will throw out code that indexes into capturing groups
 
 (defn ncg
   "As for [[grp]], but uses a named capturing group named `nm`.  Returns `nil` if
