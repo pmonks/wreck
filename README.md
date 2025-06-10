@@ -159,10 +159,10 @@ $ deps-try com.github.pmonks/wreck
 ;; A more complex example that composes a longer regex from just a few easy-to-read statements
 ;; (from the unit tests)
 
-(def lorl-re (re/or-grp "Lesser" "Library" #"\s+or\s+"))  ; "Lesser" or "Library", but in any
-                                                          ; order, or either word by itself,
-                                                          ; with the word "or" as a separator
-;=> #"(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)"
+; "Lesser" or "Library", but in any order, or either word by itself, with either a forward
+; slash or the word "or" as a separator
+(def lorl-re (re/or-grp "Lesser" "Library" (re/alt-grp #"\s*/\s*" #"\s+or\s+")))
+;=> #"(?:Lesser(?:\s*/\s*|\s+or\s+)Library|Library(?:\s*/\s*|\s+or\s+)Lesser|Lesser|Library)"
 
 (def lgpl-re (re/join #"(?iuU)(?<!\w)"                                ; Prefix fragment
                       (re/alt-ncg "lgpl"                              ; Alternations, ncg'ed
@@ -171,9 +171,10 @@ $ deps-try com.github.pmonks/wreck
                         (re/join "GNU" #"\s+" lorl-re)                ; GNU <lorl regex>
                         (re/join lorl-re #"\s+" "GPL"))               ; <lorl regex> GPL
                       #"(?!\w)"))                                     ; Suffix fragment
-;=> #"(?iuU)(?<!\w)(?<lgpl>LGPL|GNU\s+(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|
-;=> Library)\s+GPL|GNU\s+(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)|
-;=> (?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)\s+GPL)(?!\w)"
+;=> #"(?iuU)(?<!\w)(?<lgpl>LGPL|GNU\s+(?:Lesser(?:\s*/\s*|\s+or\s+)Library|Library
+;=>   (?:\s*/\s*|\s+or\s+)Lesser|Lesser|Library)\s+GPL|GNU\s+(?:Lesser(?:\s*/\s*|\s+or\s+)
+;=>   Library|Library(?:\s*/\s*|\s+or\s+)Lesser|Lesser|Library)|(?:Lesser(?:\s*/\s*|\s+or\s+)
+;=>   Library|Library(?:\s*/\s*|\s+or\s+)Lesser|Lesser|Library)\s+GPL)(?!\w)"
 
 ; Which would you rather maintain?  😉
 ```
