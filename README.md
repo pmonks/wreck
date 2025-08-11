@@ -100,11 +100,14 @@ $ deps-try com.github.pmonks/wreck
 
 ;; Cardinality
 
-(re/zom #"foo")  ; zom = zero or more
-;=> #"foo*"  ; Probably not what we want, so...
+(re/opt #"foo")  ; opt = optional (i.e. zero or one)
+;=> #"foo?"  ; Probably not what we want, so...
 
-(re/zom-grp #"foo")
-;=> #"(?:foo)*"  ; That's more like it!
+(re/opt-grp #"foo")
+;=> #"(?:foo)?"  ; That's more like it!
+
+(re/zom-grp #"foo")  ; zom = zero or more
+;=> #"(?:foo)*"
 
 (re/oom-grp #"foo")  ; oom = one or more
 ;=> #"(?:foo)+"
@@ -118,30 +121,24 @@ $ deps-try com.github.pmonks/wreck
 (re/n2m-grp 12 17 #"foo")  ; n2m = n to m
 ;=> #"(?:foo){12,17}"
 
-; There are -cg and -ncg variants of all of these fns as well, all variadic
+; There are -cg and -ncg variants of all of these fns as well, and all are variadic
 
 
 ;; Alternation
 
-(re/alt #"foo" #"bar")
-;=> #"foo|bar"
+(re/alt #"foo" #"bar")  ; Be careful using this fn as alternation has the lowest
+;=> #"foo|bar"          ; precedence in regexes
 
 (re/alt-grp #"foo" #"bar")
 ;=> #"(?:foo|bar)"
 
-; There are -cg and -ncg variants of this fn as well, all variadic
+; There are -cg and -ncg variants of this fn as well, and all are variadic
 
 
 ;; Logical operators
 
-(re/and' #"foo" #"bar")
-;=> #"foobar|barfoo"
-
 (re/and-grp #"foo" #"bar")
 ;=> #"(?:foobar|barfoo)"
-
-(re/or' #"foo" #"bar")
-;=> #"foobar|barfoo|foo|bar"
 
 (re/or-grp #"foo" #"bar")
 ;=> #"(?:foobar|barfoo|foo|bar)"
@@ -149,12 +146,10 @@ $ deps-try com.github.pmonks/wreck
 (re/or-grp #"foo" #"bar" #"\s+")  ; Logical operators also support separators
 ;=> #"(?:foo\s+bar|bar\s+foo|foo|bar)"
 
-(re/xor' #"foo" #"bar")  ; The same as alt, but provided for ease of comprehension in lengthy
-                         ; regex composition expressions that use the logical operators
-;=> #"foo|bar"
+(re/xor-grp #"foo" #"bar")  ; The same as alt, but provided for ease of comprehension in
+;=> #"(?:foo|bar)"          ; lengthy regex composition expressions that use the logical
+                            ; operators
 
-(re/xor-grp #"foo" #"bar")
-;=> #"(?:foo|bar)"
 
 ; There are -cg and -ncg variants of all of these fns as well, but note that unlike the other
 ; variants, none of the logical operator grouping variants are variadic
