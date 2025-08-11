@@ -1,17 +1,15 @@
 <img alt="wreck logo: a generated image of a shipwreck on a beach" align="right" width="25%" src="https://raw.githubusercontent.com/pmonks/wreck/dev/wreck-logo.png">
 
-| | | |
-|---:|:---:|:---:|
-| [**release**](https://github.com/pmonks/wreck/tree/release) | [![CI](https://github.com/pmonks/wreck/actions/workflows/ci.yml/badge.svg?branch=release)](https://github.com/pmonks/wreck/actions?query=workflow%3ACI+branch%3Arelease) | [![Dependencies](https://github.com/pmonks/wreck/actions/workflows/dependencies.yml/badge.svg?branch=release)](https://github.com/pmonks/wreck/actions?query=workflow%3Adependencies+branch%3Arelease) |
-| [**dev**](https://github.com/pmonks/wreck/tree/dev)  | [![CI](https://github.com/pmonks/wreck/actions/workflows/ci.yml/badge.svg?branch=dev)](https://github.com/pmonks/wreck/actions?query=workflow%3ACI+branch%3Adev) | [![Dependencies](https://github.com/pmonks/wreck/actions/workflows/dependencies.yml/badge.svg?branch=dev)](https://github.com/pmonks/wreck/actions?query=workflow%3Adependencies+branch%3Adev) |
-
-[![Latest Version](https://img.shields.io/clojars/v/com.github.pmonks/wreck)](https://clojars.org/com.github.pmonks/wreck/) [![Open Issues](https://img.shields.io/github/issues/pmonks/wreck.svg)](https://github.com/pmonks/wreck/issues) [![License](https://img.shields.io/github/license/pmonks/wreck.svg)](https://github.com/pmonks/wreck/blob/release/LICENSE) [![Vulnerabilities](https://github.com/pmonks/wreck/actions/workflows/vulnerabilities.yml/badge.svg?branch=dev)](https://github.com/pmonks/wreck/actions?query=workflow%3Avulnerabilities+branch%3Adev)
-
-
 # wreck - the "Whacky Regular Expression Construction Kit"
 
-> [!WARNING]  
-> Prior to v1.0 the library will be undergoing extensive development based on its use elsewhere.  APIs and behaviour may change in backwards incompatible ways without warning.  Feedback during this period is very welcome however, either here in the form of [issues](https://github.com/pmonks/wreck/issues), or on [the Clojure Discord server](https://discord.gg/discljord).
+[![CI](https://github.com/pmonks/wreck/actions/workflows/ci.yml/badge.svg?branch=dev)](https://github.com/pmonks/wreck/actions?query=workflow%3ACI+branch%3Adev)
+[![Dependencies](https://github.com/pmonks/wreck/actions/workflows/dependencies.yml/badge.svg?branch=dev)](https://github.com/pmonks/wreck/actions?query=workflow%3Adependencies+branch%3Adev)
+[![Vulnerabilities](https://github.com/pmonks/wreck/actions/workflows/vulnerabilities.yml/badge.svg?branch=dev)](https://github.com/pmonks/wreck/actions?query=workflow%3Avulnerabilities+branch%3Adev)
+<br/>
+[![Latest Version](https://img.shields.io/clojars/v/com.github.pmonks/wreck)](https://clojars.org/com.github.pmonks/wreck/)
+[![Open Issues](https://img.shields.io/github/issues/pmonks/wreck.svg)](https://github.com/pmonks/wreck/issues)
+[![License](https://img.shields.io/github/license/pmonks/wreck.svg)](https://github.com/pmonks/wreck/blob/release/LICENSE) 
+![Maintained](https://badges.ws/badge/?label=maintained&value=yes,+at+author's+discretion)
 
 A micro-library for Clojure(Script) that provides a selection of regular expression construction functions.  It has no dependencies, other than on Clojure, and emits standard Clojure regular expression objects, so is fully compatible with Clojure's built-in regular expression functions (it does not use any JVM-specific or JavaScript-specific regex syntax itself, though is compatible with platform-specific regular expressions, if you're using those).
 
@@ -19,12 +17,12 @@ The library is _not_ intended to provide a comprehensive functional alternative 
 
 It also pairs very nicely with [`rencg`](https://github.com/pmonks/rencg) - that library adds first class support for named capturing groups to Clojure (albeit the JVM flavour only).
 
-> [!WARNING]  
-> JavaScript's `RegExp` class fundamentally doesn't support lossless round-tripping of `RegExp` objects to `String`s and back, something this library relies upon and does extensively.  The library makes a best effort to correct JavaScript's problematic implementation, but because it's fundamentally lossy there are some cases that (on ClojureScript only) may change your regexes in unexpected (though not semantically significant) ways.  [See the unit tests for specific examples](https://github.com/pmonks/wreck/blob/dev/test/wreck/api_test.cljc).
-
 #### Why?
 
 I have other projects that perform complex text processing and in some cases have ended up writing very large regular expressions (as large as ~10KB), and writing and maintaining huge regular expressions while keeping them syntactically and functionally correct using regular expression literals, is... ..."challenging".  As a result I'd written some helper functions that let me modularise those regular expressions, and test and construct them in pieces, and before long I realised that these functions were independently useful, despite not being complex or novel.  Hence this library.
+
+> [!WARNING]  
+> JavaScript's `RegExp` class fundamentally doesn't support lossless round-tripping of `RegExp` objects to `String`s and back, something this library relies upon and does extensively.  The library makes a best effort to correct JavaScript's problematic implementation, but because it's fundamentally lossy there are some cases that (on ClojureScript only) may change your regexes in unexpected (though _probably_ not semantically significant) ways.  [See the unit tests for specific examples](https://github.com/pmonks/wreck/blob/dev/test/wreck/api_test.cljc).
 
 ## Installation
 
@@ -32,7 +30,7 @@ I have other projects that perform complex text processing and in some cases hav
 
 ## Usage
 
-[API documentation is available here](https://pmonks.github.io/wreck/), or [here on cljdoc](https://cljdoc.org/d/com.github.pmonks/wreck/), and the [unit tests](https://github.com/pmonks/wreck/blob/dev/test/wreck/api_test.clj) are also worth perusing to see worked examples.  I'm also active on [the Clojure Discord server](https://discord.gg/discljord).
+[API documentation is available here](https://pmonks.github.io/wreck/wreck.api.html), or [here on cljdoc](https://cljdoc.org/d/com.github.pmonks/wreck/), and the [unit tests](https://github.com/pmonks/wreck/blob/dev/test/wreck/api_test.clj) are also worth perusing to see worked examples.  I'm also active on [the Clojure Discord server](https://discord.gg/discljord) if you'd like to chat.
 
 ### Trying it Out
 
@@ -163,10 +161,10 @@ $ deps-try com.github.pmonks/wreck
 ;; A more complex example that composes a longer regex from just a few easy-to-read statements
 ;; (from the unit tests)
 
-(def lorl-re (re/or-grp "Lesser" "Library" #"\s+or\s+"))  ; "Lesser" or "Library", but in any
-                                                          ; order, or either word by itself,
-                                                          ; with the word "or" as a separator
-;=> #"(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)"
+; "Lesser" or "Library", but in any order, or either word by itself, with either a forward
+; slash or the word "or" as a separator
+(def lorl-re (re/or-grp "Lesser" "Library" (re/alt-grp #"\s*/\s*" #"\s+or\s+")))
+;=> #"(?:Lesser(?:\s*/\s*|\s+or\s+)Library|Library(?:\s*/\s*|\s+or\s+)Lesser|Lesser|Library)"
 
 (def lgpl-re (re/join #"(?iuU)(?<!\w)"                                ; Prefix fragment
                       (re/alt-ncg "lgpl"                              ; Alternations, ncg'ed
@@ -175,9 +173,10 @@ $ deps-try com.github.pmonks/wreck
                         (re/join "GNU" #"\s+" lorl-re)                ; GNU <lorl regex>
                         (re/join lorl-re #"\s+" "GPL"))               ; <lorl regex> GPL
                       #"(?!\w)"))                                     ; Suffix fragment
-;=> #"(?iuU)(?<!\w)(?<lgpl>LGPL|GNU\s+(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|
-;=> Library)\s+GPL|GNU\s+(?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)|
-;=> (?:Lesser\s+or\s+Library|Library\s+or\s+Lesser|Lesser|Library)\s+GPL)(?!\w)"
+;=> #"(?iuU)(?<!\w)(?<lgpl>LGPL|GNU\s+(?:Lesser(?:\s*/\s*|\s+or\s+)Library|Library
+;=>   (?:\s*/\s*|\s+or\s+)Lesser|Lesser|Library)\s+GPL|GNU\s+(?:Lesser(?:\s*/\s*|\s+or\s+)
+;=>   Library|Library(?:\s*/\s*|\s+or\s+)Lesser|Lesser|Library)|(?:Lesser(?:\s*/\s*|\s+or\s+)
+;=>   Library|Library(?:\s*/\s*|\s+or\s+)Lesser|Lesser|Library)\s+GPL)(?!\w)"
 
 ; Which would you rather maintain?  😉
 ```
