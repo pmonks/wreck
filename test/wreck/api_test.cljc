@@ -116,6 +116,10 @@
     ; Note: whitespace literals (such as \n, \r and \t) act strangely inside Clojure regex literals, so we don't test with them
   (testing "qot"
     (is (=' #"\Qfoo\E" (qot "foo")))
+    (is (=' #"\Q2\E" (qot 2)))
+#?(:clj  (is (=' #"\Q2.0\E" (qot 2.0)))
+   :cljs (is (=' #"\Q2\E" (qot 2.0))))  ; JavaScript is 🤡🤡🤡
+    (is (=' #"\Qtrue\E" (qot true)))
     (is (=' #"\Qfoo\E" (qot #"foo")))  ; Technically quoting regexes is a Bad Idea™, but we test a simple example just in case
     (is (=' #"\Q.*\E"  (qot ".*")))))
 

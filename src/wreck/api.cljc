@@ -136,13 +136,10 @@
                  \> "\\>"})))
 
 (defn qot
-  "Quotes `s` (a `String`) for use in a regex, returning a regex.  Note that
-  unlike most other fns in this namespace, this one does _not_ support a regex
-  as an input."
-  [s]
-  (when s
-    (join "\\Q" s "\\E")))
-
+  "Quotes `re` (anything that can be accepted by [[join]]), returning a regex."
+  [re]
+  (when re
+    (join "\\Q" re "\\E")))
 
 ;; Internal implementation details
 
