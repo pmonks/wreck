@@ -69,9 +69,10 @@ $ deps-try com.github.pmonks/wreck
 (re/join #"a" #"b")
 ;=> #"ab"
 
-(re/join "[" #"\p{Punct}" #"\p{Space}" "]+")  ; join also supports strings, allowing
-                                              ; syntactically invalid fragments to be used to
-                                              ; build up a valid expression
+(re/join "[" #"\p{Punct}" #"\p{Space}" "]+")  ; join also supports strings (and other data
+                                              ; types), allowing syntactically invalid
+                                              ; fragments to be used to build up a valid
+                                              ; expression
 ;=> #"[\p{Punct}\p{Space}]+"
 
 ; Because equality isn't defined for regexes in Clojure
@@ -90,10 +91,11 @@ $ deps-try com.github.pmonks/wreck
 (re/ncg "ab" #"a" #"b")
 ;=> #"(?<ab>ab)"  ; And named capturing groups (much more useful, especially with rencg!)
 
-(re/grp "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" "y" "z")
-;=> #"(?:abcdefghijklmnopqrstuvwxyz)"  ; Group functions are variadic, including most of the
-                                       ; variants shown next. They also (like join) support
-                                       ; both regexes and strings.
+(re/grp "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" "y" "z" 0 1 2 3 4 5 6 7 8 9)
+;=> #"(?:abcdefghijklmnopqrstuvwxyz0123456789)"  ; Group functions are variadic, including
+                                                 ; most of the variants shown next. They also
+                                                 ; (like join) support regexes, strings, and
+                                                 ; other data types
 
 
 ;; Cardinality
