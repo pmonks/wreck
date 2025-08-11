@@ -438,7 +438,7 @@
 
   Notes:
 
-  * Unlike most other `-grp` fns, this one does _not_ accept any number of res.
+  * Unlike most other `-cg` fns, this one does _not_ accept any number of res.
   * May optimise the expression (via de-duplication in [[alt]])."
   ([a b] (and-cg a b nil))
   ([a b s]
@@ -449,7 +449,7 @@
 
   Notes:
 
-  * Unlike most other `-grp` fns, this one does _not_ accept any number of res.
+  * Unlike most other `-ncg` fns, this one does _not_ accept any number of res.
   * May optimise the expression (via de-duplication in [[alt]])."
   ([nm a b] (and-ncg nm a b nil))
   ([nm a b s]
@@ -490,7 +490,7 @@
 
   Notes:
 
-  * Unlike most other `-grp` fns, this one does _not_ accept any number of res.
+  * Unlike most other `-cg` fns, this one does _not_ accept any number of res.
   * May optimise the expression (via de-duplication in [[alt]])."
   ([a b] (or-cg a b nil))
   ([a b s]
@@ -501,7 +501,7 @@
 
   Notes:
 
-  * Unlike most other `-grp` fns, this one does _not_ accept any number of res.
+  * Unlike most other `-ncg` fns, this one does _not_ accept any number of res.
   * May optimise the expression (via de-duplication in [[alt]])."
   ([nm a b] (or-ncg nm a b nil))
   ([nm a b s]
@@ -539,7 +539,7 @@
 
   Notes:
 
-  * Unlike most other `-grp` fns, this one does _not_ accept any number of res.
+  * Unlike most other `-cg` fns, this one does _not_ accept any number of res.
   * May optimise the expression (via de-duplication in [[alt]])."
   [a b]
   (cg (xor' a b)))
@@ -549,7 +549,7 @@
 
   Notes:
 
-  * Unlike most other `-grp` fns, this one does _not_ accept any number of res.
+  * Unlike most other `-ncg` fns, this one does _not_ accept any number of res.
   * May optimise the expression (via de-duplication in [[alt]])."
   [nm a b]
   (ncg nm (xor' a b)))
