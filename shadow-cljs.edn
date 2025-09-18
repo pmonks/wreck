@@ -12,7 +12,7 @@
   "test"]
 
  :dependencies
- []
+ [[net.cgrand/macrovich "0.2.2" :scope "test"]]  ; If this changes, also make sure to update it in pbr.clj!
 
  :builds
   {:test
