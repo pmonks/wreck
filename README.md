@@ -41,9 +41,9 @@ I have other projects that perform complex text processing and in some cases hav
 > While the foolproof approach is to simply not use flags at all, that may not be practical and if you must use flags:
 >
 > * On the JVM you should only use embedded flags that are within a non-capturing group (e.g. `#"(?i:[abc]+)"`) - this ensures that the flags are scoped correctly, especially if they're used to compose a larger regex.  [`flags-grp`](https://pmonks.github.io/wreck/wreck.api.html#var-flags-grp) is provided for this purpose.
-> * On JavaScript you should avoid using flags in regexes that are then used to compose a larger regex, and instead only set the flags once (using [`set-flags`](https://pmonks.github.io/wreck/wreck.api.html#var-set-flags)), on the final, fully composed regex.  If you happen to use a regex with flags to compose a larger regex, those flags will be silently dropped.  To preserve them (for re-application later), use [`flags`](https://pmonks.github.io/wreck/wreck.api.html#var-flags) to store them first.
+> * On JavaScript you should avoid using flags in regexes that are then used to compose a larger regex, and instead only set the flags once (using [`set-flags`](https://pmonks.github.io/wreck/wreck.api.html#var-set-flags)), on the final, fully composed regex.  If you happen to use a regex with flags to compose a larger regex, those flags will be silently dropped, and to preserve them (in order to set them again later), use [`flags`](https://pmonks.github.io/wreck/wreck.api.html#var-flags) to store them first.
 >
-> Be especially cognizant of the risks involved in using 3rd party regexes (e.g. from some other library) to compose a larger regex.  While this _should_ Just Work™ on the JVM, on JavaScript any flags these regexes contain will be silently dropped unless you take explicit steps to save them and reapply them, post-composition.
+> Be especially cognizant of the risks involved in using 3rd party regexes (e.g. returned from other libraries) to compose a larger regex.  While this _should_ Just Work™ on the JVM (where `wreck` uses [`embed-flags`](https://pmonks.github.io/wreck/wreck.api.html#var-embed-flags) internally for this purpose), on JavaScript any flags these regexes contain will be silently dropped unless you take explicit steps to save them and re-set them, post-composition.
 
 ### Trying it Out
 
