@@ -36,7 +36,7 @@
     may be uncommon) are supported to the best ability of the library, but
     please carefully review the usage notes in the
     [README.md](https://github.com/pmonks/wreck?tab=readme-ov-file#wreck---the-whacky-regular-expression-construction-kit)
-    for various caveats, especially in ClojureScript."
+    for various caveats, especially on ClojureScript."
   (:require [clojure.string :as s]
    #?(:cljs [goog.object])))
 
