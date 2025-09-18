@@ -171,8 +171,8 @@
   On JavaScript there's no choice - JavaScript's regex engine doesn't support
   embedded flags so flags always apply globally.  It is therefore recommended to
   keep flags out of regex fragments used for composition entirely, and only
-  settings flags (if needed) globally to the final, fully composed regex, using
-  this function.
+  setting flags (if needed) globally on the final, fully composed regex (using
+  this function).
 
   Note:
 
