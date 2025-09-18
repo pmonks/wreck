@@ -11,18 +11,15 @@
 [![License](https://img.shields.io/github/license/pmonks/wreck.svg)](https://github.com/pmonks/wreck/blob/release/LICENSE) 
 ![Maintained](https://badges.ws/badge/?label=maintained&value=yes,+at+author's+discretion)
 
-A micro-library for Clojure(Script) that provides a selection of regular expression construction functions.  It has no dependencies, other than on Clojure, and emits standard Clojure regular expression objects, so is fully compatible with Clojure's built-in regular expression functions (it does not use any JVM-specific or JavaScript-specific regex syntax itself, though is compatible with platform-specific regular expressions, if you're using those).
+A micro-library for Clojure(Script) that provides a selection of regular expression (regex) functions, mostly focused on ease of composition.  It has no dependencies, other than on Clojure, and emits standard Clojure regex objects, so is fully compatible with Clojure's built-in regex functions (it does not use any JVM-specific or JavaScript-specific regex syntax itself, though is compatible with platform-specific regexes, if you're using those).
 
-The library is _not_ intended to provide a comprehensive functional alternative for constructing regular expressions - knowledge of regular expression syntax remains necessary.  Instead it is intended to assist in constructing syntactically valid large regular expressions by composing smaller regular expressions together in well-defined ways.
+The library is _not_ intended to provide a comprehensive functional alternative for constructing regexes - knowledge of regex syntax remains necessary.  Instead it is intended to assist in constructing syntactically valid large regexes by composing smaller regexes together in well-defined ways.
 
 It also pairs very nicely with [`rencg`](https://github.com/pmonks/rencg) - that library adds first class support for named capturing groups to Clojure (albeit the JVM flavour only).
 
 #### Why?
 
-I have other projects that perform complex text processing and in some cases have ended up writing very large regular expressions (as large as ~10KB), and writing and maintaining huge regular expressions while keeping them syntactically and functionally correct using regular expression literals, is... ..."challenging".  As a result I'd written some helper functions that let me modularise those regular expressions, and test and construct them in pieces, and before long I realised that these functions were independently useful, despite not being complex or novel.  Hence this library.
-
-> [!WARNING]  
-> JavaScript's `RegExp` class fundamentally doesn't support lossless round-tripping of `RegExp` objects to `String`s and back, something this library relies upon and does extensively.  The library makes a best effort to correct JavaScript's problematic implementation, but because it's fundamentally lossy there are some cases that (on ClojureScript only) may change your regexes in unexpected (though _probably_ not semantically significant) ways.  [See the unit tests for specific examples](https://github.com/pmonks/wreck/blob/dev/test/wreck/api_test.cljc).
+I have other projects that perform complex text processing and in some cases have ended up writing very large regexes (as large as ~10KB), and writing and maintaining huge regexes while keeping them syntactically and functionally correct using Clojure regex literals, is... ..."challenging".  As a result I'd written some helper functions that let me modularise those regexes, and test and construct them in pieces, and before long I realised that these functions were independently useful, despite not being complex or novel.  Hence this library.
 
 ## Installation
 
@@ -31,6 +28,22 @@ I have other projects that perform complex text processing and in some cases hav
 ## Usage
 
 [API documentation is available here](https://pmonks.github.io/wreck/wreck.api.html), or [here on cljdoc](https://cljdoc.org/d/com.github.pmonks/wreck/), and the [unit tests](https://github.com/pmonks/wreck/blob/dev/test/wreck/api_test.clj) are also worth perusing to see worked examples.  I'm also active on [the Clojure Discord server](https://discord.gg/discljord) if you'd like to chat.
+
+> [!WARNING]  
+> JavaScript's `RegExp` class fundamentally doesn't support lossless round-tripping of `RegExp` objects to `String`s and back, something this library relies upon and does extensively.  The library makes a best effort to correct JavaScript's problematic implementation, but because it's fundamentally lossy there are some cases that (on ClojureScript only) may change your regexes in unexpected (though _probably_ not semantically significant) ways.  [See the unit tests for specific examples](https://github.com/pmonks/wreck/blob/dev/test/wreck/api_test.cljc).
+
+> [!IMPORTANT]  
+> `wreck` is primarily intended to be used to construct long-lived regex objects once (e.g. at load time), and YMMV if you're constructing large regexes dynamically.  This is because it repeatedly round trips regex objects to `String`s and back during the construction process, since Clojure regex objects don't natively support concatenation.  This can generate a substantial number of shortlived objects on the heap, which can have garbage collection implications (though generational garbage collectors, such as the JVM's, tend to handle this case well).
+
+> [!IMPORTANT]  
+> While Clojure(Script) regex literals don't support setting flags directly (and so their use is rare), `wreck` does take them into account if a regex happens to have been constructed with flags (e.g. the regex was constructed via host interop).  On the JVM flags will be converted into an embedded equivalent where possible (the `LITERAL` and `CANON-EQ` flags have no embedded equivalent), while on JavaScript flags will be silently dropped (since JavaScript's regex engine doesn't support embedded flags).
+> 
+> While the foolproof approach is to simply not use flags at all, that may not be practical and if you must use flags:
+>
+> * On the JVM you should only use embedded flags that are within a non-capturing group (e.g. `#"(?i:[abc]+)"`) - this ensures that the flags are scoped correctly, especially if they're used to compose a larger regex.  [`flags-grp`](https://pmonks.github.io/wreck/wreck.api.html#var-flags-grp) is provided for this purpose.
+> * On JavaScript you should avoid using flags in regexes that are then used to compose a larger regex, and instead only set the flags once (using [`set-flags`](https://pmonks.github.io/wreck/wreck.api.html#var-set-flags)), on the final, fully composed regex.  If you happen to use a regex with flags to compose a larger regex, those flags will be silently dropped, and to preserve them (in order to set them again later), use [`flags`](https://pmonks.github.io/wreck/wreck.api.html#var-flags) to store them first.
+>
+> Be especially cognizant of the risks involved in using 3rd party regexes (e.g. returned from other libraries) to compose a larger regex.  While this _should_ Just Work™ on the JVM (where `wreck` uses [`embed-flags`](https://pmonks.github.io/wreck/wreck.api.html#var-embed-flags) internally for this purpose), on JavaScript any flags these regexes contain will be silently dropped unless you take explicit steps to save them and set them after composition is complete.
 
 ### Trying it Out
 
@@ -69,9 +82,10 @@ $ deps-try com.github.pmonks/wreck
 (re/join #"a" #"b")
 ;=> #"ab"
 
-(re/join "[" #"\p{Punct}" #"\p{Space}" "]+")  ; join also supports strings, allowing
-                                              ; syntactically invalid fragments to be used to
-                                              ; build up a valid expression
+(re/join "[" #"\p{Punct}" #"\p{Space}" "]+")  ; join also supports strings (and other data
+                                              ; types), allowing syntactically invalid
+                                              ; fragments to be used to build up a valid
+                                              ; expression
 ;=> #"[\p{Punct}\p{Space}]+"
 
 ; Because equality isn't defined for regexes in Clojure
@@ -90,19 +104,23 @@ $ deps-try com.github.pmonks/wreck
 (re/ncg "ab" #"a" #"b")
 ;=> #"(?<ab>ab)"  ; And named capturing groups (much more useful, especially with rencg!)
 
-(re/grp "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" "y" "z")
-;=> #"(?:abcdefghijklmnopqrstuvwxyz)"  ; Group functions are variadic, including most of the
-                                       ; variants shown next. They also (like join) support
-                                       ; both regexes and strings.
+(re/grp "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" "y" "z" 0 1 2 3 4 5 6 7 8 9)
+;=> #"(?:abcdefghijklmnopqrstuvwxyz0123456789)"  ; Group functions are variadic, including
+                                                 ; most of the variants shown next. They also
+                                                 ; (like join) support regexes, strings, and
+                                                 ; other data types
 
 
 ;; Cardinality
 
-(re/zom #"foo")  ; zom = zero or more
-;=> #"foo*"  ; Probably not what we want, so...
+(re/opt #"foo")  ; opt = optional (i.e. zero or one)
+;=> #"foo?"  ; Probably not what we want, so...
 
-(re/zom-grp #"foo")
-;=> #"(?:foo)*"  ; That's more like it!
+(re/opt-grp #"foo")
+;=> #"(?:foo)?"  ; That's more like it!
+
+(re/zom-grp #"foo")  ; zom = zero or more
+;=> #"(?:foo)*"
 
 (re/oom-grp #"foo")  ; oom = one or more
 ;=> #"(?:foo)+"
@@ -116,30 +134,24 @@ $ deps-try com.github.pmonks/wreck
 (re/n2m-grp 12 17 #"foo")  ; n2m = n to m
 ;=> #"(?:foo){12,17}"
 
-; There are -cg and -ncg variants of all of these fns as well, all variadic
+; There are -cg and -ncg variants of all of these fns as well, and all are variadic
 
 
 ;; Alternation
 
-(re/alt #"foo" #"bar")
-;=> #"foo|bar"
+(re/alt #"foo" #"bar")  ; Be careful using this fn as alternation has the lowest
+;=> #"foo|bar"          ; precedence in regexes
 
 (re/alt-grp #"foo" #"bar")
 ;=> #"(?:foo|bar)"
 
-; There are -cg and -ncg variants of this fn as well, all variadic
+; There are -cg and -ncg variants of this fn as well, and all are variadic
 
 
 ;; Logical operators
 
-(re/and' #"foo" #"bar")
-;=> #"foobar|barfoo"
-
 (re/and-grp #"foo" #"bar")
 ;=> #"(?:foobar|barfoo)"
-
-(re/or' #"foo" #"bar")
-;=> #"foobar|barfoo|foo|bar"
 
 (re/or-grp #"foo" #"bar")
 ;=> #"(?:foobar|barfoo|foo|bar)"
@@ -147,12 +159,10 @@ $ deps-try com.github.pmonks/wreck
 (re/or-grp #"foo" #"bar" #"\s+")  ; Logical operators also support separators
 ;=> #"(?:foo\s+bar|bar\s+foo|foo|bar)"
 
-(re/xor' #"foo" #"bar")  ; The same as alt, but provided for ease of comprehension in lengthy
-                         ; regex composition expressions that use the logical operators
-;=> #"foo|bar"
+(re/xor-grp #"foo" #"bar")  ; The same as alt, but provided for ease of comprehension in
+;=> #"(?:foo|bar)"          ; lengthy regex composition expressions that use the logical
+                            ; operators
 
-(re/xor-grp #"foo" #"bar")
-;=> #"(?:foo|bar)"
 
 ; There are -cg and -ncg variants of all of these fns as well, but note that unlike the other
 ; variants, none of the logical operator grouping variants are variadic
@@ -166,17 +176,19 @@ $ deps-try com.github.pmonks/wreck
 (def lorl-re (re/or-grp "Lesser" "Library" (re/alt-grp #"\s*/\s*" #"\s+or\s+")))
 ;=> #"(?:Lesser(?:\s*/\s*|\s+or\s+)Library|Library(?:\s*/\s*|\s+or\s+)Lesser|Lesser|Library)"
 
-(def lgpl-re (re/join #"(?iuU)(?<!\w)"                                ; Prefix fragment
-                      (re/alt-ncg "lgpl"                              ; Alternations, ncg'ed
-                        "LGPL"                                        ; LGPL literal (string)
-                        (re/join "GNU" #"\s+" lorl-re #"\s+" "GPL")   ; GNU <lorl regex> GPL
-                        (re/join "GNU" #"\s+" lorl-re)                ; GNU <lorl regex>
-                        (re/join lorl-re #"\s+" "GPL"))               ; <lorl regex> GPL
-                      #"(?!\w)"))                                     ; Suffix fragment
-;=> #"(?iuU)(?<!\w)(?<lgpl>LGPL|GNU\s+(?:Lesser(?:\s*/\s*|\s+or\s+)Library|Library
-;=>   (?:\s*/\s*|\s+or\s+)Lesser|Lesser|Library)\s+GPL|GNU\s+(?:Lesser(?:\s*/\s*|\s+or\s+)
-;=>   Library|Library(?:\s*/\s*|\s+or\s+)Lesser|Lesser|Library)|(?:Lesser(?:\s*/\s*|\s+or\s+)
-;=>   Library|Library(?:\s*/\s*|\s+or\s+)Lesser|Lesser|Library)\s+GPL)(?!\w)"
+(def lgpl-re (re/flags-grp #{\u \i \U}                           ; Flags group
+               (re/join
+                 #"(?<!\w)"                                      ; Prefix fragment
+                 (re/alt-ncg "lgpl"                              ; Alternations, ncg'ed
+                   "LGPL"                                        ; LGPL literal (string)
+                   (re/join "GNU" #"\s+" lorl-re #"\s+" "GPL")   ; GNU <lorl regex> GPL
+                   (re/join "GNU" #"\s+" lorl-re)                ; GNU <lorl regex>
+                   (re/join lorl-re #"\s+" "GPL"))               ; <lorl regex> GPL
+                 #"(?!\w)")))                                    ; Suffix fragment
+;=> #"(?Uiu:(?<!\w)(?<lgpl>LGPL|GNU\s+(?:Lesser(?:\s*/\s*|\s+or\s+)Library|Library(?:\s*/\s*|
+;=>   \s+or\s+)Lesser|Lesser|Library)\s+GPL|GNU\s+(?:Lesser(?:\s*/\s*|\s+or\s+)Library|Library
+;=>   (?:\s*/\s*|\s+or\s+)Lesser|Lesser|Library)|(?:Lesser(?:\s*/\s*|\s+or\s+)Library|Library
+;=>   (?:\s*/\s*|\s+or\s+)Lesser|Lesser|Library)\s+GPL)(?!\w))"
 
 ; Which would you rather maintain?  😉
 ```
