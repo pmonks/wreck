@@ -19,9 +19,9 @@
     specific regexes if they wish.
   * As a result, all functions have the potential to throw platform-specific
     exceptions if the resulting regex is syntactically invalid.
-  * On the JVM, these will typically be instances of the
-    `java.util.regex.PatternSyntaxException` class.
-  * On JavaScript, these will typically be a `js/SyntaxError`.
+    * On the JVM, these will typically be instances of the
+      `java.util.regex.PatternSyntaxException` class.
+    * On JavaScript, these will typically be a `js/SyntaxError`.
   * Platform specific behaviour is particularly notable for short / empty
     regexes, such as `#\"{}\"` (an error on the JVM, fine but
     nonsensical on JS) and `#\"{1}\"` (ironically, fine but nonsensical on the
@@ -31,7 +31,12 @@
     upon and does extensively.  The library makes a best effort to correct
     JavaScript's problematic implementation, but because it's fundamentally
     lossy there are some cases that (on ClojureScript only) may change your
-    regexes in unexpected (though _probably_ not semantically significant) ways."
+    regexes in unexpected (though _probably_ not semantically significant) ways.
+  * Regex flags (which aren't natively supported by Clojure's regex literals, so
+    may be uncommon) are supported to the best ability of the library, but
+    please carefully review the usage notes in the
+    [README.md](https://github.com/pmonks/wreck?tab=readme-ov-file#wreck---the-whacky-regular-expression-construction-kit)
+    for various caveats, especially in ClojureScript."
   (:require [clojure.string :as s]
    #?(:cljs [goog.object])))
 
