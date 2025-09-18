@@ -258,8 +258,9 @@
 
 (defn ='
   "Equality for regexes, defined by having equal `String` representations (as
-  per [[str']]) and flags (as per [[flags]]).  This means that _equivalent_
-  regexes (e.g. `#\"...\"` and `#\".{3}\"` will _not_ be considered equal."
+  per [[str']]) and flags (as per [[flags]]).  This means that _functionally
+  equivalent_ regexes (e.g. `#\"...\"` and `#\".{3}\"` will _not_ be considered
+  equal."
   ([_] true)
   ([re1 re2]
 #?(:clj
