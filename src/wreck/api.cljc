@@ -34,8 +34,7 @@
     regexes in unexpected (though _probably_ not semantically significant) ways.
   * Regex flags (which aren't natively supported by Clojure's regex literals, so
     may be uncommon) are supported to the best ability of the library, but
-    please carefully review the usage notes in the
-    [README.md](https://github.com/pmonks/wreck?tab=readme-ov-file#wreck---the-whacky-regular-expression-construction-kit)
+    please carefully review the [usage notes in README.md](https://github.com/pmonks/wreck?tab=readme-ov-file#usage)
     for various caveats, especially on ClojureScript."
   (:require [clojure.string :as s]
    #?(:cljs [goog.object])))
@@ -165,17 +164,15 @@
   ⚠️ Because this function has platform specific behaviour, its use is
   discouraged.
 
-  On the JVM, it's instead recommended to manually place flags in a non-
-  capturing group that wraps the relevant regex (or fragment) since that gives
-  explicit control over how multiple regexes with different flag sets compose
-  together.  For example:
-
-    `#\"(?i:[abc]+)\"`
+  On the JVM, it's _strongly_ recommended to use [[flags-grp]] instead of this
+  function, since that gives explicit control over how multiple regexes with
+  different flag sets compose together.
 
   On JavaScript there's no choice - JavaScript's regex engine doesn't support
-  embedded flags and they always apply globally.  It is therefore recommended to
+  embedded flags so flags always apply globally.  It is therefore recommended to
   keep flags out of regex fragments used for composition entirely, and only
-  apply flags (if needed) globally to the final, fully composed regex.
+  settings flags (if needed) globally to the final, fully composed regex, using
+  this function.
 
   Note:
 
@@ -221,15 +218,18 @@
 
   * This function is only available on the JVM. JavaScript's regex engine does
     not support embedded flags.
+  * This function is primarily intended for internal use by `wreck`, but is
+    useful in those rare cases where Clojure code receives a 3rd party regex,
+    wishes to use it as part of composing a larger regex, and doesn't know if it
+    contains flags or not.  In all other cases, [[flags-grp]] is a better
+    choice.
   * Embedded flags in the middle of `re` will be moved to the beginning of the
     regex.  This may alter the semantics of the regex - for example `a(?i)b`
     will become `(?i:ab)`, which means that `a` will be matched case-
     insensitively by the result, which is _not_ the same as the original (which
     matches lower-case `a` only). This is an unavoidable consequence of how the
-    JVM regex engine reports embedded flags (arguably it shouldn't report them
-    as flags at all...).  If you really need to use an embedded flag midway
-    through a regex, put the flag in a non-capturing group e.g. `a(?i:b) as this
-    usage will be preserved."
+    JVM regex engine reports embedded flags.  If you really need to use an
+    embedded flag midway through a regex, use [[flags-grp]]."
   [re]
   (if-let [flgs (flags re)]
     (set-flags re flgs)
@@ -275,7 +275,11 @@
      false)))
 
 (defn empty?'
-  "Is `re` `nil` or `(=' #\"\")`?"
+  "Is `re` `nil` or `(=' #\"\")`?
+
+  Notes:
+
+  * Takes flags (if any) into account."
   [re]
   (or (nil? re)
       (=' #"" re)))
@@ -381,9 +385,9 @@
 
 #?(:clj
 (defn flags-grp
-  "As for [[grp], but prefixes the group with `flgs` (a set of regex flag
-  characters, such as those returned by [[flags]]).  See ['special constructs'
-  in the `java.util.regex.Pattern` JavaDoc](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/regex/Pattern.html#special)
+  "As for [[grp]], but prefixes the group with `flgs` (a set of regex flag
+  characters, such as those returned by [[flags]]).  See the ['special
+  constructs' section of the `java.util.regex.Pattern` JavaDoc](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/regex/Pattern.html#special)
   for the set of valid flag characters.
 
   Notes:
