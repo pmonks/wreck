@@ -14,4 +14,4 @@ echo "ℹ️ Compiling ClojureScript tests..."
 npx shadow-cljs compile test
 
 echo "ℹ️ Running ClojureScript tests on node.js..."
-node --enable-source-maps target/cljs/api-test-node.js
+node --enable-source-maps target/cljs/unit-tests.js
