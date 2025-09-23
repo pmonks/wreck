@@ -35,15 +35,18 @@ I have other projects that perform complex text processing and in some cases hav
 > [!IMPORTANT]  
 > `wreck` is primarily intended to be used to construct long-lived regex objects once (e.g. at load time), and YMMV if you're constructing large regexes dynamically.  This is because it repeatedly round trips regex objects to `String`s and back during the construction process, since Clojure regex objects don't natively support concatenation.  This can generate a substantial number of shortlived objects on the heap, which can have garbage collection implications (though generational garbage collectors, such as the JVM's, tend to handle this case well).
 
-> [!IMPORTANT]  
-> While Clojure(Script) regex literals don't support setting flags directly (and so their use is rare), `wreck` does take them into account if a regex happens to have been constructed with flags (e.g. the regex was constructed via host interop).  On the JVM flags will be converted into an embedded equivalent where possible (the `LITERAL` and `CANON_EQ` flags have no embedded equivalent), while on JavaScript flags will be silently dropped (since JavaScript's regex engine doesn't support embedded flags).
-> 
-> While the foolproof approach is to simply not use flags at all, that may not be practical and if you must use flags:
->
-> * On the JVM you should only use embedded flags that are within a non-capturing group (e.g. `#"(?i:[abc]+)"`) - this ensures that the flags are scoped correctly, especially if they're used to compose a larger regex.  [`flags-grp`](https://pmonks.github.io/wreck/wreck.api.html#var-flags-grp) is provided for this purpose.
-> * On JavaScript you should avoid using flags in regexes that are then used to compose a larger regex, and instead only set the flags once (using [`set-flags`](https://pmonks.github.io/wreck/wreck.api.html#var-set-flags)), on the final, fully composed regex.  If you happen to use a regex with flags to compose a larger regex, those flags will be silently dropped, and to preserve them (in order to set them again later), use [`flags`](https://pmonks.github.io/wreck/wreck.api.html#var-flags) to store them first.
->
-> Be especially cognizant of the risks involved in using 3rd party regexes (e.g. returned from other libraries) to compose a larger regex.  While this _should_ Just Work™ on the JVM (where `wreck` uses [`embed-flags`](https://pmonks.github.io/wreck/wreck.api.html#var-embed-flags) internally for this purpose), on JavaScript any flags these regexes contain will be silently dropped unless you take explicit steps to save them and set them after composition is complete.
+### Regex flags
+
+Regex flags are a thorny corner case with regexes, in that they're both highly platform specific, and (in their usual usage) don't compose properly because of their global nature (and regex composition is the entire point of `wreck`).  As a result `wreck` makes the opinionated design choice to only natively support grouped embedded flags (e.g. `(?i:[abc]+)`), as these provide scoping of the flag to a well-defined portion of a regex (i.e. the group).  This avoids most of the problems of global flags, with the downside that the JVM has 2 flags that can't be embedded, and JavaScript has 5 that can't be embedded.
+
+In general, and for the most commonly used flag (`(?i)` aka case insensitivity), you should always use the [`flags-grp`](https://pmonks.github.io/wreck/wreck.api.html#var-flags-grp) function to clearly delineate where in a given regex the flag applies.  This ensures if that regex is then composed into a larger regex, the flag's effects won't "leak" into the other fragments that larger regex was composed from.
+
+Be especially cognizant of the risks involved in using 3rd party regexes (e.g. returned from other libraries) when composing a larger regex - they may contain flags that can't easily be seen at the REPL (since by default neither the ClojureJVM nor ClojureScript REPLs emits flags when a regex value is printed).  The [`embed-flags`](https://pmonks.github.io/wreck/wreck.api.html#var-embed-flags) function can be used to automatically convert any flags in a regex to the embedded grouped equivalent (i.e. as if `flags-grp` had been called explicitly), but be aware that this will silently drop flags that cannot be embedded.  You may use the [`has-non-embeddable-flags?`](https://pmonks.github.io/wreck/wreck.api.html#var-has-non-embeddable-flags.3F) function to check for the presence of non-embeddable flags in such regexes, if that's important.
+
+`wreck` very consciously does not provide functions for setting programmatic flags on regexes (since this is strongly discouraged), and because Clojure regex literals don't support setting them either, users will be required to resort to interop in the unlikely event that a programmatic flag is the only possible solution for a use case.  Interop logic in Clojure tends to stand out, and that may help communicate the risks of such code.
+
+> [!WARNING]  
+> [ClojureScript appears to have a JS code generation bug](https://ask.clojure.org/index.php/14717/possible-clojurescript-corner-regex-literal-compilation) in the logic that emulates support for JVM-style (`(?i)`) embedded flags (JavaScript does _not_ natively support embedded flags of this form).  This bug manifests as a JavaScript syntax error at runtime (the JavaScript code generated by ClojureScript is syntactically invalid).  Be aware if you happen to be constructing regexes using JVM-style embedded flags (and better yet, use the [`flags-grp`](https://pmonks.github.io/wreck/wreck.api.html#var-flags-grp) function instead).
 
 ### Trying it Out
 
@@ -176,19 +179,19 @@ $ deps-try com.github.pmonks/wreck
 (def lorl-re (re/or-grp "Lesser" "Library" (re/alt-grp #"\s*/\s*" #"\s+or\s+")))
 ;=> #"(?:Lesser(?:\s*/\s*|\s+or\s+)Library|Library(?:\s*/\s*|\s+or\s+)Lesser|Lesser|Library)"
 
-(def lgpl-re (re/flags-grp #{\u \i \U}                           ; Flags group
-               (re/join
-                 #"(?<!\w)"                                      ; Prefix fragment
-                 (re/alt-ncg "lgpl"                              ; Alternations, ncg'ed
-                   "LGPL"                                        ; LGPL literal (string)
-                   (re/join "GNU" #"\s+" lorl-re #"\s+" "GPL")   ; GNU <lorl regex> GPL
-                   (re/join "GNU" #"\s+" lorl-re)                ; GNU <lorl regex>
-                   (re/join lorl-re #"\s+" "GPL"))               ; <lorl regex> GPL
-                 #"(?!\w)")))                                    ; Suffix fragment
-;=> #"(?Uiu:(?<!\w)(?<lgpl>LGPL|GNU\s+(?:Lesser(?:\s*/\s*|\s+or\s+)Library|Library(?:\s*/\s*|
+(def lgpl-re (re/join
+               #"(?<!\w)"                                       ; No word character before
+               (re/flags-grp "i"                                ; Flags (in a group)
+                 (re/alt-ncg "lgpl"                             ; Alternations, in a NCG
+                   "LGPL"                                       ; LGPL literal (string)
+                   (re/join "GNU" #"\s+" lorl-re #"\s+" "GPL")  ; GNU <lorl regex> GPL
+                   (re/join "GNU" #"\s+" lorl-re)               ; GNU <lorl regex>
+                   (re/join lorl-re #"\s+" "GPL")))             ; <lorl regex> GPL
+               #"(?!\w)"))                                      ; No word character after
+;=> #"(?<!\w)(?i:(?<lgpl>LGPL|GNU\s+(?:Lesser(?:\s*/\s*|\s+or\s+)Library|Library(?:\s*/\s*|
 ;=>   \s+or\s+)Lesser|Lesser|Library)\s+GPL|GNU\s+(?:Lesser(?:\s*/\s*|\s+or\s+)Library|Library
 ;=>   (?:\s*/\s*|\s+or\s+)Lesser|Lesser|Library)|(?:Lesser(?:\s*/\s*|\s+or\s+)Library|Library
-;=>   (?:\s*/\s*|\s+or\s+)Lesser|Lesser|Library)\s+GPL)(?!\w))"
+;=>   (?:\s*/\s*|\s+or\s+)Lesser|Lesser|Library)\s+GPL))(?!\w)"
 
 ; Which would you rather maintain?  😉
 ```
