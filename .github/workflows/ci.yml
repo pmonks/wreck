@@ -50,7 +50,8 @@ jobs:
           java-version: 24           # shadow-cljs depends on the JVM
       - uses: actions/setup-node@v5
         with:
-          node-version: 'lts/*'
+          node-version: '>=24'
+          check-latest: true
       - name: Compile unit tests
         run: |
           npm install source-map-support
