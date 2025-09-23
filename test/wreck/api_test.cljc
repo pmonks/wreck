@@ -10,16 +10,15 @@
 
 (ns wreck.api-test
   (:require [clojure.string   :as s]
-   #?(:cljs [goog.object])
    #?(:clj  [clojure.test     :refer [deftest testing is]]
       :cljs [cljs.test        :refer-macros [deftest testing is]])
    #?(:clj  [wreck.test-utils :refer [time-execution]]
       :cljs [wreck.test-utils :refer-macros [time-execution]])
-   #?(:clj  [wreck.api        :refer [embed-flags flags-grp]])  ; functions only available on the JVM
-            [wreck.api        :refer [has-flags? flags set-flags
-                                      str' =' empty?'
-                                      join esc qot
-                                      grp  cg      ncg
+            [wreck.api        :refer [has-non-embeddable-flags?
+                                      embed-flags
+                                      str' ='      empty?'
+                                      join esc     qot
+                                      grp  cg      ncg    flags-grp
                                       opt  opt-grp opt-cg opt-ncg
                                       zom  zom-grp zom-cg zom-ncg
                                       oom  oom-grp oom-cg oom-ncg
@@ -31,113 +30,42 @@
                                       or'  or-grp  or-cg  or-ncg
                                       xor' xor-grp xor-cg xor-ncg]]))
 
+; Important note: because of the way reader conditionals work, regexes in _ALL_
+; branches _ALWAYS_ get compiled on _ALL_ hosts. This means that platform-
+; specific regexes will cause compilation errors on the _OTHER_ platform.  To
+; get around this, we use (re-pattern) to move regex compilation from read time
+; to runtime (which will always take reader conditionals into account).
+; This is a niche corner case, and only due to the Clojure reader pre-dating
+; reader conditionals by a lot.
+
 #?(:cljs (enable-console-print!))
 
-(deftest has-flags?-tests
-  (testing "Basic cases - nil, not a regex object, etc."
-    (is (false? (has-flags? nil)))
-    (is (false? (has-flags? "")))
-    (is (false? (has-flags? 0))))
-  (testing "Regexes without flags"
-    (is (false? (has-flags? #".*")))
-#?(:clj  (is (false? (has-flags? (java.util.regex.Pattern/compile "ab"))))
-   :cljs (is (false? (has-flags? (doto (js/RegExp.) (.compile "ab"))))))
-#?(:clj  (is (false? (has-flags? (java.util.regex.Pattern/compile ".+")))))
-#?(:clj  (is (false? (has-flags? #"(?i:a)")))))  ; embedded flag in a non-capturing group - JVM doesn't count this as a "flag" for some inconsistent reason
-  (testing "Regexes with programmatic flags"
-#?(:clj  (is (true? (has-flags? (java.util.regex.Pattern/compile "ab" java.util.regex.Pattern/CASE_INSENSITIVE))))
-   :cljs (is (true? (has-flags? (doto (js/RegExp.) (.compile "ab" "i")))))))
-#?(:clj
-  (testing "JVM specific regexes with embedded flags"
-    (is (true?  (has-flags? #"(?i)ab")))          ; Inconvenient, but ok I guess...
-    (is (false? (has-flags? #"(?-i)ab")))         ; Ok I guess...
-    (is (true?  (has-flags? #"a(?i)b")))          ; wat
-    (is (false? (has-flags? #"(?i)a(?-i)b"))))))  ; watman?!?
-
-(deftest flags-tests
-  (testing "Basic cases - nil, not a regex object, etc."
-    (is (nil? (flags nil)))
-    (is (nil? (flags "")))
-    (is (nil? (flags 0))))
-  (testing "Regexes without flags"
-    (is (nil? (flags #".*")))
-#?(:clj  (is (nil? (flags (java.util.regex.Pattern/compile "ab"))))
-   :cljs (is (nil? (flags (doto (js/RegExp.) (.compile "ab"))))))
-#?(:clj  (is (nil? (flags #"(?i:a)")))))  ; embedded flag in a non-capturing group - JVM doesn't count this as a "flag" for some inconsistent reason
-  (testing "Regexes with programmatic flags"
-#?(:clj  (is (= #{\i}                      (flags (java.util.regex.Pattern/compile "ab" java.util.regex.Pattern/CASE_INSENSITIVE))))
-   :cljs (is (= #{\i}                      (flags (doto (js/RegExp.) (.compile "ab" "i"))))))
-#?(:clj  (is (= #{\i \u}                   (flags (java.util.regex.Pattern/compile "ab" (+ java.util.regex.Pattern/CASE_INSENSITIVE  java.util.regex.Pattern/UNICODE_CASE)))))
-   :cljs (is (= #{\i \u}                   (flags (doto (js/RegExp.) (.compile "ab" "iu"))))))
-#?(:clj  (is (= #{\U \d \i \m \s \u \x}    (flags (java.util.regex.Pattern/compile "a+" (+ java.util.regex.Pattern/UNIX_LINES
-                                                                                           java.util.regex.Pattern/CASE_INSENSITIVE
-                                                                                           java.util.regex.Pattern/COMMENTS
-                                                                                           java.util.regex.Pattern/MULTILINE
-                                                                                           java.util.regex.Pattern/DOTALL
-                                                                                           java.util.regex.Pattern/UNICODE_CASE
-                                                                                           java.util.regex.Pattern/UNICODE_CHARACTER_CLASS)))))
-   ; JavaScript's regex engine doesn't support \u and \v in the same regex - they're mutually exclusive
-   :cljs (is (= #{\d \g \i \m \s \u \y} (flags (doto (js/RegExp.) (.compile "a+" "dgimsuy"))))))
-#?(:cljs (is (= #{\d \g \i \m \s \v \y} (flags (doto (js/RegExp.) (.compile "a+" "dgimsvy")))))))
-#?(:clj
-  (testing "JVM specific regexes with embedded flags"
-    (is (= #{\i} (flags #"(?i)ab")))    ; embedded flag
-    (is (= #{\i} (flags #"a(?i)b")))))  ; embedded flag partway through a regex
-#?(:clj
-  (testing "JVM programmatic flags without an embedded representation"
-    (is (thrown? clojure.lang.ExceptionInfo (flags (java.util.regex.Pattern/compile "ab" java.util.regex.Pattern/LITERAL))))
-    (is (thrown? clojure.lang.ExceptionInfo (flags (java.util.regex.Pattern/compile "ab" java.util.regex.Pattern/CANON_EQ))))
-    (is (thrown? clojure.lang.ExceptionInfo (flags (java.util.regex.Pattern/compile "ab" (+ java.util.regex.Pattern/LITERAL java.util.regex.Pattern/CANON_EQ)))))
-    (is (thrown? clojure.lang.ExceptionInfo (flags (java.util.regex.Pattern/compile "ab" (+  java.util.regex.Pattern/CASE_INSENSITIVE java.util.regex.Pattern/LITERAL)))))
-    (is (thrown? clojure.lang.ExceptionInfo (flags (java.util.regex.Pattern/compile "a+" (+ java.util.regex.Pattern/UNIX_LINES
-                                                                                            java.util.regex.Pattern/CASE_INSENSITIVE
-                                                                                            java.util.regex.Pattern/COMMENTS
-                                                                                            java.util.regex.Pattern/MULTILINE
-                                                                                            java.util.regex.Pattern/LITERAL
-                                                                                            java.util.regex.Pattern/DOTALL
-                                                                                            java.util.regex.Pattern/UNICODE_CASE
-                                                                                            java.util.regex.Pattern/CANON_EQ
-                                                                                            java.util.regex.Pattern/UNICODE_CHARACTER_CLASS))))))))
-
-; These test are short, as set-flags is highly platform specific.
-(deftest set-flags-tests
-  (testing "Basic cases - nil etc."
-    (is (nil?    (set-flags nil   nil)))
-    (is (nil?    (set-flags nil   #{\i})))
-    (is (=' #".*" (set-flags #".*" nil))))
-#?(:clj
-  (testing "JVM cases"
-    ; Note: we cannot use flags here, since on the JVM flags/set-flags do NOT round trip (due to the use of non-capturing groups)
-    (is (=' #"(?i:.*)"       (set-flags #".*" #{\i})))
-    (is (=' #"(?im:.*)"      (set-flags #".*" #{\m \i})))
-    (is (=' #"(?Udimsux:.*)" (set-flags #".*" #{\x \d \s \i \U \m \u}))))  ; Use random order to test sorting
-:cljs
-  (testing "JavaScript cases"
-    ; We round-trip through flags on JavaScript, since they do round trip on that platform
-    (is (= #{\i}                   (flags (set-flags #".*" #{\i}))))
-    (is (= #{\i \m}                (flags (set-flags #".*" #{\i \m}))))
-    (is (= #{\d \g \i \m \s \u \y} (flags (set-flags #".*" #{\u \s \g \i \y \d \m})))))))
-
-#?(:clj
-; embed-flags only exists on the JVM
 (deftest embed-flags-tests
   (testing "Basic cases - nil etc."
     (is (nil?     (embed-flags nil)))
     (is (=' #""   (embed-flags #"")))
     (is (=' #".*" (embed-flags #".*"))))
-  (testing "Embedded flags"
-    (is (=' #"(?i:ab)" (embed-flags #"(?i)ab")))
-    (is (=' #"(?i:ab)" (embed-flags #"a(?i)b"))))  ; ⚠️ footgun: this changes the semantics of the regex
-  (testing "Programmatic flags"
-    (is (=' #"(?i:ab)"       (embed-flags (java.util.regex.Pattern/compile "ab" java.util.regex.Pattern/CASE_INSENSITIVE))))
-    (is (=' #"(?Udimsux:ab)" (embed-flags (java.util.regex.Pattern/compile "ab" (+ java.util.regex.Pattern/UNIX_LINES
-                                                                                   java.util.regex.Pattern/CASE_INSENSITIVE
-                                                                                   java.util.regex.Pattern/COMMENTS
-                                                                                   java.util.regex.Pattern/MULTILINE
-                                                                                   java.util.regex.Pattern/DOTALL
-                                                                                   java.util.regex.Pattern/UNICODE_CASE
-                                                                                   java.util.regex.Pattern/UNICODE_CHARACTER_CLASS)))))
-    (is (thrown? clojure.lang.ExceptionInfo (embed-flags (java.util.regex.Pattern/compile "ab" java.util.regex.Pattern/CANON_EQ)))))))
+  (testing "Ungrouped embedded flags (note: this is emulated by ClojureScript and NOT supported by native JavaScript!)"
+    (is (=' #"(?i:ab)"   (embed-flags #"(?i)ab")))
+    (is (=' #"(?ims:ab)" (embed-flags #"(?smi)ab"))))
+#?(:clj
+  (testing "JVM specific cases"
+    (is (=' #"(?ims:ab)"                 (embed-flags (re-pattern "(?s)(?i)(?m)ab"))))
+    (is (=' #"(?i:ab)"                   (embed-flags (re-pattern "a(?i)b"))))  ; ⚠️ footgun: this changes the semantics of the regex
+    (is (=' #"(?i:ab)"                   (embed-flags (java.util.regex.Pattern/compile "ab" java.util.regex.Pattern/CASE_INSENSITIVE))))
+    (is (=' #"ab"                        (embed-flags (java.util.regex.Pattern/compile "ab" java.util.regex.Pattern/CANON_EQ))))  ; ⚠️ footgun: non-embeddable flag is silently dropped
+    (is (=' (re-pattern "(?Udimsux:ab)") (embed-flags (java.util.regex.Pattern/compile "ab" (+ java.util.regex.Pattern/UNIX_LINES
+                                                                                               java.util.regex.Pattern/CASE_INSENSITIVE
+                                                                                               java.util.regex.Pattern/COMMENTS
+                                                                                               java.util.regex.Pattern/MULTILINE
+                                                                                               java.util.regex.Pattern/DOTALL
+                                                                                               java.util.regex.Pattern/UNICODE_CASE
+                                                                                               java.util.regex.Pattern/UNICODE_CHARACTER_CLASS))))))
+:cljs
+  (testing "JavaScript specific cases"
+    (is (=' #"(?i:ab)"               (embed-flags (doto (js/RegExp.) (.compile "ab" "i")))))
+    (is (=' (re-pattern "(?ims:ab)") (embed-flags (doto (js/RegExp.) (.compile "ab" "msiydgv")))))     ; ⚠️ footgun: non-embeddable flags are silently dropped
+    (is (=' (re-pattern "(?ims:ab)") (embed-flags (doto (js/RegExp.) (.compile "ab" "ydsiumg"))))))))  ; ⚠️ footgun: non-embeddable flags are silently dropped
 
 (deftest str'-tests
   (testing "Basic cases"
@@ -156,25 +84,30 @@
 #?(:clj  (is (= "(?:)"             (str' (re-pattern "(?:)"))))        ; JVM is sane
    :cljs (is (= ""                 (str' (re-pattern "(?:)")))))       ; JavaScript is 🤡🤡🤡
     (is  (= "foo/bar/blah"         (str' (re-pattern "foo/bar/blah")))))
-  (testing "Programmatically constructed regexes with flags"
-#?(:clj  (is (= "(?i:a+)"          (str' (java.util.regex.Pattern/compile "a+" java.util.regex.Pattern/CASE_INSENSITIVE))))
-   :cljs (is (= "a+"               (str' (doto (js/RegExp.) (.compile "a+" "i"))))))    ; ⚠️ JavaScript doesn't support embedded flags in regexes, so we can't "stringify" flags the way we do on the JVM
-#?(:clj  (is (= "(?iu:a+)"         (str' (java.util.regex.Pattern/compile "a+" (+ java.util.regex.Pattern/CASE_INSENSITIVE java.util.regex.Pattern/UNICODE_CASE)))))
-   :cljs (is (= "a+"               (str' (doto (js/RegExp.) (.compile "a+" "iu"))))))   ; ⚠️ JavaScript doesn't support embedded flags in regexes, so we can't "stringify" flags the way we do on the JVM
-#?(:clj  (is (= "(?Udimsux:a+)"    (str' (java.util.regex.Pattern/compile "a+" (+ java.util.regex.Pattern/UNIX_LINES
-                                                                                  java.util.regex.Pattern/CASE_INSENSITIVE
-                                                                                  java.util.regex.Pattern/COMMENTS
-                                                                                  java.util.regex.Pattern/MULTILINE
-                                                                                  java.util.regex.Pattern/DOTALL
-                                                                                  java.util.regex.Pattern/UNICODE_CASE
-                                                                                  java.util.regex.Pattern/UNICODE_CHARACTER_CLASS)))))
-   :cljs (is (= "a+"               (str' (doto (js/RegExp.) (.compile "a+" "dgimsvy")))))))  ; ⚠️ JavaScript doesn't support embedded flags in regexes, so we can't "stringify" flags the way we do on the JVM
+  (testing "Flags"
+    (is (= "(?i:a+b)"              (str' #"(?i)a+b")))
+    (is (= "(?ims:a+b)"            (str' #"(?sim)a+b")))) ; Test sorting of flags that are common to both JVM and JS
 #?(:clj
-  (testing "JVM specific regexes with embedded flags"
-    (is (= "(?i:a+b)"            (str' #"(?i)a+b")))
-    (is (= "(?Udimsux:a+b)"      (str' #"(?xsiUmdu)a+b")))                            ; Test sorting of flags
-    (is (= "(?i:a+b)"            (str' #"a+(?i)b")))                                  ; ⚠️ footgun: this changes the semantics of the regex
-    (is (= "(?Udimsux:abcdefgh)" (str' #"a(?x)b(?s)c(?i)d(?U)e(?m)f(?d)g(?u)h"))))))  ; ⚠️ footgun: this changes the semantics of the regex
+  (testing "JVM specific cases"
+    (is (= "(?im:ab)"            (str' (re-pattern "(?m)(?i)ab"))))                            ; JavaScript doesn't support separate embedded flags like this
+    (is (= "(?Udimsux:a+b)"      (str' (re-pattern "(?xsiUmdu)a+b"))))                         ; Test sorting of flags
+    (is (= "(?i:a+b)"            (str' (re-pattern "a+(?i)b"))))                               ; ⚠️ footgun: this changes the semantics of the regex
+    (is (= "(?Udimsux:abcdefgh)" (str' (re-pattern "a(?x)b(?s)c(?i)d(?U)e(?m)f(?d)g(?u)h"))))  ; ⚠️ footgun: this changes the semantics of the regex
+    (is (= "(?i:a+)"             (str' (java.util.regex.Pattern/compile "a+" java.util.regex.Pattern/CASE_INSENSITIVE))))
+    (is (= "(?iu:a+)"            (str' (java.util.regex.Pattern/compile "a+" (+ java.util.regex.Pattern/CASE_INSENSITIVE java.util.regex.Pattern/UNICODE_CASE)))))
+    (is (= "(?Udimsux:a+)"       (str' (java.util.regex.Pattern/compile "a+" (+ java.util.regex.Pattern/UNIX_LINES
+                                                                                java.util.regex.Pattern/CASE_INSENSITIVE
+                                                                                java.util.regex.Pattern/COMMENTS
+                                                                                java.util.regex.Pattern/MULTILINE
+                                                                                java.util.regex.Pattern/DOTALL
+                                                                                java.util.regex.Pattern/UNICODE_CASE
+                                                                                java.util.regex.Pattern/UNICODE_CHARACTER_CLASS))))))
+:cljs
+  (testing "JavaScript specific cases"
+    (is (= "(?i:a+)"   (str' (doto (js/RegExp.) (.compile "a+" "i")))))
+    (is (= "(?is:a+)"  (str' (doto (js/RegExp.) (.compile "a+" "si")))))
+    (is (= "(?ims:a+)" (str' (doto (js/RegExp.) (.compile "a+" "mivgsdy")))))     ; ⚠️ footgun: this changes the semantics of the regex
+    (is (= "(?ims:a+)" (str' (doto (js/RegExp.) (.compile "a+" "miugsdy"))))))))  ; ⚠️ footgun: this changes the semantics of the regex
 
 ; How fast we expect the str' performance tests to complete.
 ; Note: we have to hedge out bets a little bit as GitHub actions VMs are slow.
@@ -184,31 +117,36 @@
   (testing "Performance of str' (simplistic)"
     (let [re #".*"]
       (is (< (:time (time-execution (run! (fn [_] (str' re)) (range 1000000))) performance-threshold-ms )))
-    (let [re (set-flags #".*" #{\i \m})]
+    (let [re #"(?im:.*)"]
       (is (< (:time (time-execution (run! (fn [_] (str' re)) (range 1000000))) performance-threshold-ms )))))))
 
-(deftest equality-tests
+(deftest ='-tests
   (testing "Equal"
     (is (true?  (=' #""   #"")))
     (is (true?  (=' #".*" #".*"))))
   (testing "Not equal"
     (is (false? (=' #"" #" ")))
     (is (false? (=' #"..." #".{3}"))))
+  (testing "Flags"
+    (is (true?  (=' #"(?i:a+)"              (embed-flags #"(?i)a+"))))
+    (is (true?  (=' (embed-flags #"(?i)a+") (embed-flags #"(?i)a+"))))
+    (is (false? (=' #"a+"                   (embed-flags #"(?i)a+")))))
 #?(:clj
-  (testing "JVM regexes with flags"
-    (is (true?  (=' #"(?i:a+)" (set-flags #"a+" #{\i}))))
-    (is (true?  (=' #"(?i:a+)" (embed-flags #"(?i)a+"))))
+  (testing "JVM specific cases"
     (is (true?  (=' #"(?i:a+)" (embed-flags (java.util.regex.Pattern/compile "a+" java.util.regex.Pattern/CASE_INSENSITIVE)))))
-    (is (true?  (=' #"(?i:a+)" (set-flags #"a+" #{\i}) (embed-flags #"(?i)a+") (embed-flags (java.util.regex.Pattern/compile "a+" java.util.regex.Pattern/CASE_INSENSITIVE)))))
-    (is (false? (=' #"a+"      (set-flags #"a+" #{\i}))))
-    (is (false? (=' #"a+"      (java.util.regex.Pattern/compile "a+" java.util.regex.Pattern/CASE_INSENSITIVE)))))
+    (is (true?  (=' #"(?i:a+)" (embed-flags #"(?i)a+") (embed-flags (java.util.regex.Pattern/compile "a+" java.util.regex.Pattern/CASE_INSENSITIVE)))))
+    (is (true?  (=' (embed-flags #"(?i)ab") (embed-flags #"a(?i)b"))))  ; ⚠️ footgun: prior to embedding the flags, these regexes have different semantics
+    (is (false? (=' #"(?i)ab" #"a(?i)b")))
+    (is (false? (=' #"a+"      (java.util.regex.Pattern/compile "a+" java.util.regex.Pattern/CASE_INSENSITIVE))))
+    (is (false? (=' (java.util.regex.Pattern/compile "a+" java.util.regex.Pattern/CASE_INSENSITIVE)
+                    (java.util.regex.Pattern/compile "a+" (+ java.util.regex.Pattern/CASE_INSENSITIVE java.util.regex.Pattern/LITERAL))))))   ; Ensure all flags are considered in equality , even if they can't be embedded ; Ensure all flags are considered, even if we normally drop them
 :cljs
-  (testing "JavaScript regexes with flags"
-    (is (true?  (=' (set-flags #"a+" #{\i})                 (set-flags #"a+" #{\i}))))
+  (testing "JavaScript specific cases"
     (is (true?  (=' (doto (js/RegExp.) (.compile "a+" "i")) (doto (js/RegExp.) (.compile "a+" "i")))))
-    (is (true?  (=' (set-flags #"a+" #{\i})                 (doto (js/RegExp.) (.compile "a+" "i")))))
-    (is (false? (=' #"a+"                                   (set-flags #"a+" #{\i}))))
-    (is (false? (=' #"a+"                                   (doto (js/RegExp.) (.compile "a+" "i")))))))
+    (is (true?  (=' (embed-flags #"(?i)a+")                 (embed-flags (doto (js/RegExp.) (.compile "a+" "i"))))))
+    (is (false? (=' (embed-flags #"(?i)a+")                 (doto (js/RegExp.) (.compile "a+" "i")))))  ; ⚠️ footgun: once flags are embedded, these are identical
+    (is (false? (=' #"a+"                                   (doto (js/RegExp.) (.compile "a+" "i")))))
+    (is (false? (=' (doto (js/RegExp.) (.compile "a+" "i")) (doto (js/RegExp.) (.compile "ab" "ig")))))))  ; Ensure all flags are considered in equality , even if they can't be embedded
   (testing "Variable arguments"
     (is (true?  (=' #"")))
     (is (true?  (=' #"" #"")))
@@ -223,21 +161,21 @@
   (testing "empty?'"
     (is (true?  (empty?' nil)))
     (is (true?  (empty?' #"")))
-    (is (true?  (empty?' (set-flags #"" nil))))
-    (is (false? (empty?' (set-flags #"" #{\i \m}))))
+    (is (true?  (empty?' (embed-flags #""))))
+    (is (false? (empty?' (re-pattern "(?i)"))))  ; This shouldn't need the call to re-pattern, except for https://ask.clojure.org/index.php/14717/possible-clojurescript-corner-regex-literal-compilation
+    (is (false? (empty?' #"(?i:a)")))
+    (is (false? (empty?' #"(?im:)")))
+    (is (false? (empty?' (embed-flags (re-pattern "(?im)")))))  ; This shouldn't need the call to re-pattern, except for https://ask.clojure.org/index.php/14717/possible-clojurescript-corner-regex-literal-compilation
     (is (false? (empty?' #" ")))
     (is (false? (empty?' #"a")))
     (is (false? (empty?' #".*")))
     (is (false? (empty?' #"(?:abc)+"))))
 #?(:clj
-  (testing "JVM cases"
-    (is (false? (empty?' #"(?i)")))
-    (is (false? (empty?' #"(?i:a)")))
+  (testing "JVM specific cases"
     (is (false? (empty?' (java.util.regex.Pattern/compile "" java.util.regex.Pattern/CASE_INSENSITIVE)))))
 :cljs
-  (testing "JavaScript cases"
-    (is (false? (empty?' (doto (js/RegExp.) (.compile "" "i")))))
-  )))
+  (testing "JavaScript specific cases"
+    (is (false? (empty?' (doto (js/RegExp.) (.compile "" "i"))))))))
 
 (deftest join-tests
   (testing "join - nil, empty or blank"
@@ -322,25 +260,30 @@
     (is (=' #"(?<groupName>.*)"                                (ncg "groupName" #"" #".*")))
     (is (=' #"(?<groupName>foo.*)"                             (ncg "groupName" #"foo" #".*")))
     (is (=' #"(?<apache>Apache(\s+Software)?(\s+Licen[cs]e)?)" (ncg "apache" "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
-#?(:clj
-; flags-grp only exists on the JVM
   (testing "flags-grp"
-    (is (nil?                                              (flags-grp nil)))
-    (is (nil?                                              (flags-grp #{})))
-    (is (nil?                                              (flags-grp nil nil)))
-    (is (nil?                                              (flags-grp #{} nil)))
-    (is (=' #""                                            (flags-grp nil #"")))
-    (is (=' #""                                            (flags-grp #{} #"")))
-    (is (=' #"(?:.*)"                                      (flags-grp nil #".*")))
-    (is (=' #"(?:.*)"                                      (flags-grp #{} #".*")))
-    (is (=' #""                                            (flags-grp #{\i} #"")))     ; Optimisation
-    (is (=' #"(?i:.*)"                                     (flags-grp #{\i} #".*")))
-    (is (=' #"(?im:.*)"                                    (flags-grp "mi" #".*")))    ; String flags are not officially documented, but we test it anyway
-    (is (=' #""                                            (flags-grp #{\m \i} #"")))  ; Optimisation
-    (is (=' #"(?ix:.*)"                                    (flags-grp #{\x \i} #".*")))
-    (is (=' #"(?:.*)"                                      (flags-grp nil #"" #".*")))
-    (is (=' #"(?:foo.*)"                                   (flags-grp #{} #"foo" #".*")))
-    (is (=' #"(?Uiu:Apache(\s+Software)?(\s+Licen[cs]e)?)" (flags-grp #{\u \i \U} "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))))
+    (is (nil?                                             (flags-grp nil)))
+    (is (nil?                                             (flags-grp "")))
+    (is (nil?                                             (flags-grp " ")))
+    (is (nil?                                             (flags-grp "\n")))
+    (is (nil?                                             (flags-grp "\n   \r\n  \t ")))
+    (is (nil?                                             (flags-grp nil nil)))
+    (is (nil?                                             (flags-grp "" nil)))
+    (is (nil?                                             (flags-grp " " nil)))
+    (is (nil?                                             (flags-grp "\n" nil)))
+    (is (nil?                                             (flags-grp "\n   \r\n  \t " nil)))
+    (is (nil?                                             (flags-grp nil #"")))
+    (is (nil?                                             (flags-grp nil #".*")))
+    (is (nil?                                             (flags-grp nil #"ab" #"cd")))
+    (is (nil?                                             (flags-grp ""  #"foo" #".*")))
+    (is (nil?                                             (flags-grp "  " #"")))
+    (is (=' #"(?i:)"                                      (flags-grp "i" #"")))
+    (is (=' #"(?i:)"                                      (flags-grp "i" #"")))
+    (is (=' #"(?i:.*)"                                    (flags-grp "i" #".*")))
+    (is (=' #"(?im:.*)"                                   (flags-grp "mi" #".*")))
+    (is (=' #"(?im:)"                                     (flags-grp "mi" #"")))
+    (is (=' #"(?im:Apache(\s+Software)?(\s+Licen[cs]e)?)" (flags-grp "mi" "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?")))
+    (is (thrown? #?(:clj  java.util.regex.PatternSyntaxException
+                    :cljs js/SyntaxError)                  (flags-grp "42" #".*")))))
 
 (deftest opt-variant-tests
   (testing "opt"
@@ -760,21 +703,20 @@
   [re s]
   (boolean (re-find re s)))
 
-; From here on down we only test on ClojureJVM, as JavaScript's regex engine is rubbish (e.g. no inline modifiers)
 #?(:clj
 (deftest composite-tests
   ; The following regex ends up being ~300 characters long, partly because of the sheer number of times the words
   ; "Lesser" and "Library" appear in it (in order to implement the nested alt/or)
   (let [lorl-re (or-grp "Lesser" "Library" (alt-grp #"\s*/\s*" #"\s+or\s+"))
-        lgpl-re (flags-grp #{\u \i \U}
-                  (join
-                    #"(?<!\w)"
+        lgpl-re (join
+                  #"(?<!\w)"
+                  (flags-grp "i"
                     (alt-ncg "lgpl"
                       "LGPL"
                       (join "GNU" #"\s+" lorl-re #"\s+" "GPL")
                       (join "GNU" #"\s+" lorl-re)
-                      (join lorl-re #"\s+" "GPL"))
-                    #"(?!\w)"))]
+                      (join lorl-re #"\s+" "GPL")))
+                  #"(?!\w)")]
     (testing "Matching tests"
       ; Matches
       (is (true?  (matches? lgpl-re "LGPL")))

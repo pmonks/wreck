@@ -27,4 +27,5 @@
                                            :tag                  (tc/git-tag-or-hash)}
                         :issue-management {:system "github" :url "https://github.com/pmonks/wreck/issues"}}
          :test-deps    {'net.cgrand/macrovich {:mvn/version "0.2.2"}}
-         :codox        {:metadata         {:doc/format :markdown}}))
+         :codox        {:namespaces ['wreck.api]
+                        :metadata   {:doc/format :markdown}}))

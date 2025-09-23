@@ -11,7 +11,7 @@
 [![License](https://img.shields.io/github/license/pmonks/wreck.svg)](https://github.com/pmonks/wreck/blob/release/LICENSE) 
 ![Maintained](https://badges.ws/badge/?label=maintained&value=yes,+at+author's+discretion)
 
-A micro-library for Clojure(Script) that provides a selection of regular expression (regex) functions, mostly focused on ease of composition.  It has no dependencies, other than on Clojure, and emits standard Clojure regex objects, so is fully compatible with Clojure's built-in regex functions (it does not use any JVM-specific or JavaScript-specific regex syntax itself, though is compatible with platform-specific regexes, if you're using those).
+A micro-library for Clojure(Script) that provides a selection of regular expression (regex) functions, mostly focused on ease of composition.  It has no dependencies, other than on Clojure, and emits standard Clojure regex objects, so is fully compatible with Clojure's built-in regex functions ([`re-matches`](https://clojuredocs.org/clojure.core/re-matches), [`re-find`](https://clojuredocs.org/clojure.core/re-find), [`re-seq`](https://clojuredocs.org/clojure.core/re-seq), etc.).  It also doesn't make use of any JVM-specific or JavaScript-specific regex syntax, though it is fully compatible with platform-specific regexes, if you're using those.
 
 The library is _not_ intended to provide a comprehensive functional alternative for constructing regexes - knowledge of regex syntax remains necessary.  Instead it is intended to assist in constructing syntactically valid large regexes by composing smaller regexes together in well-defined ways.
 
@@ -35,15 +35,17 @@ I have other projects that perform complex text processing and in some cases hav
 > [!IMPORTANT]  
 > `wreck` is primarily intended to be used to construct long-lived regex objects once (e.g. at load time), and YMMV if you're constructing large regexes dynamically.  This is because it repeatedly round trips regex objects to `String`s and back during the construction process, since Clojure regex objects don't natively support concatenation.  This can generate a substantial number of shortlived objects on the heap, which can have garbage collection implications (though generational garbage collectors, such as the JVM's, tend to handle this case well).
 
+### Regex flags
+
+Regex flags are a thorny corner case with regexes, in that they're both highly platform specific, and (in their usual usage) don't compose properly because of their global nature (and regex composition is the entire point of `wreck`).  As a result `wreck` makes the opinionated design choice to automatically and aggressively convert all flags it finds to embedded flag groups (e.g. `(?i)[abc]+` becomes `(?i:[abc]+)`), as these groups scope the effect of the flag(s) and are therefore far easier to reason about during regex composition.  This is done using the [`embed-flags`](https://pmonks.github.io/wreck/wreck.api.html#var-embed-flags) function, which you might also use explicitly if you have a 3rd party regex (e.g. from a library), don't know if it has flags or not, and want to use the same logic `wreck` uses to embed any flags it might have.
+
+However when constructing regexes from scratch, **it is strongly recommended that you _only_ use the [`flags-grp`](https://pmonks.github.io/wreck/wreck.api.html#var-flags-grp) function**.  It directly creates an embedded flag group, avoiding any guesswork about `wreck`'s automatic embedding logic, or the scope of the flag(s).
+
 > [!IMPORTANT]  
-> While Clojure(Script) regex literals don't support setting flags directly (and so their use is rare), `wreck` does take them into account if a regex happens to have been constructed with flags (e.g. the regex was constructed via host interop).  On the JVM flags will be converted into an embedded equivalent where possible (the `LITERAL` and `CANON-EQ` flags have no embedded equivalent), while on JavaScript flags will be silently dropped (since JavaScript's regex engine doesn't support embedded flags).
-> 
-> While the foolproof approach is to simply not use flags at all, that may not be practical and if you must use flags:
->
-> * On the JVM you should only use embedded flags that are within a non-capturing group (e.g. `#"(?i:[abc]+)"`) - this ensures that the flags are scoped correctly, especially if they're used to compose a larger regex.  [`flags-grp`](https://pmonks.github.io/wreck/wreck.api.html#var-flags-grp) is provided for this purpose.
-> * On JavaScript you should avoid using flags in regexes that are then used to compose a larger regex, and instead only set the flags once (using [`set-flags`](https://pmonks.github.io/wreck/wreck.api.html#var-set-flags)), on the final, fully composed regex.  If you happen to use a regex with flags to compose a larger regex, those flags will be silently dropped, and to preserve them (in order to set them again later), use [`flags`](https://pmonks.github.io/wreck/wreck.api.html#var-flags) to store them first.
->
-> Be especially cognizant of the risks involved in using 3rd party regexes (e.g. returned from other libraries) to compose a larger regex.  While this _should_ Just Work™ on the JVM (where `wreck` uses [`embed-flags`](https://pmonks.github.io/wreck/wreck.api.html#var-embed-flags) internally for this purpose), on JavaScript any flags these regexes contain will be silently dropped unless you take explicit steps to save them and set them after composition is complete.
+> The JVM has 2 flags that can only be set globally (but cannot be embedded), and JavaScript has 5.  `wreck` very deliberately does not provide functionality to set global flags on regexes, because of the difficulties they create during regex composition.  If you have a use case that cannot be satisfied any way except with one of these non-embeddable flags, you can fallback on interop to set them (Clojure itself does not provide such a mechanism either).  Such flags must be applied at the very end of regex composition, after all `wreck` functions have been applied (since `wreck` functions aggressively remove such flags).
+
+> [!WARNING]  
+> [ClojureScript appears to have a JS code generation bug](https://ask.clojure.org/index.php/14717/possible-clojurescript-corner-regex-literal-compilation) in the logic that emulates support for JVM-style (`(?i)`) embedded flags (JavaScript does _not_ natively support embedded flags of this form).  This bug manifests as a JavaScript syntax error at runtime (the JavaScript code generated by ClojureScript is syntactically invalid).  Be aware if you happen to be constructing regexes using JVM-style embedded flags (and better yet, use the [`flags-grp`](https://pmonks.github.io/wreck/wreck.api.html#var-flags-grp) function instead).
 
 ### Trying it Out
 
@@ -176,19 +178,19 @@ $ deps-try com.github.pmonks/wreck
 (def lorl-re (re/or-grp "Lesser" "Library" (re/alt-grp #"\s*/\s*" #"\s+or\s+")))
 ;=> #"(?:Lesser(?:\s*/\s*|\s+or\s+)Library|Library(?:\s*/\s*|\s+or\s+)Lesser|Lesser|Library)"
 
-(def lgpl-re (re/flags-grp #{\u \i \U}                           ; Flags group
-               (re/join
-                 #"(?<!\w)"                                      ; Prefix fragment
-                 (re/alt-ncg "lgpl"                              ; Alternations, ncg'ed
-                   "LGPL"                                        ; LGPL literal (string)
-                   (re/join "GNU" #"\s+" lorl-re #"\s+" "GPL")   ; GNU <lorl regex> GPL
-                   (re/join "GNU" #"\s+" lorl-re)                ; GNU <lorl regex>
-                   (re/join lorl-re #"\s+" "GPL"))               ; <lorl regex> GPL
-                 #"(?!\w)")))                                    ; Suffix fragment
-;=> #"(?Uiu:(?<!\w)(?<lgpl>LGPL|GNU\s+(?:Lesser(?:\s*/\s*|\s+or\s+)Library|Library(?:\s*/\s*|
+(def lgpl-re (re/join
+               #"(?<!\w)"                                       ; No word character before
+               (re/flags-grp "i"                                ; Flags (in a group)
+                 (re/alt-ncg "lgpl"                             ; Alternations, in a NCG
+                   "LGPL"                                       ; LGPL literal (string)
+                   (re/join "GNU" #"\s+" lorl-re #"\s+" "GPL")  ; GNU <lorl regex> GPL
+                   (re/join "GNU" #"\s+" lorl-re)               ; GNU <lorl regex>
+                   (re/join lorl-re #"\s+" "GPL")))             ; <lorl regex> GPL
+               #"(?!\w)"))                                      ; No word character after
+;=> #"(?<!\w)(?i:(?<lgpl>LGPL|GNU\s+(?:Lesser(?:\s*/\s*|\s+or\s+)Library|Library(?:\s*/\s*|
 ;=>   \s+or\s+)Lesser|Lesser|Library)\s+GPL|GNU\s+(?:Lesser(?:\s*/\s*|\s+or\s+)Library|Library
 ;=>   (?:\s*/\s*|\s+or\s+)Lesser|Lesser|Library)|(?:Lesser(?:\s*/\s*|\s+or\s+)Library|Library
-;=>   (?:\s*/\s*|\s+or\s+)Lesser|Lesser|Library)\s+GPL)(?!\w))"
+;=>   (?:\s*/\s*|\s+or\s+)Lesser|Lesser|Library)\s+GPL))(?!\w)"
 
 ; Which would you rather maintain?  😉
 ```

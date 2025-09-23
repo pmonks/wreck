@@ -32,208 +32,107 @@
     JavaScript's problematic implementation, but because it's fundamentally
     lossy there are some cases that (on ClojureScript only) may change your
     regexes in unexpected (though _probably_ not semantically significant) ways.
-  * Regex flags (which aren't natively supported by Clojure's regex literals, so
-    may be uncommon) are supported to the best ability of the library, but
-    please carefully review the [usage notes in README.md](https://github.com/pmonks/wreck?tab=readme-ov-file#usage)
-    for various caveats, especially on ClojureScript."
+  * Regex flags are supported to the best ability of the library, but please
+    carefully review the [usage notes in README.md](https://github.com/pmonks/wreck?tab=readme-ov-file#regex-flags)
+    for various caveats when flags are used."
   (:require [clojure.string :as s]
+            [wreck.impl     :as wi]
+   #?(:cljs [clojure.set    :as set])
    #?(:cljs [goog.object])))
 
 
-;; FUNDAMENTAL PRIMITIVES
+;; FLAGS HANDLING
 
-#?(:cljs
-; We have to do this chicanery because regexes and strings don't round-trip in JavaScript  🙄
-; This awful code is a best effort to handle this lunacy.
+; Note: the set of embeddable flag characters on JavaScript was determined
+; empirically, by running this code on node.js with each flag character one at
+; a time:
 ;
-; Some examples of how much of a 🤡show JavaScript regexes are:
+;   (new RegExp()).compile("(?<flagChar>:.*");
 ;
-;   (str (re-pattern #""))                    =>  "/(?:)/"
-;   (str (re-pattern "foo"))                  =>  "/foo/"
-;   (str (re-pattern "foo/bar"))              =>  "/foo\\/bar/"
-;   (str (re-pattern "foo\\/bar"))            =>  "/foo\\/bar/"
-;   (str (re-pattern (str (re-pattern ""))))  =>  "/\\/(?:)\\//"
-(defn- js-re-str
-  "`clojure.core/str` but with better support for JavaScript's appalling RegExp
-  class.
+; While (at the time of writing) the full set of official JavaScript regex flag
+; characters is `digmsuvy`, only `ims` were found to be embeddable.  `u` and `v`
+; were also separately found to be mutually exclusive (they cannot be used
+; together).
+;
+; Note also that ClojureScript complicates matters by (attempting) to add
+; support for JVM-style ungrouped embedded flags (e.g. `(?i).*`).  This is NOT
+; natively supported by JavaScript however, and it appears that the
+; ClojureScript logic that handles the conversion sometimes emits invalid
+; JavaScript code - see https://ask.clojure.org/index.php/14717/possible-clojurescript-corner-regex-literal-compilation
 
-  Note:
+#?(:clj
+; On the JVM, flags are bit masks (ints)
+(def ^:private non-embeddable-flags (set (filter identity (map (fn [[k v]] (when (nil? v) k)) wi/flag->embedded-char))))
+:cljs
+; On JavaScript, flags are characters
+(def ^:private embeddable-flags #{\i \m \s}))
 
-  * Silently drops any flags in the regex."
-  [o]
-  (when o
-    (if (not= js/RegExp (type o))
-      (str o)
-      (let [src (goog.object/get o "source")]  ; Remove leading and trailing "/" (inserted by JavaScript's idiotic RegExp class)
-        (-> src
-            (s/replace "(?:)" "")              ; Remove redundant capturing groups (inserted by JavaScript's idiotic RegExp class when a regex is blank)
-            (s/replace "\\/"  "/")))))))       ; Remove redundant escapings of "/" (inserted by JavaScript's idiotic RegExp class)
-
-(defn raw-flags
-  "Returns the raw, platform specific flags in `re`. On the JVM this is an
-  `int`, on JavaScript this is a `String`.  If `re` has no flags, or `re` is not
-  a regex, returns `nil`.
-
-  ⚠️ Because this function has platform specific behaviour, it is _strongly_
-  recommended that callers use [[flags]] instead (that function is _not_
-  platform specific, at least in its contract).  The one reasonable exception to
-  this guideline is on the JVM, in the narrow case where a caller needs to check
-  for a non-embeddable flag (as of JVM 25, `LITERAL` and `CANON_EQ`) - in that
-  case [[flags]] throws, which may be a hindrance.
+(defn has-non-embeddable-flags?
+  "Does `re` have non-embeddable flags?
 
   Notes:
 
-  * the JVM considers _some but not all_ embedded flags as flags. See the unit
-    tests for details."
+  * On the JVM, the only non-embeddable flags are the programmatic flags
+    `LITERAL` and `CANON_EQ`.
+  * On JavaScript, this is every flag _except_ `i`, `m`, and `s`."
   [re]
+  (if-let [flgs (wi/raw-flags re)]
 #?(:clj
-  (when (= (type re) java.util.regex.Pattern)
-    (let [f (.flags ^java.util.regex.Pattern re)]
-      (if (= f 0)
-        nil
-        f)))
-   :cljs
-  (when (= (type re) js/RegExp)
-    (let [f (goog.object/get re "flags")]  ; Note: JavaScript always returns flags in sorted order, regardless of their order at RegExp construction time
-      (if (= f "")
-        nil
-        f)))))
+    (loop [[f & r] non-embeddable-flags]
+      (if-not f
+        false
+        (if (bit-and flgs f)
+          true
+          (recur r))))
+  :cljs
+    (let [flag-set (-> flgs
+                       seq
+                       set)]
+      (boolean (seq (set/difference flag-set embeddable-flags)))))
+    false))  ; re did not contain any flags
 
-(defn has-flags?
-  "Does `re` have any flags?
-
-  Notes:
-
-  * returns `false` if `re` is not a regex
-  * the JVM considers _some but not all_ embedded flags as flags. See the unit
-    tests for details."
-  [re]
-  (boolean (raw-flags re)))
-
-#?(:clj
-(def ^:private flag->embedded-char {
-  java.util.regex.Pattern/UNIX_LINES              \d     ; 1
-  java.util.regex.Pattern/CASE_INSENSITIVE        \i     ; 2
-  java.util.regex.Pattern/COMMENTS                \x     ; 4
-  java.util.regex.Pattern/MULTILINE               \m     ; 8
-  java.util.regex.Pattern/LITERAL                 nil    ; 16   ; No embedded equivalent
-  java.util.regex.Pattern/DOTALL                  \s     ; 32
-  java.util.regex.Pattern/UNICODE_CASE            \u     ; 64
-  java.util.regex.Pattern/CANON_EQ                nil    ; 128  ; No embedded equivalent
-  java.util.regex.Pattern/UNICODE_CHARACTER_CLASS \U}))  ; 256
-
-(defn flags
-  "Returns the flags for `re` as a set of characters, or `nil` if `re` doesn't
-  have any or is not a regex.
-
-  Notes:
-
-  * on the JVM, flags that don't have an embedded equivalent (as of JVM 25,
-    `LITERAL` and `CANON_EQ`) will cause an `ex-info` to be thrown. If you
-    specifically need to handle these flags, [[raw-flags]] may be useful but it
-    should only be used as a last resort as its behaviour is platform specific.
-  * the JVM considers _some but not all_ embedded flags as flags. See the unit
-    tests for details."
-  [re]
-  (when-let [flgs (raw-flags re)]
-#?(:cljs
-      ; JavaScript flags are a string, so we can just seq it directly
-    (set (seq flgs))
-   :clj
-    ; JVM flags are a bit set (int), so we have to manually determine the characters
-    (let [chs (filter identity
-                      (map (fn [[bit ch]]
-                             (when-not (zero? (bit-and flgs bit))
-                               (or ch (throw (ex-info "regex has flag with no embedded equivalent"
-                                                      (merge {:regex         re
-                                                              :flags         flgs
-                                                              :problem-flag  bit}
-                                                             (case (int bit)
-                                                               16  {:problem-flag-name "LITERAL"}
-                                                               128 {:problem-flag-name "CANON_EQ"}
-                                                               {:problem-flag-name "unknown"})))))))
-                           flag->embedded-char))]
-      (set chs)))))
-
-(defn set-flags
-  "Sets the flags on `re` to `flgs` (a set of flag characters, such as those
-  returned by [[flags]] - may also be `nil` to strip all flags), returning a new
-  regex.  All existing flags in `re` are replaced.  Returns `nil` if `re` is
-  `nil`.
-
-  ⚠️ Because this function has platform specific behaviour, its use is
-  discouraged.
-
-  On the JVM, it's _strongly_ recommended to use [[flags-grp]] instead of this
-  function, since that gives explicit control over how multiple regexes with
-  different flag sets compose together.
-
-  On JavaScript there's no choice - JavaScript's regex engine doesn't support
-  embedded flags so flags always apply globally.  It is therefore recommended to
-  keep flags out of regex fragments used for composition entirely, and only
-  settings flags (if needed) globally to the final, fully composed regex, using
-  this function.
-
-  Note:
-
-  * Throws if `flgs` contains invalid flag characters.
-  * On the JVM, all programmatic AND embedded flags in the regex will be
-    removed, except embedded flags that appear in a non-capturing group (those
-    will be retained, since the JVM doesn't consider them to be 'flags').
-  * On the JVM, the flags will be set via a non-capturing group at the start of
-    the regex that encloses the entire thing.  This ensures that regexes with
-    flags can be safely combined with other regexes with different flags, with
-    correct scoping of each regex's flags.  It also means that flags do _not_
-    round-trip between [[flags]] and [[set-flags]] (unlike on JavaScript).
-  * On JavaScript, the flags will be set programmatically (i.e. globally for the
-    entire regex), since JavaScript's regex engine doesn't support embedded
-    flags of any kind (and therefore flags can't be scoped to subsets of a
-    regex).  This is obviously a problem if you're trying to compose regexes
-    that have mutually exclusive flags."
-  [re flgs]
-  (when re
-    ; Notes:
-    ; * We sort the flags before joining, to ensure consistent flag strings (important for equality)
-#?(:clj
-    (let [raw-re (s/replace (str re) #"\(\?[Udimsux]+\)" "")]  ; Strip any embedded flags
-      (if-let [flgs (seq flgs)]
-        (re-pattern (str "(?" (s/join (sort flgs)) ":" raw-re ")"))
-        (re-pattern raw-re)))
-   :cljs
-    (let [raw-re (js-re-str re)]
-      (if-let [flgs (seq flgs)]
-        (doto (js/RegExp.)
-              (.compile raw-re (s/join (sort flgs))))
-        (re-pattern raw-re))))))
-
-#?(:clj
 (defn embed-flags
   "Embeds any flags found in `re` at the start of `re` in a non-capturing group
   (to ensure scoping), returning a new regex.  Returns `re` if `re` contains no
   flags or is `nil`.
 
-  For example `#\"(?i)[abc]+\"` would become `#\"(?i:[abc]+)\"`.
+  For example, on the JVM `#\"(?i)[abc]+\"` would become `#\"(?i:[abc]+)\"`.
+
+  Similarly, on ClojureScript `(doto (js/RegExp.) (.compile \"[abc]+\" \"i\"))`
+  would also become `#\"(?i:[abc]+)\"`.
 
   Note:
 
-  * This function is only available on the JVM. JavaScript's regex engine does
-    not support embedded flags.
-  * This function is primarily intended for internal use by `wreck`, but is
-    useful in those rare cases where Clojure code receives a 3rd party regex,
-    wishes to use it as part of composing a larger regex, and doesn't know if it
-    contains flags or not.  In all other cases, [[flags-grp]] is a better
-    choice.
-  * Embedded flags in the middle of `re` will be moved to the beginning of the
-    regex.  This may alter the semantics of the regex - for example `a(?i)b`
-    will become `(?i:ab)`, which means that `a` will be matched case-
-    insensitively by the result, which is _not_ the same as the original (which
-    matches lower-case `a` only). This is an unavoidable consequence of how the
-    JVM regex engine reports embedded flags.  If you really need to use an
-    embedded flag midway through a regex, use [[flags-grp]]."
+  * **[[flags-grp]] is almost always a better choice than this function!**
+    `embed-flags` is primarily intended for internal use by `wreck`, but may be
+    useful in those rare cases where Clojure(Script) code receives a 3rd party
+    regex, wishes to use it as part of composing a larger regex, doesn't
+    know if it contains flags or not, and doesn't care that non-embeddable flags
+    will be silently dropped.
+  * ⚠️ On the JVM, ungrouped embedded flags in the middle of `re` will be moved
+    to the beginning of the regex.  This may alter the semantics of the regex -
+    for example `a(?i)b` will become `(?i:ab)`, which means that `a` will be
+    matched case-insensitively by the result, which is _not_ the same as the
+    original (which matches lower-case `a` only).  This is an unavoidable
+    consequence of how the JVM regex engine reports flags.  If you really need
+    to use embedded flag(s) midway through a regex, use [[flags-grp]] to ensure
+    proper scoping of the flag(s).
+  * ⚠️ On the JVM, the programmatic flags `LITERAL` and `CANON_EQ` have no
+    embeddable equivalent, and will be silently dropped by this function.  Use
+    [[has-non-embeddable-flags?]] if you need to check for the presence of
+    these flags (e.g. in a 3rd party regex).
+  * ⚠️ On JavaScript, only the flags `ims` can be embedded.  All other flags
+    will be silently dropped by this function.  Use
+    [[has-non-embeddable-flags?]] if you need to check for the presence of these
+    flags (e.g. in a 3rd party regex)."
   [re]
-  (if-let [flgs (flags re)]
-    (set-flags re flgs)
-    re)))
+  (if-let [rf (wi/raw-flags re)]  ; Check raw flags, in case we have to strip some
+    (let [f #?(:clj  (wi/flags re)
+               :cljs (s/join (set/intersection embeddable-flags (set (seq rf)))))]
+      (wi/set-flags re f))
+    re))
+
+;; FUNDAMENTAL PRIMITIVES
 
 (defn str'
   "Returns the `String` representation of `o`, with special handling for
@@ -242,37 +141,53 @@
 
   Notes:
 
-  * On the JVM will embed all flags (as per [[embed-flags]]).
-  * On JavaScript this will silently drop flags.  You may use [[flags]] and
-    [[set-flags]] in combination to preserve flags if needed, but note that
-    JavaScript only supports global flags - unlike the JVM there is no way to
-    scope flags to subsets of a regex."
+  * Embeds flags (as per [[embed-flags]])."
   [o]
   (when o
-#?(:clj
     (-> o
         embed-flags
-        str)
-  :cljs
-      (js-re-str o))))
+        wi/raw-str)))
 
 (defn ='
-  "Equality for regexes, defined by having equal `String` representations (as
-  per [[str']]) and flags (as per [[flags]]).  This means that _equivalent_
-  regexes (e.g. `#\"...\"` and `#\".{3}\"` will _not_ be considered equal."
+  "Equality for regexes, defined by having equal string representations and
+  flags (including flags that cannot be embedded).
+
+  Notes:
+
+  * Functionally equivalent regexes (e.g. `#\"...\"` and `#\".{3}\"` are _not_
+    considered `='`.
+  * Some regexes may not be `='` initially due to differing flag sets, but after
+    being run through [[embed-flags]] may become `='`, due to non-embeddable
+    flags being silently dropped (see [[embed-flags]] for details)."
   ([_] true)
   ([re1 re2]
-#?(:clj
-   (= (str' re1) (str' re2))  ; On the JVM str' embeds flags, so we don't need a separate condition to handle them
-:cljs
-   (and (= (str' re1)      (str' re2))
-        (= (raw-flags re1) (raw-flags re2)))))
+   (and (= (wi/raw-flags re1) (wi/raw-flags  re2))  ; Check flags first, because that's fast
+        (= (wi/raw-str   re1) (wi/raw-str    re2))))
   ([re1 re2 & more]
-   (if (=' re1 re2)
+   (if (=' re1 re2)  ; Naive recursion to 2-arg version of =' (which doesn't recurse further)
      (if (next more)
        (recur re2 (first more) (rest more))
-       (=' re2 (first more)))
+       (=' re2 (first more)))  ; Naive recursion to 2-arg version of =' (which doesn't recurse further)
      false)))
+
+(defn- distinct'
+  "Similar to `clojure.core/distinct`, but non-lazy, and uses the regex
+  representation of each element (e.g. `0`, `\"0\"`, and `#\"0\"` would all be
+  considered identical).
+
+  Notes:
+
+  * Unlike `clojure.core/distinct`, returns `nil` if the result is empty."
+  [res]
+  (when res
+    (loop [[f & r] res
+           result  []
+           seen    #{}]
+      (if-not f
+        (seq result)
+        (let [f-str      (str' f)
+              new-result (if (contains? seen f-str) result (conj result f))]
+          (recur r new-result (conj seen f-str)))))))
 
 (defn empty?'
   "Is `re` `nil` or `(=' #\"\")`?
@@ -292,7 +207,7 @@
 
   Notes:
 
-  * In ClojureScript be cautious about using numbers in these calls, since
+  * ⚠️ In ClojureScript be cautious about using numbers in these calls, since
     JavaScript's number handling is a 🤡show.  See the unit tests for examples."
   [& res]
   (when-let [res (seq (filter identity res))]
@@ -333,25 +248,6 @@
   (when re
     (join "\\Q" re "\\E")))
 
-;; Internal implementation details
-
-(defn- distinct'
-  "Similar to `clojure.core/distinct`, but non-lazy, and uses the regex
-  representation of each element (e.g. `0`, `\"0\"`, and `#\"0\"` would all be
-  considered identical).
-
-  Notes: unlike `clojure.core/distinct`, returns `nil` if the result is empty."
-  [res]
-  (when res
-    (loop [[f & r] res
-           result  []
-           seen    #{}]
-      (if-not f
-        (seq result)
-        (let [f-str      (str' f)
-              new-result (if (contains? seen f-str) result (conj result f))]
-          (recur r new-result (conj seen f-str)))))))
-
 
 ;; GROUPS
 
@@ -382,27 +278,36 @@
     (when-let [res (seq (filter identity res))]
       (join "(?<" nm ">" (apply join res) ")"))))  ; Note: don't optimise empty named capturing groups, because that will throw out code that indexes into capturing groups
 
-
-#?(:clj
 (defn flags-grp
-  "As for [[grp]], but prefixes the group with `flgs` (a set of regex flag
-  characters, such as those returned by [[flags]]).  See the ['special
-  constructs' section of the `java.util.regex.Pattern` JavaDoc](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/regex/Pattern.html#special)
-  for the set of valid flag characters.
+  "As for [[grp]], but prefixes the group with `flgs` (a `String`). Returns
+  `nil` if `flgs` is `nil` or empty.  Throws if `flgs` contains an invalid flag
+  character, including those that (ClojureScript only) cannot be embedded.
 
   Notes:
 
-  * This function is only available on the JVM. JavaScript's regex engine does
-    not support embedded flags."
+  * If you must use regex flags, **it is STRONGLY RECOMMENDED that you use this
+    function!**  Programmatically set flags and ungrouped embedded flags (e.g.
+    `(?i)`) have no explicit scope and so cannot be reliably used to compose
+    larger regexes.  `wreck` makes a best effort to always convert such
+    'unscoped' flags into their embedded equivalents when composing larger
+    regexes (via [[embed-flags]]), but using flag groups explicitly in the
+    first place is easier to reason about and avoids potential footguns.
+  * Removes any ungrouped embedded flags in `re` (e.g. `(?i)ab`), but unlike
+    [[embed-flags]] does _not_ check that they appear in `flgs`.
+  * ⚠️ On the JVM, ungrouped embedded flags _in the middle of `re`_ will also be
+    removed, which may alter the semantics of the regex.
+  * ⚠️ On JavaScript, only the flags `ims` can be embedded (this is a limitation
+    of the JavaScript regex engine).  Other flags will result in a
+    `js/SyntaxError` being thrown.
+  * For the JVM, see the ['special constructs' section of the
+    `java.util.regex.Pattern` JavaDoc](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/regex/Pattern.html#special)
+    for the set of valid flag characters.
+  * For JavaScript, see the [`RegExp` flags reference](https://www.w3schools.com/js/js_regexp_flags.asp)
+    for the set of valid flag characters."
   [flgs & res]
-  (if-not (seq flgs)
-    (apply grp res)  ; Default to grp if no flags provided
+  (when-not (s/blank? flgs)
     (when-let [res (seq (filter identity res))]
-      ; Here we optimise out an empty non-capturing group
-      (let [exp (apply join res)]
-        (if (empty?' exp)
-          #""
-          (join "(?" (s/join (sort flgs)) ":" exp ")")))))))
+      (wi/set-flags (apply join res) flgs))))
 
 ;; OPTIONAL
 

@@ -4,7 +4,7 @@
 ; To run the tests:
 ;
 ;  $ npx shadow-cljs compile test
-;  $ node target/cljs/api-test-node.js
+;  $ node --enable-source-maps target/cljs/api-test-node.js
 ;
 
 {:source-paths
@@ -17,4 +17,4 @@
  :builds
   {:test
    {:target    :node-test
-    :output-to "target/cljs/api-test-node.js"}}}
+    :output-to "target/cljs/unit-tests.js"}}}

@@ -50,13 +50,14 @@ jobs:
           java-version: 24           # shadow-cljs depends on the JVM
       - uses: actions/setup-node@v5
         with:
-          node-version: 'lts/*'
+          node-version: '>=24'
+          check-latest: true
       - name: Compile unit tests
         run: |
           npm install source-map-support
           npx shadow-cljs compile test
       - name: Run unit tests (ClojureScript)
-        run: node --enable-source-maps target/cljs/api-test-node.js
+        run: node --enable-source-maps target/cljs/unit-tests.js
 
   # Adapted from https://brunoscheufler.com/blog/2022-04-09-the-required-github-status-check-that-wasnt
   after_ci_matrix:

@@ -1,7 +1,7 @@
 {
   "name": "wreck",
   "version": "1.0.x",
-  "description": "A micro-library for Clojure(Script) that provides regular expression construction functions. ",
+  "description": "A micro-library for Clojure(Script) that provides regular expression construction functions.",
   "main": "index.js",
   "directories": {
     "test": "test"
