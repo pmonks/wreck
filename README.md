@@ -11,9 +11,9 @@
 [![License](https://img.shields.io/github/license/pmonks/wreck.svg)](https://github.com/pmonks/wreck/blob/release/LICENSE) 
 ![Maintained](https://badges.ws/badge/?label=maintained&value=yes,+at+author's+discretion)
 
-A micro-library for Clojure(Script) that provides a selection of regular expression (regex) functions, mostly focused on ease of composition.  It has no dependencies, other than on Clojure, and emits standard Clojure regex objects, so is fully compatible with Clojure's built-in regex functions ([`re-matches`](https://clojuredocs.org/clojure.core/re-matches), [`re-find`](https://clojuredocs.org/clojure.core/re-find), [`re-seq`](https://clojuredocs.org/clojure.core/re-seq), etc.).  It also doesn't make use of any JVM-specific or JavaScript-specific regex syntax, though it is fully compatible with platform-specific regexes, if you're using those.
+A micro-library for Clojure(Script) that provides a selection of regular expression (regex) functions, mostly focused on ease of composition.  It has no dependencies, other than on Clojure, and emits standard Clojure regex objects, so is fully compatible with Clojure's built-in regex functions ([`re-matches`](https://clojuredocs.org/clojure.core/re-matches), [`re-find`](https://clojuredocs.org/clojure.core/re-find), [`re-seq`](https://clojuredocs.org/clojure.core/re-seq), etc.).  It also doesn't make use of any JVM-specific or JavaScript-specific regex syntax, though it is fully compatible with platform-specific regex syntax, if you're using that.
 
-The library is _not_ intended to provide a comprehensive functional alternative for constructing regexes - knowledge of regex syntax remains necessary.  Instead it is intended to assist in constructing syntactically valid large regexes by composing smaller regexes together in well-defined ways.
+The library is _not_ intended to provide a comprehensive functional alternative for constructing regexes - knowledge of regex syntax remains necessary.  Instead it is intended to assist in constructing syntactically valid large regexes by composing smaller regexes together in well-defined ways, which mostly involves making groups and alternation easier to use.
 
 It also pairs very nicely with [`rencg`](https://github.com/pmonks/rencg) - that library adds first class support for named capturing groups to Clojure (albeit the JVM flavour only).
 
