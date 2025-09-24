@@ -37,7 +37,7 @@ I have other projects that perform complex text processing and in some cases hav
 
 ### Regex flags
 
-Regex flags are a thorny corner case with regexes, in that they're both highly platform specific, and (in their usual usage) don't compose properly because of their global nature (and regex composition is the entire point of `wreck`).  As a result `wreck` makes the opinionated design choice to automatically and aggressively convert all flags it finds to embedded flag groups (e.g. `#"(?i)[abc]+"`, `/[abc]+/i`, and the programmatic JVM equivalent all get turned into `(?i:[abc]+)`), as this construct scopes the effect of the flag(s) and is therefore easier to reason about during regex composition.
+Regex flags are a thorny corner case with regexes, in that they're both highly platform specific, and (in their usual usage) don't compose properly because of their global nature (and regex composition is the entire point of `wreck`).  As a result `wreck` makes the opinionated design choice to automatically and aggressively convert all flags it finds to embedded flag groups (e.g. `#"(?i)[abc]+"`, `/[abc]+/i`, and the programmatic JVM equivalent all get turned into `#"(?i:[abc]+)"`), as this construct scopes the effect of the flag(s) and is therefore easier to reason about during regex composition.
 
 When constructing regexes from scratch, **it is strongly recommended that you use the [`flags-grp`](https://pmonks.github.io/wreck/wreck.api.html#var-flags-grp) function**, and don't programmatically set flags or use other inline flag regex syntax.  This function directly creates an embedded flag group, avoiding any guesswork about `wreck`'s automatic embedding logic, or the scope of the flag(s).
 
