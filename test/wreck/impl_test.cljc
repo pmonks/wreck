@@ -12,7 +12,7 @@
   (:require [wreck.api    :refer [=']]
    #?(:clj  [clojure.test :refer [deftest testing is]]
       :cljs [cljs.test    :refer-macros [deftest testing is]])
-            [wreck.impl   :refer [raw-flags flags set-flags]]))
+            [wreck.impl   :refer [regex? raw-flags flags set-flags]]))
 
 #?(:cljs (enable-console-print!))
 

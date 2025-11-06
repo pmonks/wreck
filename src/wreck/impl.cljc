@@ -17,6 +17,16 @@
 
 ;; FUNDAMENTAL PRIMITIVES
 
+(defn regex?
+  "Is `o` a regex?
+
+  Notes:
+
+  * ClojureScript already has a `regexp?` predicate in `cljs.core`, but
+    ClojureJVM doesn't.  See [this ask.clojure.org post](https://ask.clojure.org/index.php/1127/add-clojure-core-pattern-predicate)."
+  [o]
+  (instance? #?(:clj java.util.regex.Pattern :cljs js/RegExp) o))
+
 ; We have to do this chicanery because regexes and strings don't round-trip in JavaScript  🙄
 ; This awful code is a best effort to handle this lunacy.
 ;
@@ -33,13 +43,13 @@
 
   Note:
 
-  * Ignores all flags in the regex."
+  * Ignores all programmatic (non-embedded) flags in the regex."
   [o]
   (when o
 #?(:clj
      (str o)  ; No special handling needed on the JVM
-:cljs
-    (if (not= js/RegExp (type o))
+   :cljs
+    (if-not (regex? o)
       (str o)
       (let [src (goog.object/get o "source")]  ; Remove leading and trailing "/" (inserted by JavaScript's idiotic RegExp class)
         (-> src
@@ -51,15 +61,14 @@
   `int`, on JavaScript this is a `String`.  If `re` has no flags, or `re` is not
   a regex, returns `nil`."
   [re]
+  (when (regex? re)
 #?(:clj
-  (when (= (type re) java.util.regex.Pattern)
     (let [f (.flags ^java.util.regex.Pattern re)]
       (if (= f 0)
         nil
-        f)))
+        f))
    :cljs
-  (when (= (type re) js/RegExp)
-    (let [f (goog.object/get re "flags")]  ; Note: JavaScript always returns flags in sorted order, regardless of their order at RegExp construction time
+    (let [f (goog.object/get re "flags")]  ; Note: JavaScript always returns flags in sorted order, regardless of their order at RegExp construction time, so we don't need to sort them separately
       (if (= f "")
         nil
         f)))))
