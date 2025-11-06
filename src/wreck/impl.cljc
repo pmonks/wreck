@@ -44,14 +44,14 @@
   Note:
 
   * Ignores all programmatic (non-embedded) flags in the regex."
-  [o]
-  (when o
+  [x]
+  (when x
 #?(:clj
-     (str o)  ; No special handling needed on the JVM
+     (str x)  ; No special handling needed on the JVM
    :cljs
-    (if-not (regex? o)
-      (str o)
-      (let [src (goog.object/get o "source")]  ; Remove leading and trailing "/" (inserted by JavaScript's idiotic RegExp class)
+    (if-not (regex? x)
+      (str x)
+      (let [src (goog.object/get x "source")]  ; Remove leading and trailing "/" (inserted by JavaScript's idiotic RegExp class)
         (-> src
             (s/replace "(?:)" "")              ; Remove redundant non capturing groups (inserted by JavaScript's idiotic RegExp class when a regex is blank)
             (s/replace "\\/"  "/")))))))       ; Remove redundant escapings of "/" (inserted by JavaScript's idiotic RegExp class)

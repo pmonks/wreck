@@ -139,16 +139,16 @@
   (wi/regex? x))  ; Ideally should eliminate this redundant call
 
 (defn str'
-  "Returns the `String` representation of `o`, with special handling for
+  "Returns the `String` representation of `x`, with special handling for
   `RegExp` objects on ClojureScript in an attempt to correct JavaScript's
   **APPALLING** default stringification.
 
   Notes:
 
   * Embeds flags (as per [[embed-flags]])."
-  [o]
-  (when o
-    (-> o
+  [x]
+  (when x
+    (-> x
         embed-flags
         wi/raw-str)))
 
