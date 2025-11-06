@@ -129,14 +129,14 @@
 ;; FUNDAMENTAL PRIMITIVES
 
 (defn regex?
-  "Is `o` a regex?
+  "Is `x` a regex?
 
   Notes:
 
   * ClojureScript already has a `regexp?` predicate in `cljs.core`, but
     ClojureJVM doesn't.  See [this ask.clojure.org post](https://ask.clojure.org/index.php/1127/add-clojure-core-pattern-predicate)."
-  [o]
-  (wi/regex? o))  ; Ideally should eliminate this redundant call
+  [x]
+  (wi/regex? x))  ; Ideally should eliminate this redundant call
 
 (defn str'
   "Returns the `String` representation of `o`, with special handling for
