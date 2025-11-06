@@ -187,7 +187,8 @@ $ deps-try com.github.pmonks/wreck
 
 ; "Lesser" or "Library", but in any order, or either word by itself, with either a forward
 ; slash or the word "or" as a separator
-(def lorl-re (re/or-grp "Lesser" "Library" (re/alt-grp (re/join ows "/" ows) (re/join mws "or" mws))))
+(def lorl-re (re/or-grp "Lesser" "Library" (re/alt-grp (re/join ows "/" ows)
+                                                       (re/join mws "or" mws))))
 ;=> #"(?:Lesser(?:[\s\p{IsWhitespace}]*/[\s\p{IsWhitespace}]*|[\s\p{IsWhitespace}]+or[/s
 ;=>   \p{IsWhitespace}]+)Library|Library(?:[\s\p{IsWhitespace}]*/[\s\p{IsWhitespace}]*|[/s
 ;=>   \p{IsWhitespace}]+or[\s\p{IsWhitespace}]+)Lesser|Lesser|Library)"
