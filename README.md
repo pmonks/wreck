@@ -90,6 +90,10 @@ $ deps-try com.github.pmonks/wreck
                                               ; expression
 ;=> #"[\p{Punct}\p{Space}]+"
 
+(re/oom (re/chcl #"\p{Punct}\p{Space}"))      ; But this is a better way to build this
+                                              ; particular regex
+;=> #"[\p{Punct}\p{Space}]+"
+
 ; Because equality isn't defined for regexes in Clojure
 (re/=' #"ab" (re/join #"a" #"b"))
 ;=> true
