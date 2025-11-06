@@ -90,10 +90,6 @@ $ deps-try com.github.pmonks/wreck
                                               ; expression
 ;=> #"[\p{Punct}\p{Space}]+"
 
-(re/oom (re/chcl #"\p{Punct}\p{Space}"))      ; But this is a better way to build this
-                                              ; particular regex
-;=> #"[\p{Punct}\p{Space}]+"
-
 ; Because equality isn't defined for regexes in Clojure
 (re/=' #"ab" (re/join #"a" #"b"))
 ;=> true
@@ -115,6 +111,13 @@ $ deps-try com.github.pmonks/wreck
                                                  ; most of the variants shown next. They also
                                                  ; (like join) support regexes, strings, and
                                                  ; other data types
+
+(re/flags-grp "i" #"[abc]+")
+;=> #"(?i:[abc]+)"  ; Flag groups, which apply a regex flag in a scoped manner
+
+(re/chcl #"\p{Punct}" #"\p{Space}")
+;=> #"[\p{Punct}\p{Space}]"  ; While not a "group" per say, character classes are conceptually
+                             ; similar
 
 
 ;; Cardinality
@@ -174,24 +177,25 @@ $ deps-try com.github.pmonks/wreck
 ; variants, none of the logical operator grouping variants are variadic
 
 
-;; A more complex example that composes a longer regex from just a few easy-to-read statements
-;; (from the unit tests)
+;; A more complex JVM-specific example that composes a longer regex from just a few easy-to-
+;; read statements (from the unit tests)
 
-; Whitespace - ASCII or Unicode
-(def ws  (re/chcl #"\s\p{IsWhitespace}"))
-;=> #"[\s\p{IsWhitespace}]"
+; Whitespace - ASCII & Unicode (likly redundant, though Unicode categories can be surprising)
+(def ws  (re/chcl #"\p{Space}\p{IsWhitespace}"))
+;=> #"[\p{Space}\p{IsWhitespace}]"
 (def ows (re/zom ws))
-;=> #"[\s\p{IsWhitespace}]*"
+;=> #"[\p{Space}\p{IsWhitespace}]*"
 (def mws (re/oom ws))
-;=> #"[\s\p{IsWhitespace}]+"
+;=> #"[\p{Space}\p{IsWhitespace}]+"
 
 ; "Lesser" or "Library", but in any order, or either word by itself, with either a forward
 ; slash or the word "or" as a separator
 (def lorl-re (re/or-grp "Lesser" "Library" (re/alt-grp (re/join ows "/" ows)
                                                        (re/join mws "or" mws))))
-;=> #"(?:Lesser(?:[\s\p{IsWhitespace}]*/[\s\p{IsWhitespace}]*|[\s\p{IsWhitespace}]+or[/s
-;=>   \p{IsWhitespace}]+)Library|Library(?:[\s\p{IsWhitespace}]*/[\s\p{IsWhitespace}]*|[/s
-;=>   \p{IsWhitespace}]+or[\s\p{IsWhitespace}]+)Lesser|Lesser|Library)"
+;=> #"(?:Lesser(?:[\p{Space}\p{IsWhitespace}]*/[\p{Space}\p{IsWhitespace}]*|[\p{Space}
+;=>   \p{IsWhitespace}]+or[\p{Space}\p{IsWhitespace}]+)Library|Library(?:[\p{Space}
+;=>   \p{IsWhitespace}]*/[\p{Space}\p{IsWhitespace}]*|[\p{Space}\p{IsWhitespace}]+or
+;=>   [\p{Space}\p{IsWhitespace}]+)Lesser|Lesser|Library)"
 
 (def lgpl-re (re/join
                #"(?<!\w)"                                 ; No word character before
@@ -202,16 +206,19 @@ $ deps-try com.github.pmonks/wreck
                    (re/join "GNU" mws lorl-re)            ; GNU <lorl regex>
                    (re/join lorl-re mws "GPL")))          ; <lorl regex> GPL
                #"(?!\w)"))                                ; No word character after
-;=> #"(?<!\w)(?i:(?<lgpl>LGPL|GNU[\s\p{IsWhitespace}]+(?:Lesser(?:[\s\p{IsWhitespace}]*/[/s
-;=>   \p{IsWhitespace}]*|[\s\p{IsWhitespace}]+or[\s\p{IsWhitespace}]+)Library|Library(?:[/s
-;=>   \p{IsWhitespace}]*/[\s\p{IsWhitespace}]*|[\s\p{IsWhitespace}]+or[\s\p{IsWhitespace}]+)
-;=>   Lesser|Lesser|Library)[\s\p{IsWhitespace}]+GPL|GNU[\s\p{IsWhitespace}]+(?:Lesser(?:[/s
-;=>   \p{IsWhitespace}]*/[\s\p{IsWhitespace}]*|[\s\p{IsWhitespace}]+or[\s\p{IsWhitespace}]+)
-;=>   Library|Library(?:[\s\p{IsWhitespace}]*/[\s\p{IsWhitespace}]*|[\s\p{IsWhitespace}]+or[/s
-;=>   \p{IsWhitespace}]+)Lesser|Lesser|Library)|(?:Lesser(?:[\s\p{IsWhitespace}]*/[/s
-;=>   \p{IsWhitespace}]*|[\s\p{IsWhitespace}]+or[\s\p{IsWhitespace}]+)Library|Library(?:[/s\p
-;=>   {IsWhitespace}]*/[\s\p{IsWhitespace}]*|[\s\p{IsWhitespace}]+or[\s\p{IsWhitespace}]+)
-;=>   Lesser|Lesser|Library)[\s\p{IsWhitespace}]+GPL))(?!\w)"
+;=> #"(?<!\w)(?i:(?<lgpl>LGPL|GNU[\p{Space}\p{IsWhitespace}]+(?:Lesser(?:[\p{Space}
+;=>   \p{IsWhitespace}]*/[\p{Space}\p{IsWhitespace}]*|[\p{Space}\p{IsWhitespace}]+or[\p{Space}
+;=>   \p{IsWhitespace}]+)Library|Library(?:[\p{Space}\p{IsWhitespace}]*/[\p{Space}
+;=>   \p{IsWhitespace}]*|[\p{Space}\p{IsWhitespace}]+or[\p{Space}\p{IsWhitespace}]+)Lesser|
+;=>   Lesser|Library)[\p{Space}\p{IsWhitespace}]+GPL|GNU[\p{Space}\p{IsWhitespace}]+(?:Lesser
+;=>   (?:[\p{Space}\p{IsWhitespace}]*/[\p{Space}\p{IsWhitespace}]*|[\p{Space}
+;=>   \p{IsWhitespace}]+or[\p{Space}\p{IsWhitespace}]+)Library|Library(?:[\p{Space}
+;=>   \p{IsWhitespace}]*/[\p{Space}\p{IsWhitespace}]*|[\p{Space}\p{IsWhitespace}]+or[\p{Space}
+;=>   \p{IsWhitespace}]+)Lesser|Lesser|Library)|(?:Lesser(?:[\p{Space}\p{IsWhitespace}]*/
+;=>   [\p{Space}\p{IsWhitespace}]*|[\p{Space}\p{IsWhitespace}]+or[\p{Space}\p{IsWhitespace}]+)
+;=>   Library|Library(?:[\p{Space}\p{IsWhitespace}]*/[\p{Space}\p{IsWhitespace}]*|[\p{Space}
+;=>   \p{IsWhitespace}]+or[\p{Space}\p{IsWhitespace}]+)Lesser|Lesser|Library)[\p{Space}
+;=>   \p{IsWhitespace}]+GPL))(?!\w)"
 
 ; Which would you rather maintain?  😉
 ```

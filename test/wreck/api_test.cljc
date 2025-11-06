@@ -763,7 +763,7 @@
 
 #?(:clj
 (deftest composite-tests
-  (let [ws      (chcl #"\s\p{IsWhitespace}")
+  (let [ws      (chcl #"\p{Space}\p{IsWhitespace}")
         ows     (zom ws)
         mws     (oom ws)
         lorl-re (or-grp "Lesser" "Library" (alt-grp (join ows "/" ows) (join mws "or" mws)))
