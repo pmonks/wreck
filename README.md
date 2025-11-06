@@ -177,24 +177,40 @@ $ deps-try com.github.pmonks/wreck
 ;; A more complex example that composes a longer regex from just a few easy-to-read statements
 ;; (from the unit tests)
 
+; Whitespace - ASCII or Unicode
+(def ws  (re/chcl #"\s\p{IsWhitespace}"))
+;=> #"[\s\p{IsWhitespace}]"
+(def ows (re/zom ws))
+;=> #"[\s\p{IsWhitespace}]*"
+(def mws (re/oom ws))
+;=> #"[\s\p{IsWhitespace}]+"
+
 ; "Lesser" or "Library", but in any order, or either word by itself, with either a forward
 ; slash or the word "or" as a separator
-(def lorl-re (re/or-grp "Lesser" "Library" (re/alt-grp #"\s*/\s*" #"\s+or\s+")))
-;=> #"(?:Lesser(?:\s*/\s*|\s+or\s+)Library|Library(?:\s*/\s*|\s+or\s+)Lesser|Lesser|Library)"
+(def lorl-re (re/or-grp "Lesser" "Library" (re/alt-grp (re/join ows "/" ows) (re/join mws "or" mws))))
+;=> #"(?:Lesser(?:[\s\p{IsWhitespace}]*/[\s\p{IsWhitespace}]*|[\s\p{IsWhitespace}]+or[/s
+;=>   \p{IsWhitespace}]+)Library|Library(?:[\s\p{IsWhitespace}]*/[\s\p{IsWhitespace}]*|[/s
+;=>   \p{IsWhitespace}]+or[\s\p{IsWhitespace}]+)Lesser|Lesser|Library)"
 
 (def lgpl-re (re/join
-               #"(?<!\w)"                                       ; No word character before
-               (re/flags-grp "i"                                ; Flags (in a group)
-                 (re/alt-ncg "lgpl"                             ; Alternations, in a NCG
-                   "LGPL"                                       ; LGPL literal (string)
-                   (re/join "GNU" #"\s+" lorl-re #"\s+" "GPL")  ; GNU <lorl regex> GPL
-                   (re/join "GNU" #"\s+" lorl-re)               ; GNU <lorl regex>
-                   (re/join lorl-re #"\s+" "GPL")))             ; <lorl regex> GPL
-               #"(?!\w)"))                                      ; No word character after
-;=> #"(?<!\w)(?i:(?<lgpl>LGPL|GNU\s+(?:Lesser(?:\s*/\s*|\s+or\s+)Library|Library(?:\s*/\s*|
-;=>   \s+or\s+)Lesser|Lesser|Library)\s+GPL|GNU\s+(?:Lesser(?:\s*/\s*|\s+or\s+)Library|Library
-;=>   (?:\s*/\s*|\s+or\s+)Lesser|Lesser|Library)|(?:Lesser(?:\s*/\s*|\s+or\s+)Library|Library
-;=>   (?:\s*/\s*|\s+or\s+)Lesser|Lesser|Library)\s+GPL))(?!\w)"
+               #"(?<!\w)"                                 ; No word character before
+               (re/flags-grp "i"                          ; Flags (in a group)
+                 (re/alt-ncg "lgpl"                       ; Alternations, in NCG called "lgpl"
+                   "LGPL"                                 ; LGPL literal (string)
+                   (re/join "GNU" mws lorl-re mws "GPL")  ; GNU <lorl regex> GPL
+                   (re/join "GNU" mws lorl-re)            ; GNU <lorl regex>
+                   (re/join lorl-re mws "GPL")))          ; <lorl regex> GPL
+               #"(?!\w)"))                                ; No word character after
+;=> #"(?<!\w)(?i:(?<lgpl>LGPL|GNU[\s\p{IsWhitespace}]+(?:Lesser(?:[\s\p{IsWhitespace}]*/[/s
+;=>   \p{IsWhitespace}]*|[\s\p{IsWhitespace}]+or[\s\p{IsWhitespace}]+)Library|Library(?:[/s
+;=>   \p{IsWhitespace}]*/[\s\p{IsWhitespace}]*|[\s\p{IsWhitespace}]+or[\s\p{IsWhitespace}]+)
+;=>   Lesser|Lesser|Library)[\s\p{IsWhitespace}]+GPL|GNU[\s\p{IsWhitespace}]+(?:Lesser(?:[/s
+;=>   \p{IsWhitespace}]*/[\s\p{IsWhitespace}]*|[\s\p{IsWhitespace}]+or[\s\p{IsWhitespace}]+)
+;=>   Library|Library(?:[\s\p{IsWhitespace}]*/[\s\p{IsWhitespace}]*|[\s\p{IsWhitespace}]+or[/s
+;=>   \p{IsWhitespace}]+)Lesser|Lesser|Library)|(?:Lesser(?:[\s\p{IsWhitespace}]*/[/s
+;=>   \p{IsWhitespace}]*|[\s\p{IsWhitespace}]+or[\s\p{IsWhitespace}]+)Library|Library(?:[/s\p
+;=>   {IsWhitespace}]*/[\s\p{IsWhitespace}]*|[\s\p{IsWhitespace}]+or[\s\p{IsWhitespace}]+)
+;=>   Lesser|Lesser|Library)[\s\p{IsWhitespace}]+GPL))(?!\w)"
 
 ; Which would you rather maintain?  😉
 ```

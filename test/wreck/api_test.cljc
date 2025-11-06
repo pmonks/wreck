@@ -763,17 +763,19 @@
 
 #?(:clj
 (deftest composite-tests
-  ; The following regex ends up being ~300 characters long, partly because of the sheer number of times the words
-  ; "Lesser" and "Library" appear in it (in order to implement the nested alt/or)
-  (let [lorl-re (or-grp "Lesser" "Library" (alt-grp #"\s*/\s*" #"\s+or\s+"))
+  (let [ws      (chcl #"\s\p{IsWhitespace}")
+        ows     (zom ws)
+        mws     (oom ws)
+        lorl-re (or-grp "Lesser" "Library" (alt-grp (join ows "/" ows) (join mws "or" mws)))
+        ; The following regex ends up being ~800 characters long, and yet it's easy to reason about
         lgpl-re (join
                   #"(?<!\w)"
                   (flags-grp "i"
                     (alt-ncg "lgpl"
                       "LGPL"
-                      (join "GNU" #"\s+" lorl-re #"\s+" "GPL")
-                      (join "GNU" #"\s+" lorl-re)
-                      (join lorl-re #"\s+" "GPL")))
+                      (join "GNU" mws lorl-re mws "GPL")
+                      (join "GNU" mws lorl-re)
+                      (join lorl-re mws "GPL")))
                   #"(?!\w)")]
     (testing "Matching tests"
       ; Matches
