@@ -87,7 +87,7 @@ $ deps-try com.github.pmonks/wreck
 (re/=' #"ab" (re/join #"a" #"b"))
 ;=> true
 
-;Escaping and quoting
+; Escaping and quoting
 (re/esc ".*")
 ;=> "\\.\\*"  ; Note: a String - most other fns return regexes
 
