@@ -4,16 +4,16 @@
 
 [![CI](https://github.com/pmonks/wreck/actions/workflows/ci.yml/badge.svg?branch=dev)](https://github.com/pmonks/wreck/actions?query=workflow%3ACI+branch%3Adev)
 [![Dependencies](https://github.com/pmonks/wreck/actions/workflows/dependencies.yml/badge.svg?branch=dev)](https://github.com/pmonks/wreck/actions?query=workflow%3Adependencies+branch%3Adev)
-[![Vulnerabilities](https://github.com/pmonks/wreck/actions/workflows/vulnerabilities.yml/badge.svg?branch=dev)](https://github.com/pmonks/wreck/actions?query=workflow%3Avulnerabilities+branch%3Adev)
+[![Vulnerabilities](https://github.com/pmonks/wreck/actions/workflows/vulnerabilities.yml/badge.svg?branch=dev)](https://pmonks.github.io/wreck/nvd/dependency-check-report.html)
 <br/>
 [![Latest Version](https://img.shields.io/clojars/v/com.github.pmonks/wreck)](https://clojars.org/com.github.pmonks/wreck/)
 [![Open Issues](https://img.shields.io/github/issues/pmonks/wreck.svg)](https://github.com/pmonks/wreck/issues)
 [![License](https://img.shields.io/github/license/pmonks/wreck.svg)](https://github.com/pmonks/wreck/blob/release/LICENSE) 
 ![Maintained](https://badges.ws/badge/?label=maintained&value=yes,+at+author's+discretion)
 
-A micro-library for Clojure(Script) that provides a selection of regular expression (regex) functions, mostly focused on ease of composition.  It has no dependencies, other than on Clojure, and emits standard Clojure regex objects, so is fully compatible with Clojure's built-in regex functions ([`re-matches`](https://clojuredocs.org/clojure.core/re-matches), [`re-find`](https://clojuredocs.org/clojure.core/re-find), [`re-seq`](https://clojuredocs.org/clojure.core/re-seq), etc.).  It also doesn't make use of any JVM-specific or JavaScript-specific regex syntax, though it is fully compatible with platform-specific regexes, if you're using those.
+A micro-library for Clojure(Script) that provides a selection of regular expression (regex) functions, mostly focused on ease of composition.  It has no dependencies, other than on Clojure, and emits standard Clojure regex objects, so is fully compatible with Clojure's built-in regex functions ([`re-matches`](https://clojuredocs.org/clojure.core/re-matches), [`re-find`](https://clojuredocs.org/clojure.core/re-find), [`re-seq`](https://clojuredocs.org/clojure.core/re-seq), etc.).  It also doesn't make use of any JVM-specific or JavaScript-specific regex syntax, though it is fully compatible with platform-specific regex syntax, if you're using that.
 
-The library is _not_ intended to provide a comprehensive functional alternative for constructing regexes - knowledge of regex syntax remains necessary.  Instead it is intended to assist in constructing syntactically valid large regexes by composing smaller regexes together in well-defined ways.
+The library is _not_ intended to provide a comprehensive functional alternative for constructing regexes - knowledge of regex syntax remains necessary.  Instead it is intended to assist in constructing syntactically valid large regexes by composing smaller regexes together in well-defined ways, which mostly involves adding support for regex concatenation, and making groups and alternation easier to use.
 
 It also pairs very nicely with [`rencg`](https://github.com/pmonks/rencg) - that library adds first class support for named capturing groups to Clojure (albeit the JVM flavour only).
 
@@ -37,9 +37,9 @@ I have other projects that perform complex text processing and in some cases hav
 
 ### Regex flags
 
-Regex flags are a thorny corner case with regexes, in that they're both highly platform specific, and (in their usual usage) don't compose properly because of their global nature (and regex composition is the entire point of `wreck`).  As a result `wreck` makes the opinionated design choice to automatically and aggressively convert all flags it finds to embedded flag groups (e.g. `(?i)[abc]+` becomes `(?i:[abc]+)`), as these groups scope the effect of the flag(s) and are therefore far easier to reason about during regex composition.  This is done using the [`embed-flags`](https://pmonks.github.io/wreck/wreck.api.html#var-embed-flags) function, which you might also use explicitly if you have a 3rd party regex (e.g. from a library), don't know if it has flags or not, and want to use the same logic `wreck` uses to embed any flags it might have.
+Regex flags are a thorny corner case with regexes, in that they're both highly platform specific, and (in their usual usage) don't compose properly because of their global nature (and regex composition is the entire point of `wreck`).  As a result `wreck` makes the opinionated design choice to automatically and aggressively convert all flags it finds to embedded flag groups (e.g. `#"(?i)[abc]+"`, `/[abc]+/i`, and the programmatic JVM equivalent all get turned into `#"(?i:[abc]+)"`), as this construct scopes the effect of the flag(s) and is therefore easier to reason about during regex composition.
 
-However when constructing regexes from scratch, **it is strongly recommended that you _only_ use the [`flags-grp`](https://pmonks.github.io/wreck/wreck.api.html#var-flags-grp) function**.  It directly creates an embedded flag group, avoiding any guesswork about `wreck`'s automatic embedding logic, or the scope of the flag(s).
+When constructing regexes from scratch, **it is strongly recommended that you use the [`flags-grp`](https://pmonks.github.io/wreck/wreck.api.html#var-flags-grp) function**, and don't programmatically set flags or use other embedded flag regex syntax.  This function directly creates an embedded flag group, avoiding any guesswork about `wreck`'s automatic embedding logic, or the scope of the flag(s).
 
 > [!IMPORTANT]  
 > The JVM has 2 flags that can only be set globally (but cannot be embedded), and JavaScript has 5.  `wreck` very deliberately does not provide functionality to set global flags on regexes, because of the difficulties they create during regex composition.  If you have a use case that cannot be satisfied any way except with one of these non-embeddable flags, you can fallback on interop to set them (Clojure itself does not provide such a mechanism either).  Such flags must be applied at the very end of regex composition, after all `wreck` functions have been applied (since `wreck` functions aggressively remove such flags).

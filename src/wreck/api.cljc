@@ -18,23 +18,24 @@
     is a first class requirement that callers be allowed to construct platform
     specific regexes if they wish.
   * As a result, all functions have the potential to throw platform-specific
-    exceptions if the resulting regex is syntactically invalid.
-    * On the JVM, these will typically be instances of the
-      `java.util.regex.PatternSyntaxException` class.
-    * On JavaScript, these will typically be a `js/SyntaxError`.
+    exceptions if the resulting regex is syntactically invalid. On the JVM,
+    these will typically be instances of the `java.util.regex.PatternSyntaxException`
+    class. On JavaScript, these will typically be a `js/SyntaxError`.
   * Platform specific behaviour is particularly notable for short / empty
     regexes, such as `#\"{}\"` (an error on the JVM, fine but
-    nonsensical on JS) and `#\"{1}\"` (ironically, fine but nonsensical on the
+    nonsensical on JS) and `#\"{1}\"` (ironically fine but nonsensical on the
     JVM, but an error on JS).  🤡
   * Furthemore, JavaScript fundamentally doesn't support lossless round-tripping
-    of `RegExp` objects to `String`s and back, something this library relies
-    upon and does extensively.  The library makes a best effort to correct
-    JavaScript's problematic implementation, but because it's fundamentally
-    lossy there are some cases that (on ClojureScript only) may change your
-    regexes in unexpected (though _probably_ not semantically significant) ways.
+    of `RegExp` objects to `String`s and back, something this library does
+    extensively.  The library makes a best effort to correct JavaScript's
+    problematic implementation, but because it's fundamentally lossy there are
+    some cases that (on ClojureScript only) may change your regexes in
+    unexpected (though _probably_ not semantically significant) ways.
   * Regex flags are supported to the best ability of the library, but please
     carefully review the [usage notes in README.md](https://github.com/pmonks/wreck?tab=readme-ov-file#regex-flags)
-    for various caveats when flags are used."
+    for various caveats when flags are used.
+  * None of these functions perform `String` escaping or quoting automatically.
+    You can use [[esc]] or [[qot]] for this."
   (:require [clojure.string :as s]
             [wreck.impl     :as wi]
    #?(:cljs [clojure.set    :as set])
@@ -44,10 +45,10 @@
 ;; FLAGS HANDLING
 
 ; Note: the set of embeddable flag characters on JavaScript was determined
-; empirically, by running this code on node.js with each flag character one at
-; a time:
+; empirically, by running this code on node.js v25 with each flag character one
+; at a time:
 ;
-;   (new RegExp()).compile("(?<flagChar>:.*");
+;   new RegExp().compile("(?<flagChar>:.*)");
 ;
 ; While (at the time of writing) the full set of official JavaScript regex flag
 ; characters is `digmsuvy`, only `ims` were found to be embeddable.  `u` and `v`
@@ -57,14 +58,12 @@
 ; Note also that ClojureScript complicates matters by (attempting) to add
 ; support for JVM-style ungrouped embedded flags (e.g. `(?i).*`).  This is NOT
 ; natively supported by JavaScript however, and it appears that the
-; ClojureScript logic that handles the conversion sometimes emits invalid
-; JavaScript code - see https://ask.clojure.org/index.php/14717/possible-clojurescript-corner-regex-literal-compilation
+; ClojureScript logic that handles the conversion sometimes emits syntactically
+; invalid JavaScript code - see https://ask.clojure.org/index.php/14717/possible-clojurescript-corner-regex-literal-compilation
 
 #?(:clj
-; On the JVM, flags are bit masks (ints)
-(def ^:private non-embeddable-flags (set (filter identity (map (fn [[k v]] (when (nil? v) k)) wi/flag->embedded-char))))
+(def ^:private non-embeddable-flags (seq (filter identity (map (fn [[k v]] (when (nil? v) k)) wi/flag->embedded-char))))
 :cljs
-; On JavaScript, flags are characters
 (def ^:private embeddable-flags #{\i \m \s}))
 
 (defn has-non-embeddable-flags?
@@ -78,12 +77,7 @@
   [re]
   (if-let [flgs (wi/raw-flags re)]
 #?(:clj
-    (loop [[f & r] non-embeddable-flags]
-      (if-not f
-        false
-        (if (bit-and flgs f)
-          true
-          (recur r))))
+    (boolean (seq (filter (complement zero?) (map #(bit-and flgs %) non-embeddable-flags))))
   :cljs
     (let [flag-set (-> flgs
                        seq
@@ -92,14 +86,17 @@
     false))  ; re did not contain any flags
 
 (defn embed-flags
-  "Embeds any flags found in `re` at the start of `re` in a non-capturing group
-  (to ensure scoping), returning a new regex.  Returns `re` if `re` contains no
-  flags or is `nil`.
+  "Embeds any programmatic or ungrouped flags found in `re`. It does this by
+  removing all flags from `re` then wrapping it in a flag group containing those
+  flags that are embeddable (non-embeddable flags are silently dropped - use
+  [[has-non-embeddable-flags?]] if you need to check for this).  Returns `re` if
+  `re` contains no flags.
 
-  For example, on the JVM `#\"(?i)[abc]+\"` would become `#\"(?i:[abc]+)\"`.
+  For example on the JVM, both `(Pattern/compile \"[abc]+\" Pattern/CASE_INSENSITIVE)`
+  and `#\"(?i)[abc]+\"` would become `#\"(?i:[abc]+)\"`.
 
   Similarly, on ClojureScript `(doto (js/RegExp.) (.compile \"[abc]+\" \"i\"))`
-  would also become `#\"(?i:[abc]+)\"`.
+  would become `#\"(?i:[abc]+)\"`.
 
   Note:
 
@@ -118,13 +115,9 @@
     to use embedded flag(s) midway through a regex, use [[flags-grp]] to ensure
     proper scoping of the flag(s).
   * ⚠️ On the JVM, the programmatic flags `LITERAL` and `CANON_EQ` have no
-    embeddable equivalent, and will be silently dropped by this function.  Use
-    [[has-non-embeddable-flags?]] if you need to check for the presence of
-    these flags (e.g. in a 3rd party regex).
-  * ⚠️ On JavaScript, only the flags `ims` can be embedded.  All other flags
-    will be silently dropped by this function.  Use
-    [[has-non-embeddable-flags?]] if you need to check for the presence of these
-    flags (e.g. in a 3rd party regex)."
+    embeddable equivalent, and will be silently dropped by this function.
+  * ⚠️ On JavaScript, only the flags `i`, `m`, and `s` can be embedded.  All
+    other flags will be silently dropped by this function."
   [re]
   (if-let [rf (wi/raw-flags re)]  ; Check raw flags, in case we have to strip some
     (let [f #?(:clj  (wi/flags re)
@@ -132,7 +125,18 @@
       (wi/set-flags re f))
     re))
 
+
 ;; FUNDAMENTAL PRIMITIVES
+
+(defn regex?
+  "Is `o` a regex?
+
+  Notes:
+
+  * ClojureScript already has a `regexp?` predicate in `cljs.core`, but
+    ClojureJVM doesn't.  See [this ask.clojure.org post](https://ask.clojure.org/index.php/1127/add-clojure-core-pattern-predicate)."
+  [o]
+  (wi/regex? o))  ; Ideally should eliminate this redundant call
 
 (defn str'
   "Returns the `String` representation of `o`, with special handling for
@@ -171,13 +175,15 @@
      false)))
 
 (defn- distinct'
-  "Similar to `clojure.core/distinct`, but non-lazy, and uses the regex
-  representation of each element (e.g. `0`, `\"0\"`, and `#\"0\"` would all be
-  considered identical).
+  "Similar to `clojure.core/distinct`, but non-lazy, and uses the [[str']]
+  representation of each element when comparing for equality (so `0`, `\"0\"`,
+  and `#\"0\"` would all be considered identical, for example).
 
   Notes:
 
-  * Unlike `clojure.core/distinct`, returns `nil` if the result is empty."
+  * Unlike `clojure.core/distinct`, returns `nil` if the result is empty.
+  * Flags in each re are embedded, as per [[embed-flags]], before checking for
+    equality, though the result contains the original re and may ."
   [res]
   (when res
     (loop [[f & r] res
@@ -186,7 +192,8 @@
       (if-not f
         (seq result)
         (let [f-str      (str' f)
-              new-result (if (contains? seen f-str) result (conj result f))]
+              new-f      (if (regex? f) (re-pattern f-str) f)
+              new-result (if (contains? seen f-str) result (conj result new-f))]
           (recur r new-result (conj seen f-str)))))))
 
 (defn empty?'
@@ -202,8 +209,8 @@
 (defn join
   "Returns a regex that is all of the `res` joined together. Each element in
   `res` can be a regex, a `String` or something that can be turned into a
-  `String` (including numbers, etc.).  Returns `nil` when no `res` are provided,
-  or they're all `nil`.
+  `String` (including numbers, etc.).  Ignores `nil` values in `res`, and
+  returns `nil` when no `res` are provided or they're all `nil`.
 
   Notes:
 
@@ -243,17 +250,44 @@
                  \> "\\>"})))
 
 (defn qot
-  "Quotes `re` (anything that can be accepted by [[join]]), returning a regex."
+  "Quotes `re`:
+
+  * `\\Qre\\E`"
   [re]
   (when re
     (join "\\Q" re "\\E")))
+
+
+;; CHARACTER CLASSES
+
+(defn chcl
+  "As for [[join]], but encloses the joined `res` into a character class:
+
+  * `[res]`
+
+  Notes:
+
+  * ⚠️ On ClojureScript nested character classes don't work as one might expect,
+    even though they will compile just fine.  For example, this code matches as
+    expected on ClojureJVM, but does not on ClojureScript:
+    `(re-matches #\"[a[b[c]]]+\" \"abc\")`.  As a result it's worth being
+    particularly careful when composing character classes programmatically, to
+    avoid accidentally nesting them."
+  [& res]
+  (when-let [res (seq (filter identity res))]
+    (let [exp (apply join res)]
+      (if (empty?' exp)
+        #""
+        (join "[" exp "]")))))
 
 
 ;; GROUPS
 
 (defn grp
   "As for [[join]], but encloses the joined `res` into a single non-capturing
-  group."
+  group:
+
+  * `(?:res)`"
   [& res]
   (when-let [res (seq (filter identity res))]
     ; Here we optimise out an empty non-capturing group
@@ -263,25 +297,34 @@
         (join "(?:" exp ")")))))
 
 (defn cg
-  "As for [[grp]], but uses a capturing group."
+  "As for [[grp]], but uses a capturing group:
+
+  * `(res)`"
   [& res]
   (when-let [res (seq (filter identity res))]
     (join "(" (apply join res) ")")))  ; Note: don't optimise empty capturing groups, because that will throw out code that indexes into capturing groups
 
 (defn ncg
-  "As for [[grp]], but uses a named capturing group named `nm`.  Returns `nil` if
-  `nm` is `nil` or blank. Throws if `nm` is an invalid name for a named capturing
-  group (alphanumeric only, must start with an alphabetical character, must be
-  unique within the regex)."
+  "As for [[grp]], but uses a named capturing group named `nm`:
+
+  * `(?<nm>res)`
+
+  Returns `nil` if `nm` is `nil` or blank. Throws if `nm` is an invalid name for
+  a named capturing group (alphanumeric only, must start with an alphabetical
+  character, must be unique within the regex)."
   [nm & res]
   (when-not (s/blank? nm)
     (when-let [res (seq (filter identity res))]
       (join "(?<" nm ">" (apply join res) ")"))))  ; Note: don't optimise empty named capturing groups, because that will throw out code that indexes into capturing groups
 
 (defn flags-grp
-  "As for [[grp]], but prefixes the group with `flgs` (a `String`). Returns
-  `nil` if `flgs` is `nil` or empty.  Throws if `flgs` contains an invalid flag
-  character, including those that (ClojureScript only) cannot be embedded.
+  "As for [[grp]], but prefixes the group with `flgs` (a `String`):
+
+  * `(?flgs:res)`
+
+  Returns `nil` if `flgs` is `nil` or empty.  Throws if `flgs` contains an
+  invalid flag character, including those that (ClojureScript only) cannot be
+  embedded.
 
   Notes:
 
@@ -289,48 +332,59 @@
     function!**  Programmatically set flags and ungrouped embedded flags (e.g.
     `(?i)`) have no explicit scope and so cannot be reliably used to compose
     larger regexes.  `wreck` makes a best effort to always convert such
-    'unscoped' flags into their embedded equivalents when composing larger
-    regexes (via [[embed-flags]]), but using flag groups explicitly in the
-    first place is easier to reason about and avoids potential footguns.
-  * Removes any ungrouped embedded flags in `re` (e.g. `(?i)ab`), but unlike
-    [[embed-flags]] does _not_ check that they appear in `flgs`.
-  * ⚠️ On the JVM, ungrouped embedded flags _in the middle of `re`_ will also be
-    removed, which may alter the semantics of the regex.
-  * ⚠️ On JavaScript, only the flags `ims` can be embedded (this is a limitation
-    of the JavaScript regex engine).  Other flags will result in a
+    'unscoped' flags into their embedded (scoped) equivalents (using
+    [[embed-flags]]) when composing larger regexes , but using `flags-grp`
+    explicitly in the first place is easier to reason about and avoids potential
+    footguns.
+  * Removes any ungrouped embedded flags in `re` (e.g. `(?i)ab`), but does _not_
+    add them to `flgs` if they aren't already there.
+  * ⚠️ On the JVM, ungrouped embedded flags _in the middle of `re`_ (e.g.
+    `a(?i)b`) will also be removed, which may alter the semantics of the regex.
+  * ⚠️ On JavaScript, only the flags `i`, `m` and `s` can be embedded (this is a
+    limitation of the JavaScript regex engine).  Other flags will result in a
     `js/SyntaxError` being thrown.
   * For the JVM, see the ['special constructs' section of the
     `java.util.regex.Pattern` JavaDoc](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/regex/Pattern.html#special)
     for the set of valid flag characters.
   * For JavaScript, see the [`RegExp` flags reference](https://www.w3schools.com/js/js_regexp_flags.asp)
-    for the set of valid flag characters."
+    for the set of valid flag characters (while keeping in mind most of them
+    can't be embedded)."
   [flgs & res]
   (when-not (s/blank? flgs)
     (when-let [res (seq (filter identity res))]
       (wi/set-flags (apply join res) flgs))))
 
+
 ;; OPTIONAL
 
 (defn opt
-  "Returns a regex where `re` is optional."
+  "Returns a regex where `re` is optional:
+
+  * `re?`"
   [re]
   (when re
     (join re "?")))
 
 (defn opt-grp
-  "[[grp]] then [[opt]]."
+  "[[grp]] then [[opt]]:
+
+  * `(?:res)?`"
   [& res]
   (when-let [res (seq (filter identity res))]
     (opt (apply grp res))))
 
 (defn opt-cg
-  "[[cg]] then [[opt]]."
+  "[[cg]] then [[opt]]:
+
+  * `(res)?`"
   [& res]
   (when-let [res (seq (filter identity res))]
     (opt (apply cg res))))
 
 (defn opt-ncg
-  "[[ncg]] then [[opt]]."
+  "[[ncg]] then [[opt]]:
+
+  * `(?<nm>res)?`"
   [nm & res]
   (when-not (s/blank? nm)
     (when-let [res (seq (filter identity res))]
@@ -340,25 +394,33 @@
 ;; ZERO OR MORE
 
 (defn zom
-  "Returns a regex where `re` will match zero or more times."
+  "Returns a regex where `re` will match zero or more times:
+
+  * `re*`"
   [re]
   (when re
     (join re "*")))
 
 (defn zom-grp
-  "[[grp]] then [[zom]]."
+  "[[grp]] then [[zom]]:
+
+  * `(?:res)*`"
   [& res]
   (when-let [res (seq (filter identity res))]
     (zom (apply grp res))))
 
 (defn zom-cg
-  "[[cg]] then [[zom]]."
+  "[[cg]] then [[zom]]:
+
+  * `(res)*`"
   [& res]
   (when-let [res (seq (filter identity res))]
     (zom (apply cg res))))
 
 (defn zom-ncg
-  "[[ncg]] then [[zom]]."
+  "[[ncg]] then [[zom]]:
+
+  * `(?<nm>res)*`"
   [nm & res]
   (when-not (s/blank? nm)
     (when-let [res (seq (filter identity res))]
@@ -368,25 +430,33 @@
 ;; ONE OR MORE
 
 (defn oom
-  "Returns a regex where `re` will match one or more times."
+  "Returns a regex where `re` will match one or more times:
+
+  * `re+`"
   [re]
   (when re
     (join re "+")))
 
 (defn oom-grp
-  "[[grp]] then [[oom]]."
+  "[[grp]] then [[oom]]:
+
+  * `(?:res)+`"
   [& res]
   (when-let [res (seq (filter identity res))]
     (oom (apply grp res))))
 
 (defn oom-cg
-  "[[cg]] then [[oom]]."
+  "[[cg]] then [[oom]]:
+
+  * `(res)+`"
   [& res]
   (when-let [res (seq (filter identity res))]
     (oom (apply cg res))))
 
 (defn oom-ncg
-  "[[ncg]] then [[oom]]."
+  "[[ncg]] then [[oom]]:
+
+  * `(?<nm>res)+`"
   [nm & res]
   (when-not (s/blank? nm)
     (when-let [res (seq (filter identity res))]
@@ -396,27 +466,35 @@
 ;; N OR MORE
 
 (defn nom
-  "Returns a regex where `re` will match `n` or more times."
+  "Returns a regex where `re` will match `n` or more times:
+
+  * `re{n,}`"
   [n re]
   (when (and n re)
     (join re "{" n ",}")))
 
 (defn nom-grp
-  "[[grp]] then [[nom]]."
+  "[[grp]] then [[nom]]:
+
+  * `(?:res){n,}`"
   [n & res]
   (when n
     (when-let [res (seq (filter identity res))]
       (nom n (apply grp res)))))
 
 (defn nom-cg
-  "[[cg]] then [[nom]]."
+  "[[cg]] then [[nom]]:
+
+  * `(res){n,}`"
   [n & res]
   (when n
     (when-let [res (seq (filter identity res))]
       (nom n (apply cg res)))))
 
 (defn nom-ncg
-  "[[ncg]] then [[nom]]."
+  "[[ncg]] then [[nom]]:
+
+  * `(?<nm>res){n,}`"
   [nm n & res]
   (when (and (not (s/blank? nm)) n)
     (when-let [res (seq (filter identity res))]
@@ -426,27 +504,35 @@
 ;; EXACTLY N
 
 (defn exn
-  "Returns a regex where `re` will match exactly `n` times."
+  "Returns a regex where `re` will match exactly `n` times:
+
+  * `re{n}`"
   [n re]
   (when (and n re)
     (join re "{" n "}")))
 
 (defn exn-grp
-  "[[grp]] then [[exn]]."
+  "[[grp]] then [[exn]]:
+
+  * `(?:res){n}`"
   [n & res]
   (when n
     (when-let [res (seq (filter identity res))]
       (exn n (apply grp res)))))
 
 (defn exn-cg
-  "[[cg]] then [[exn]]."
+  "[[cg]] then [[exn]]:
+
+  * `(res){n}`"
   [n & res]
   (when n
     (when-let [res (seq (filter identity res))]
       (exn n (apply cg res)))))
 
 (defn exn-ncg
-  "[[ncg]] then [[exn]]."
+  "[[ncg]] then [[exn]]:
+
+  * `(?<nm>res){n}`"
   [nm n & res]
   (when (and (not (s/blank? nm)) n)
     (when-let [res (seq (filter identity res))]
@@ -456,27 +542,35 @@
 ;; N TO M
 
 (defn n2m
-  "Returns a regex where `re` will match from `n` to `m` times."
+  "Returns a regex where `re` will match from `n` to `m` times:
+
+  * `re{n,m}`"
   [n m re]
   (when (and n m re)
     (join re "{" n "," m "}")))
 
 (defn n2m-grp
-  "[[grp]] then [[n2m]]."
+  "[[grp]] then [[n2m]]:
+
+  * `(?:res){n,m}`"
   [n m & res]
   (when (and n m)
     (when-let [res (seq (filter identity res))]
       (n2m n m (apply grp res)))))
 
 (defn n2m-cg
-  "[[cg]] then [[n2m]]."
+  "[[cg]] then [[n2m]]:
+
+  * `(res){n,m}`"
   [n m & res]
   (when (and n m)
     (when-let [res (seq (filter identity res))]
       (n2m n m (apply cg res)))))
 
 (defn n2m-ncg
-  "[[ncg]] then [[n2m]]."
+  "[[ncg]] then [[n2m]]:
+
+  * `(?<nm>res){n,m}`"
   [nm n m & res]
   (when (and (not (s/blank? nm)) n m)
     (when-let [res (seq (filter identity res))]
@@ -486,11 +580,14 @@
 ;; ALTERNATION
 
 (defn alt
-  "Returns a regex that will match any one of `res`, via alternation.
+  "Returns a regex that will match any one of `res`, via alternation:
+
+  * `re|re|re|...`
 
   Notes:
 
-  * Duplicate elements in `res` will only appear once in the result.
+  * Duplicate elements in `res` will only appear once in the result. This
+    equality comparison occurs _after_ each re is run through [[embed-flags]].
   * Does _not_ wrap the result in a group, which, [because alternation has the
     lowest precedence in regexes](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_04_08),
     runs the risk of behaving unexpectedly if the result is then combined with
@@ -501,17 +598,23 @@
     (apply join (interpose "|" res))))
 
 (defn alt-grp
-  "[[alt]] then [[grp]]."
+  "[[alt]] then [[grp]]:
+
+  * `(?:re|re|re|...)`"
   [& res]
    (grp (apply alt res)))
 
 (defn alt-cg
-  "[[alt]] then [[cg]]."
+  "[[alt]] then [[cg]]:
+
+  * `(re|re|re|...)`"
   [& res]
    (cg (apply alt res)))
 
 (defn alt-ncg
-  "[[alt]] then [[ncg]]."
+  "[[alt]] then [[ncg]]:
+
+  * `(?<nm>re|re|re|...)`"
   [nm & res]
   (ncg nm (apply alt res)))
 
@@ -520,12 +623,14 @@
 
 (defn and'
   "Returns an 'and' regex that will match `a` and `b` in any order, and with the
-  `s`eparator regex (if provided) between them.  This is implemented as
-  `ASB|BSA`, which means that A and B must be distinct (must not match the same
-  text).
+  separator regex `s` (if provided) between them:
+
+  * `asb|bsa`
 
   Notes:
 
+  * `a` and `b` must be distinct (must not match the same text) or else the
+    resulting regex will be logically inconsistent (will not be an 'and')
   * May optimise the expression (via de-duplication in [[alt]]).
   * Does _not_ wrap the result in a group, which, [because alternation has the
     lowest precedence in regexes](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_04_08),
@@ -538,7 +643,9 @@
      (alt (join a s b) (join b s a)))))
 
 (defn and-grp
-  "[[and']] then [[grp]].
+  "[[and']] then [[grp]]:
+
+  * `(?:asb|bsa)`
 
   Notes:
 
@@ -549,7 +656,9 @@
    (grp (and' a b s))))
 
 (defn and-cg
-  "[[and']] then [[cg]].
+  "[[and']] then [[cg]]:
+
+  * `(asb|bsa)`
 
   Notes:
 
@@ -560,7 +669,9 @@
    (cg (and' a b s))))
 
 (defn and-ncg
-  "[[and']] then [[ncg]].
+  "[[and']] then [[ncg]]:
+
+  * `(?<nm>asb|bsa)`
 
   Notes:
 
@@ -572,12 +683,14 @@
 
 (defn or'
   "Returns an 'inclusive or' regex that will match `a` or `b`, or both, in any
-  order, and with the `s`eparator regex (if provided) between them.  This is
-  implemented as `ASB|BSA|A|B`, which means that A and B must be distinct (must
-  not match the same text).
+  order, and with the separator regex `s` (if provided) between them:
+
+  * `asb|bsa|a|b`
 
   Notes:
 
+  * `a` and `b` must be distinct (must not match the same text) or else the
+    resulting regex will be logically inconsistent (will not be an 'or')
   * May optimise the expression (via de-duplication in [[alt]]).
   * Does _not_ wrap the result in a group, which, [because alternation has the
     lowest precedence in regexes](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_04_08),
@@ -590,7 +703,9 @@
      (alt (join a s b) (join b s a) a b))))
 
 (defn or-grp
-  "[[or']] then [[grp]].
+  "[[or']] then [[grp]]:
+
+  * `(?:asb|bsa|a|b)`
 
   Notes:
 
@@ -601,7 +716,9 @@
    (grp (or' a b s))))
 
 (defn or-cg
-  "[[or']] then [[cg]].
+  "[[or']] then [[cg]]:
+
+  * `(asb|bsa|a|b)`
 
   Notes:
 
@@ -612,7 +729,9 @@
    (cg (or' a b s))))
 
 (defn or-ncg
-  "[[or']] then [[ncg]].
+  "[[or']] then [[ncg]]:
+
+  * `(?<nm>asb|bsa|a|b)`
 
   Notes:
 
@@ -623,8 +742,11 @@
    (ncg nm (or' a b s))))
 
 (defn xor'
-  "Returns an 'exclusive or' regex that will match `a` or `b`, but _not_ both.
-  This is identical to [[alt]] called with 2 arguments, and is provided as a
+  "Returns an 'exclusive or' regex that will match `a` or `b`, but _not_ both:
+
+  * `a|b`
+
+  This is identical to [[alt]] called with 2 arguments, but is provided as a
   convenience for those who might be building up large logic based regexes and
   would prefer to use more easily understood logical operator names throughout.
 
@@ -640,7 +762,9 @@
   (alt a b))
 
 (defn xor-grp
-  "[[xor']] then [[grp]].
+  "[[xor']] then [[grp]]:
+
+  * `(?:a|b)`
 
   Notes:
 
@@ -650,7 +774,9 @@
   (grp (xor' a b)))
 
 (defn xor-cg
-  "[[xor']] then [[cg]].
+  "[[xor']] then [[cg]]:
+
+  * `(a|b)`
 
   Notes:
 
@@ -660,7 +786,9 @@
   (cg (xor' a b)))
 
 (defn xor-ncg
-  "[[xor']] then [[ncg]].
+  "[[xor']] then [[ncg]]:
+
+  * `(?<nm>a|b)`
 
   Notes:
 

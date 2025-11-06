@@ -15,9 +15,9 @@
    #?(:clj  [wreck.test-utils :refer [time-execution]]
       :cljs [wreck.test-utils :refer-macros [time-execution]])
             [wreck.api        :refer [has-non-embeddable-flags?
-                                      embed-flags
+                                      embed-flags  regex?
                                       str' ='      empty?'
-                                      join esc     qot
+                                      join esc     qot    chcl
                                       grp  cg      ncg    flags-grp
                                       opt  opt-grp opt-cg opt-ncg
                                       zom  zom-grp zom-cg zom-ncg
@@ -34,11 +34,33 @@
 ; branches _ALWAYS_ get compiled on _ALL_ hosts. This means that platform-
 ; specific regexes will cause compilation errors on the _OTHER_ platform.  To
 ; get around this, we use (re-pattern) to move regex compilation from read time
-; to runtime (which will always take reader conditionals into account).
-; This is a niche corner case, and only due to the Clojure reader pre-dating
-; reader conditionals by a lot.
+; to runtime (which only executes _after_ reader conditionals have been taken
+; into account). This is a niche corner case, and only due to the Clojure reader
+; pre-dating reader conditionals (by a lot).
 
 #?(:cljs (enable-console-print!))
+
+(deftest has-non-embeddable-flags?-tests
+  (testing "Basic cases - nil, blank, not a regex etc."
+    (is (false? (has-non-embeddable-flags? nil)))
+    (is (false? (has-non-embeddable-flags? "")))
+    (is (false? (has-non-embeddable-flags? " ")))
+    (is (false? (has-non-embeddable-flags? 2)))
+    (is (false? (has-non-embeddable-flags? 2.0)))
+    (is (false? (has-non-embeddable-flags? true)))
+    (is (false? (has-non-embeddable-flags? false))))
+  (testing "Regexes without non-embeddable flags"
+    (is (false? (has-non-embeddable-flags? #".*")))
+#?(:clj  (is (false? (has-non-embeddable-flags? (java.util.regex.Pattern/compile "ab"))))
+   :cljs (is (false? (has-non-embeddable-flags? (doto (js/RegExp.) (.compile "ab"))))))
+    (is (false? (has-non-embeddable-flags? #"(?i:.*)")))
+#?(:clj  (is (false? (has-non-embeddable-flags? (java.util.regex.Pattern/compile "ab" java.util.regex.Pattern/CASE_INSENSITIVE))))
+   :cljs (is (false? (has-non-embeddable-flags? (doto (js/RegExp.) (.compile "ab" "i")))))))
+  (testing "Regexes with non-embeddable flags"
+#?(:clj  (is (true? (has-non-embeddable-flags? (java.util.regex.Pattern/compile "ab" java.util.regex.Pattern/CANON_EQ))))
+   :cljs (is (true? (has-non-embeddable-flags? (doto (js/RegExp.) (.compile "ab" "y")))))))
+
+  )
 
 (deftest embed-flags-tests
   (testing "Basic cases - nil etc."
@@ -66,6 +88,20 @@
     (is (=' #"(?i:ab)"               (embed-flags (doto (js/RegExp.) (.compile "ab" "i")))))
     (is (=' (re-pattern "(?ims:ab)") (embed-flags (doto (js/RegExp.) (.compile "ab" "msiydgv")))))     ; ⚠️ footgun: non-embeddable flags are silently dropped
     (is (=' (re-pattern "(?ims:ab)") (embed-flags (doto (js/RegExp.) (.compile "ab" "ydsiumg"))))))))  ; ⚠️ footgun: non-embeddable flags are silently dropped
+
+(deftest regex?-tests
+  (testing "Not regexes"
+    (is (false? (regex? nil)))
+    (is (false? (regex? "")))
+    (is (false? (regex? \a)))
+    (is (false? (regex? 0)))
+    (is (false? (regex? 0.0)))
+    (is (false? (regex? true)))
+    (is (false? (regex? false))))
+  (testing "Regexes"
+    (is (true? (regex? #".+")))
+#?(:clj  (is (true? (regex? (java.util.regex.Pattern/compile "ab"))))
+   :cljs (is (true? (regex? (doto (js/RegExp.) (.compile "ab"))))))))
 
 (deftest str'-tests
   (testing "Basic cases"
@@ -229,6 +265,26 @@
     (is (=' #"\Qtrue\E" (qot true)))
     (is (=' #"\Qfoo\E" (qot #"foo")))  ; Technically quoting regexes is a Bad Idea™, but we test a simple example just in case
     (is (=' #"\Q.*\E"  (qot ".*")))))
+
+(deftest chcl-tests
+  (testing "chcl - nil, empty or blank"
+    (is (nil?       (chcl)))
+    (is (nil?       (chcl nil)))
+    (is (=' #""     (chcl "")))
+    (is (=' #""     (chcl #"")))
+    (is (=' #"[ ]"  (chcl " ")))
+    (is (=' #"[ ]"  (chcl #" ")))
+    (is (=' #"[  ]" (chcl "  ")))
+    (is (=' #"[  ]" (chcl #"  "))))
+  (testing "chcl"
+    (is (=' #"[abc]"                (chcl "abc")))
+    (is (=' #"[abc]"                (chcl #"abc")))
+    (is (=' #"[abc]"                (chcl "a" "b" "c")))
+    (is (=' #"[a-z]"                (chcl "a-z")))
+    (is (=' #"[\.\-\\]"             (chcl (esc ".-\\"))))  ; This combination of fn calls is likely to be common, so test it explicitly
+    (is (=' #"[\p{Punct}]"          (chcl "\\p{Punct}")))  ; Note: while JavaScript "supports" this regex, it doesn't work as one might expect because the 🤡tastic JS regex engine doesn't support POSIX character classes
+    (is (=' #"[\p{Punct}]"          (chcl #"\p{Punct}")))  ; ditto
+    (is (=' #"[\p{Alpha}\p{Digit}]" (chcl #"\p{Alpha}" #"\p{Digit}")))))  ; ditto
 
 (deftest basic-grouping-tests
   (testing "grp"
@@ -537,6 +593,8 @@
     (is (=' #"foo"                 (alt "foo" "foo")))   ; Deduplication
     (is (=' #"foo"                 (alt "foo" #"foo")))  ; Deduplication
     (is (=' #"0"                   (alt 0 "0" #"0")))    ; Deduplication
+#?(:clj  (is (=' #"(?Uiu:ab)"      (alt #"(?Uiu:ab)" #"ab(?i)(?U)(?u)")))                               ; Deduplication with flags
+   :cljs (is (=' #"(?ims:ab)"      (alt #"(?ims:ab)" (doto (js/RegExp.) (.compile "ab" "msiydgv"))))))  ; Deduplication with flags with ⚠️ footgun: non-embeddable flags are silently dropped
     (is (=' #"0|1|2|3|4|5|6|7|8|9" (apply alt (range 10)))))
   (testing "alt-grp"
     (is (nil?                          (alt-grp nil)))
