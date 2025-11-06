@@ -75,24 +75,24 @@ $ deps-try com.github.pmonks/wreck
 
 ;; Basics
 
-(re/esc ".*")
-;=> "\\.\\*"  ; Note: a String - most other fns return regexes
-
-(re/qot ".*")
-;=> #"\Q.*\E"
-
-(re/join #"a" #"b")
+(re/join #"a" #"b")  ; join is the fundamental operation provided by wreck
 ;=> #"ab"
 
-(re/join "[" #"\p{Punct}" #"\p{Space}" "]+")  ; join also supports strings (and other data
-                                              ; types), allowing syntactically invalid
-                                              ; fragments to be used to build up a valid
-                                              ; expression
+(re/join "[" #"\p{Punct}" #"\p{Space}" "]+")  ; join supports strings and other data types,
+                                              ; allowing syntactically invalid fragments to be
+                                              ; used to build up a valid expression
 ;=> #"[\p{Punct}\p{Space}]+"
 
 ; Because equality isn't defined for regexes in Clojure
 (re/=' #"ab" (re/join #"a" #"b"))
 ;=> true
+
+;Escaping and quoting
+(re/esc ".*")
+;=> "\\.\\*"  ; Note: a String - most other fns return regexes
+
+(re/qot ".*")
+;=> #"\Q.*\E"
 
 
 ;; Groups
