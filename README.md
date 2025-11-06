@@ -116,7 +116,7 @@ $ deps-try com.github.pmonks/wreck
 ;=> #"(?i:[abc]+)"  ; Flag groups, which apply a regex flag in a scoped manner
 
 (re/chcl #"\p{Punct}" #"\p{Space}")
-;=> #"[\p{Punct}\p{Space}]"  ; While not a "group" per say, character classes are conceptually
+;=> #"[\p{Punct}\p{Space}]"  ; While not a "group" per se, character classes are conceptually
                              ; similar
 
 
