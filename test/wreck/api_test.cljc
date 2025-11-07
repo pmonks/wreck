@@ -14,21 +14,19 @@
       :cljs [cljs.test        :refer-macros [deftest testing is]])
    #?(:clj  [wreck.test-utils :refer [time-execution]]
       :cljs [wreck.test-utils :refer-macros [time-execution]])
-            [wreck.api        :refer [has-non-embeddable-flags?
-                                      embed-flags  regex?
-                                      str' ='      empty?'
-                                      join esc     qot    chcl
-                                      grp  cg      ncg    flags-grp
-                                      opt  opt-grp opt-cg opt-ncg
-                                      zom  zom-grp zom-cg zom-ncg
-                                      oom  oom-grp oom-cg oom-ncg
-                                      nom  nom-grp nom-cg nom-ncg
-                                      exn  exn-grp exn-cg exn-ncg
-                                      n2m  n2m-grp n2m-cg n2m-ncg
-                                      alt  alt-grp alt-cg alt-ncg
-                                      and' and-grp and-cg and-ncg
-                                      or'  or-grp  or-cg  or-ncg
-                                      xor' xor-grp xor-cg xor-ncg]]))
+            [wreck.api        :refer [has-non-embeddable-flags? embed-flags  regex?
+                                      str' =' empty?' join esc qot
+                                               grp     cg     ncg     fgrp     chcl
+                                      opt  opt-grp opt-cg opt-ncg opt-fgrp opt-chcl
+                                      zom  zom-grp zom-cg zom-ncg zom-fgrp zom-chcl
+                                      oom  oom-grp oom-cg oom-ncg oom-fgrp oom-chcl
+                                      nom  nom-grp nom-cg nom-ncg nom-fgrp nom-chcl
+                                      exn  exn-grp exn-cg exn-ncg exn-fgrp exn-chcl
+                                      n2m  n2m-grp n2m-cg n2m-ncg n2m-fgrp n2m-chcl
+                                      alt  alt-grp alt-cg alt-ncg alt-fgrp
+                                      and' and-grp and-cg and-ncg and-fgrp
+                                      or'  or-grp  or-cg  or-ncg  or-fgrp
+                                      xor' xor-grp xor-cg xor-ncg xor-fgrp]]))
 
 ; Important note: because of the way reader conditionals work, regexes in _ALL_
 ; branches _ALWAYS_ get compiled on _ALL_ hosts. This means that platform-
@@ -266,26 +264,6 @@
     (is (=' #"\Qfoo\E" (qot #"foo")))  ; Technically quoting regexes is a Bad Idea™, but we test a simple example just in case
     (is (=' #"\Q.*\E"  (qot ".*")))))
 
-(deftest chcl-tests
-  (testing "chcl - nil, empty or blank"
-    (is (nil?       (chcl)))
-    (is (nil?       (chcl nil)))
-    (is (=' #""     (chcl "")))
-    (is (=' #""     (chcl #"")))
-    (is (=' #"[ ]"  (chcl " ")))
-    (is (=' #"[ ]"  (chcl #" ")))
-    (is (=' #"[  ]" (chcl "  ")))
-    (is (=' #"[  ]" (chcl #"  "))))
-  (testing "chcl"
-    (is (=' #"[abc]"                (chcl "abc")))
-    (is (=' #"[abc]"                (chcl #"abc")))
-    (is (=' #"[abc]"                (chcl "a" "b" "c")))
-    (is (=' #"[a-z]"                (chcl "a-z")))
-    (is (=' #"[\.\-\\]"             (chcl (esc ".-\\"))))  ; This combination of fn calls is likely to be common, so test it explicitly
-    (is (=' #"[\p{Punct}]"          (chcl "\\p{Punct}")))  ; Note: while JavaScript "supports" this regex, it doesn't work as one might expect because the 🤡tastic JS regex engine doesn't support POSIX character classes
-    (is (=' #"[\p{Punct}]"          (chcl #"\p{Punct}")))  ; ditto
-    (is (=' #"[\p{Alpha}\p{Digit}]" (chcl #"\p{Alpha}" #"\p{Digit}")))))  ; ditto
-
 (deftest basic-grouping-tests
   (testing "grp"
     (is (nil?                                           (grp)))
@@ -316,30 +294,48 @@
     (is (=' #"(?<groupName>.*)"                                (ncg "groupName" #"" #".*")))
     (is (=' #"(?<groupName>foo.*)"                             (ncg "groupName" #"foo" #".*")))
     (is (=' #"(?<apache>Apache(\s+Software)?(\s+Licen[cs]e)?)" (ncg "apache" "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
-  (testing "flags-grp"
-    (is (nil?                                             (flags-grp nil)))
-    (is (nil?                                             (flags-grp "")))
-    (is (nil?                                             (flags-grp " ")))
-    (is (nil?                                             (flags-grp "\n")))
-    (is (nil?                                             (flags-grp "\n   \r\n  \t ")))
-    (is (nil?                                             (flags-grp nil nil)))
-    (is (nil?                                             (flags-grp "" nil)))
-    (is (nil?                                             (flags-grp " " nil)))
-    (is (nil?                                             (flags-grp "\n" nil)))
-    (is (nil?                                             (flags-grp "\n   \r\n  \t " nil)))
-    (is (nil?                                             (flags-grp nil #"")))
-    (is (nil?                                             (flags-grp nil #".*")))
-    (is (nil?                                             (flags-grp nil #"ab" #"cd")))
-    (is (nil?                                             (flags-grp ""  #"foo" #".*")))
-    (is (nil?                                             (flags-grp "  " #"")))
-    (is (=' #"(?i:)"                                      (flags-grp "i" #"")))
-    (is (=' #"(?i:)"                                      (flags-grp "i" #"")))
-    (is (=' #"(?i:.*)"                                    (flags-grp "i" #".*")))
-    (is (=' #"(?im:.*)"                                   (flags-grp "mi" #".*")))
-    (is (=' #"(?im:)"                                     (flags-grp "mi" #"")))
-    (is (=' #"(?im:Apache(\s+Software)?(\s+Licen[cs]e)?)" (flags-grp "mi" "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?")))
+  (testing "fgrp"
+    (is (nil?                                             (fgrp nil)))
+    (is (nil?                                             (fgrp "")))
+    (is (nil?                                             (fgrp " ")))
+    (is (nil?                                             (fgrp "\n")))
+    (is (nil?                                             (fgrp "\n   \r\n  \t ")))
+    (is (nil?                                             (fgrp nil nil)))
+    (is (nil?                                             (fgrp "" nil)))
+    (is (nil?                                             (fgrp " " nil)))
+    (is (nil?                                             (fgrp "\n" nil)))
+    (is (nil?                                             (fgrp "\n   \r\n  \t " nil)))
+    (is (nil?                                             (fgrp nil #"")))
+    (is (nil?                                             (fgrp nil #".*")))
+    (is (nil?                                             (fgrp nil #"ab" #"cd")))
+    (is (nil?                                             (fgrp ""  #"foo" #".*")))
+    (is (nil?                                             (fgrp "  " #"")))
+    (is (=' #"(?i:)"                                      (fgrp "i" #"")))
+    (is (=' #"(?i:)"                                      (fgrp "i" #"")))
+    (is (=' #"(?i:.*)"                                    (fgrp "i" #".*")))
+    (is (=' #"(?im:.*)"                                   (fgrp "mi" #".*")))
+    (is (=' #"(?im:)"                                     (fgrp "mi" #"")))
+    (is (=' #"(?im:Apache(\s+Software)?(\s+Licen[cs]e)?)" (fgrp "mi" "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?")))
     (is (thrown? #?(:clj  java.util.regex.PatternSyntaxException
-                    :cljs js/SyntaxError)                  (flags-grp "42" #".*")))))
+                    :cljs js/SyntaxError)                 (fgrp "42" #".*"))))
+  (testing "chcl"
+    (is (nil?                       (chcl)))
+    (is (nil?                       (chcl nil)))
+    (is (=' #""                     (chcl "")))
+    (is (=' #""                     (chcl #"")))
+    (is (=' #"[ ]"                  (chcl " ")))
+    (is (=' #"[ ]"                  (chcl #" ")))
+    (is (=' #"[  ]"                 (chcl "  ")))
+    (is (=' #"[  ]"                 (chcl #"  ")))
+    (is (=' #"[abc]"                (chcl "abc")))
+    (is (=' #"[abc]"                (chcl #"abc")))
+    (is (=' #"[abc]"                (chcl "a" "b" "c")))
+    (is (=' #"[a-z]"                (chcl "a-z")))
+    (is (=' #"[\.\-\\]"             (chcl (esc ".-\\"))))  ; This combination of fn calls is likely to be common, so test it explicitly
+    (is (=' #"[\p{Punct}]"          (chcl "\\p{Punct}")))  ; Note: while JavaScript "supports" this regex, it doesn't work as one might expect because the 🤡tastic JS regex engine doesn't support POSIX character classes
+    (is (=' #"[\p{Punct}]"          (chcl #"\p{Punct}")))  ; ditto
+    (is (=' #"[\p{Alpha}\p{Digit}]" (chcl #"\p{Alpha}" #"\p{Digit}")))))  ; ditto
+
 
 (deftest opt-variant-tests
   (testing "opt"
@@ -378,7 +374,26 @@
     (is (=' #"(?<groupName>.*)?"                                (opt-ncg "groupName" #".*")))
     (is (=' #"(?<groupName>foo)?"                               (opt-ncg "groupName" #"foo")))
     (is (=' #"(?<apache>Apache)?"                               (opt-ncg "apache"    "Apache")))
-    (is (=' #"(?<apache>Apache(\s+Software)?(\s+Licen[cs]e)?)?" (opt-ncg "apache"    "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?")))))
+    (is (=' #"(?<apache>Apache(\s+Software)?(\s+Licen[cs]e)?)?" (opt-ncg "apache"    "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
+  (testing "opt-fgrp"
+    (is (nil?                                             (opt-fgrp nil)))
+    (is (nil?                                             (opt-fgrp nil nil)))
+    (is (nil?                                             (opt-fgrp "i" nil)))
+    (is (=' #"(?i:)?"                                     (opt-fgrp "i" #"")))
+    (is (=' #"(?i:x)?"                                    (opt-fgrp "i" #"x")))
+    (is (=' #"(?i:.*)?"                                   (opt-fgrp "i" #".*")))
+    (is (=' #"(?i:foo)?"                                  (opt-fgrp "i" #"foo")))
+    (is (=' #"(?i:Apache)?"                               (opt-fgrp "i" "Apache")))
+    (is (=' #"(?i:Apache(\s+Software)?(\s+Licen[cs]e)?)?" (opt-fgrp "i" "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
+  (testing "opt-chcl"
+    (is (nil?                             (opt-chcl)))
+    (is (nil?                             (opt-chcl nil)))
+    (is (thrown? #?(:clj  java.util.regex.PatternSyntaxException
+                    :cljs js/SyntaxError) (opt-chcl #"")))
+    (is (=' #"[x]?"                       (opt-chcl #"x")))
+    (is (=' #"[a-z]?"                     (opt-chcl #"a-z")))
+    (is (=' #"[abc]?"                     (opt-chcl "a" "b" "c")))
+    (is (=' #"[abc]?"                     (opt-chcl #"a" #"b" #"c")))))
 
 (deftest zom-variant-tests
   (testing "zom"
@@ -418,7 +433,26 @@
     (is (=' #"(?<groupName>.*)*"                                (zom-ncg "groupName" #".*")))
     (is (=' #"(?<groupName>foo)*"                               (zom-ncg "groupName" #"foo")))
     (is (=' #"(?<apache>Apache)*"                               (zom-ncg "apache"    "Apache")))
-    (is (=' #"(?<apache>Apache(\s+Software)?(\s+Licen[cs]e)?)*" (zom-ncg "apache"    "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?")))))
+    (is (=' #"(?<apache>Apache(\s+Software)?(\s+Licen[cs]e)?)*" (zom-ncg "apache"    "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
+  (testing "zom-fgrp"
+    (is (nil?                                             (zom-fgrp nil)))
+    (is (nil?                                             (zom-fgrp nil nil)))
+    (is (nil?                                             (zom-fgrp "i" nil)))
+    (is (=' #"(?i:)*"                                     (zom-fgrp "i" #"")))
+    (is (=' #"(?i:x)*"                                    (zom-fgrp "i" #"x")))
+    (is (=' #"(?i:.*)*"                                   (zom-fgrp "i" #".*")))
+    (is (=' #"(?i:foo)*"                                  (zom-fgrp "i" #"foo")))
+    (is (=' #"(?i:Apache)*"                               (zom-fgrp "i" "Apache")))
+    (is (=' #"(?i:Apache(\s+Software)?(\s+Licen[cs]e)?)*" (zom-fgrp "i" "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
+  (testing "zom-chcl"
+    (is (nil?                             (zom-chcl)))
+    (is (nil?                             (zom-chcl nil)))
+    (is (thrown? #?(:clj  java.util.regex.PatternSyntaxException
+                    :cljs js/SyntaxError) (zom-chcl #"")))
+    (is (=' #"[x]*"                       (zom-chcl #"x")))
+    (is (=' #"[a-z]*"                     (zom-chcl #"a-z")))
+    (is (=' #"[abc]*"                     (zom-chcl "a" "b" "c")))
+    (is (=' #"[abc]*"                     (zom-chcl #"a" #"b" #"c")))))
 
 (deftest oom-variant-tests
   (testing "oom"
@@ -458,7 +492,26 @@
     (is (=' #"(?<groupName>.*)+"                                (oom-ncg "groupName" #".*")))
     (is (=' #"(?<groupName>foo)+"                               (oom-ncg "groupName" #"foo")))
     (is (=' #"(?<apache>Apache)+"                               (oom-ncg "apache"    "Apache")))
-    (is (=' #"(?<apache>Apache(\s+Software)?(\s+Licen[cs]e)?)+" (oom-ncg "apache"    "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?")))))
+    (is (=' #"(?<apache>Apache(\s+Software)?(\s+Licen[cs]e)?)+" (oom-ncg "apache"    "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
+  (testing "oom-fgrp"
+    (is (nil?                                             (oom-fgrp nil)))
+    (is (nil?                                             (oom-fgrp nil nil)))
+    (is (nil?                                             (oom-fgrp "i" nil)))
+    (is (=' #"(?i:)+"                                     (oom-fgrp "i" #"")))
+    (is (=' #"(?i:x)+"                                    (oom-fgrp "i" #"x")))
+    (is (=' #"(?i:.*)+"                                   (oom-fgrp "i" #".*")))
+    (is (=' #"(?i:foo)+"                                  (oom-fgrp "i" #"foo")))
+    (is (=' #"(?i:Apache)+"                               (oom-fgrp "i" "Apache")))
+    (is (=' #"(?i:Apache(\s+Software)?(\s+Licen[cs]e)?)+" (oom-fgrp "i" "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
+  (testing "oom-chcl"
+    (is (nil?                             (oom-chcl)))
+    (is (nil?                             (oom-chcl nil)))
+    (is (thrown? #?(:clj  java.util.regex.PatternSyntaxException
+                    :cljs js/SyntaxError) (oom-chcl #"")))
+    (is (=' #"[x]+"                       (oom-chcl #"x")))
+    (is (=' #"[a-z]+"                     (oom-chcl #"a-z")))
+    (is (=' #"[abc]+"                     (oom-chcl "a" "b" "c")))
+    (is (=' #"[abc]+"                     (oom-chcl #"a" #"b" #"c")))))
 
 (deftest nom-variant-tests
   (testing "nom"
@@ -497,7 +550,26 @@
     (is (=' #"(?<groupName>.*){4,}"                                (nom-ncg "groupName" 4 #".*")))
     (is (=' #"(?<groupName>foo){3,}"                               (nom-ncg "groupName" 3 #"foo")))
     (is (=' #"(?<apache>Apache){2,}"                               (nom-ncg "apache"    2 "Apache")))
-    (is (=' #"(?<apache>Apache(\s+Software)?(\s+Licen[cs]e)?){1,}" (nom-ncg "apache"    1 "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?")))))
+    (is (=' #"(?<apache>Apache(\s+Software)?(\s+Licen[cs]e)?){1,}" (nom-ncg "apache"    1 "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
+  (testing "nom-fgrp"
+    (is (nil?                                                (nom-fgrp nil nil)))
+    (is (nil?                                                (nom-fgrp nil nil nil)))
+    (is (nil?                                                (nom-fgrp "i" 2 nil)))
+    (is (=' #"(?i:){5,}"                                     (nom-fgrp "i" 5 #"")))
+    (is (=' #"(?i:x){6,}"                                    (nom-fgrp "i" 6 #"x")))
+    (is (=' #"(?i:.*){2,}"                                   (nom-fgrp "i" 2 #".*")))
+    (is (=' #"(?i:foo){7,}"                                  (nom-fgrp "i" 7 #"foo")))
+    (is (=' #"(?i:Apache){8,}"                               (nom-fgrp "i" 8 "Apache")))
+    (is (=' #"(?i:Apache(\s+Software)?(\s+Licen[cs]e)?){5,}" (nom-fgrp "i" 5 "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
+  (testing "nom-chcl"
+    (is (nil?                        (nom-chcl nil)))
+    (is (nil?                        (nom-chcl nil nil)))
+#?(:clj  (is (=' #"{4,}"             (nom-chcl 4 #"")))   ; Valid (but nonsensical) regex on ClojureJVM
+   :cljs (is (thrown? js/SyntaxError (nom-chcl 4 #""))))  ; Invalid regex on ClojureScript
+    (is (=' #"[x]{7,}"               (nom-chcl 7 #"x")))
+    (is (=' #"[a-z]{2,}"             (nom-chcl 2 #"a-z")))
+    (is (=' #"[abc]{8,}"             (nom-chcl 8 "a" "b" "c")))
+    (is (=' #"[abc]{1,}"             (nom-chcl 1 #"a" #"b" #"c")))))
 
 (deftest exn-variant-tests
   (testing "exn"
@@ -539,12 +611,33 @@
     (is (=' #"(?<groupName>.*){4}"                                (exn-ncg "groupName" 4 #".*")))
     (is (=' #"(?<groupName>foo){3}"                               (exn-ncg "groupName" 3 #"foo")))
     (is (=' #"(?<apache>Apache){2}"                               (exn-ncg "apache"    2 "Apache")))
-    (is (=' #"(?<apache>Apache(\s+Software)?(\s+Licen[cs]e)?){1}" (exn-ncg "apache"    1 "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?")))))
+    (is (=' #"(?<apache>Apache(\s+Software)?(\s+Licen[cs]e)?){1}" (exn-ncg "apache"    1 "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
+  (testing "exn-fgrp"
+    (is (nil?                                               (exn-fgrp nil nil)))
+    (is (nil?                                               (exn-fgrp nil nil nil)))
+    (is (nil?                                               (exn-fgrp "i" 2 nil)))
+    (is (=' #"(?i:){5}"                                     (exn-fgrp "i" 5 #"")))
+    (is (=' #"(?i:x){6}"                                    (exn-fgrp "i" 6 #"x")))
+    (is (=' #"(?i:.*){2}"                                   (exn-fgrp "i" 2 #".*")))
+    (is (=' #"(?i:foo){7}"                                  (exn-fgrp "i" 7 #"foo")))
+    (is (=' #"(?i:Apache){8}"                               (exn-fgrp "i" 8 "Apache")))
+    (is (=' #"(?i:Apache(\s+Software)?(\s+Licen[cs]e)?){5}" (exn-fgrp "i" 5 "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
+  (testing "exn-chcl"
+    (is (nil?                        (exn-chcl nil)))
+    (is (nil?                        (exn-chcl nil nil)))
+#?(:clj  (is (=' #"{4}"              (exn-chcl 4 #"")))   ; Valid (but nonsensical) regex on ClojureJVM
+   :cljs (is (thrown? js/SyntaxError (exn-chcl 4 #""))))  ; Invalid regex on ClojureScript
+    (is (=' #"[x]{7}"                (exn-chcl 7 #"x")))
+    (is (=' #"[a-z]{2}"              (exn-chcl 2 #"a-z")))
+    (is (=' #"[abc]{8}"              (exn-chcl 8 "a" "b" "c")))
+    (is (=' #"[abc]{1}"              (exn-chcl 1 #"a" #"b" #"c")))))
 
 (deftest n2m-variant-tests
   (testing "n2m"
     (is (nil?                        (n2m nil nil nil)))
     (is (nil?                        (n2m nil nil #"")))
+    (is (nil?                        (n2m 2 nil nil)))
+    (is (nil?                        (n2m nil 4 nil)))
     (is (nil?                        (n2m 2 4 nil)))
 #?(:clj  (is (=' #"{2,4}"            (n2m 2 4 #"")))   ; Valid (but nonsensical) regex on ClojureJVM
    :cljs (is (thrown? js/SyntaxError (n2m 2 4 #""))))  ; Invalid regex on ClojureScript
@@ -580,7 +673,26 @@
     (is (=' #"(?<groupName>.*){4,11}"                                (n2m-ncg "groupName" 4 11 #".*")))
     (is (=' #"(?<groupName>foo){3,12}"                               (n2m-ncg "groupName" 3 12 #"foo")))
     (is (=' #"(?<apache>Apache){2,13}"                               (n2m-ncg "apache"    2 13 "Apache")))
-    (is (=' #"(?<apache>Apache(\s+Software)?(\s+Licen[cs]e)?){1,14}" (n2m-ncg "apache"    1 14 "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?")))))
+    (is (=' #"(?<apache>Apache(\s+Software)?(\s+Licen[cs]e)?){1,14}" (n2m-ncg "apache"    1 14 "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
+  (testing "n2m-fgrp"
+    (is (nil?                                                  (n2m-fgrp nil nil nil)))
+    (is (nil?                                                  (n2m-fgrp nil nil nil nil)))
+    (is (nil?                                                  (n2m-fgrp "i" 2 4  nil)))
+    (is (=' #"(?i:){5,9}"                                      (n2m-fgrp "i" 5 9  #"")))
+    (is (=' #"(?i:x){6,7}"                                     (n2m-fgrp "i" 6 7  #"x")))
+    (is (=' #"(?i:.*){2,99}"                                   (n2m-fgrp "i" 2 99 #".*")))
+    (is (=' #"(?i:foo){7,13}"                                  (n2m-fgrp "i" 7 13 #"foo")))
+    (is (=' #"(?i:Apache){8,8}"                                (n2m-fgrp "i" 8 8  "Apache")))
+    (is (=' #"(?i:Apache(\s+Software)?(\s+Licen[cs]e)?){5,17}" (n2m-fgrp "i" 5 17 "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
+  (testing "n2m-chcl"
+    (is (nil?                        (n2m-chcl nil nil)))
+    (is (nil?                        (n2m-chcl nil nil nil)))
+#?(:clj  (is (=' #"{4,4}"            (n2m-chcl 4 4  #"")))   ; Valid (but nonsensical) regex on ClojureJVM
+   :cljs (is (thrown? js/SyntaxError (n2m-chcl 4 4  #""))))  ; Invalid regex on ClojureScript
+    (is (=' #"[x]{7,9}"              (n2m-chcl 7 9  #"x")))
+    (is (=' #"[a-z]{2,99}"           (n2m-chcl 2 99 #"a-z")))
+    (is (=' #"[abc]{8,13}"           (n2m-chcl 8 13 "a" "b" "c")))
+    (is (=' #"[abc]{1,10}"           (n2m-chcl 1 10 #"a" #"b" #"c")))))
 
 (deftest alt-variant-tests
   (testing "alt"
@@ -624,7 +736,16 @@
     (is (=' #"(?<groupName>)"                  (alt-ncg "groupName" #"" #"")))  ; Nonsensical, but ensure we have well defined behaviour anyway
     (is (=' #"(?<groupName>foo|bar)"           (alt-ncg "groupName" #"foo" #"bar")))
     (is (=' #"(?<numbers>0|1|2|3|4|5|6|7|8|9)" (apply (partial alt-ncg "numbers") (range 10))))
-    (is (=' #"(?<numbers>0|1|2|3|4|5|6|7|8|9)" (apply (partial alt-ncg "numbers") (concat (range 10) (map str (range 10))))))))  ; Deduplication of equivalent regexes
+    (is (=' #"(?<numbers>0|1|2|3|4|5|6|7|8|9)" (apply (partial alt-ncg "numbers") (concat (range 10) (map str (range 10)))))))  ; Deduplication of equivalent regexes
+  (testing "alt-fgrp"
+    (is (nil?                           (alt-fgrp nil)))
+    (is (nil?                           (alt-fgrp nil nil)))
+    (is (nil?                           (alt-fgrp "i" nil)))
+    (is (=' #"(?i:)"                    (alt-fgrp "i" #"")))
+    (is (=' #"(?i:x)"                   (alt-fgrp "i" #"x")))
+    (is (=' #"(?i:)"                    (alt-fgrp "i" #"" #"")))  ; Nonsensical, but ensure we have well defined behaviour anyway
+    (is (=' #"(?i:foo|bar)"             (alt-fgrp "i" #"foo" #"bar")))
+    (is (=' #"(?i:0|1|2|3|4|5|6|7|8|9)" (apply (partial alt-fgrp "i") (range 10))))))
 
 (deftest and-variant-tests
   (testing "and'"
@@ -671,7 +792,17 @@
     (is (=' #"(?<groupName>aa)"          (and-ncg "groupName" #"a" #"a")))  ; Optimisation
     (is (=' #"(?<groupName>ab|ba)"       (and-ncg "groupName" #"a" #"b")))
     (is (=' #"(?<groupName>ab|ba)"       (and-ncg "groupName" #"a" #"b" nil)))
-    (is (=' #"(?<groupName>a\s+b|b\s+a)" (and-ncg "groupName" #"a" #"b" #"\s+")))))
+    (is (=' #"(?<groupName>a\s+b|b\s+a)" (and-ncg "groupName" #"a" #"b" #"\s+"))))
+  (testing "and-fgrp"
+    (is (nil?                   (and-fgrp nil nil nil)))
+    (is (nil?                   (and-fgrp nil nil nil nil)))
+    (is (=' #"(?i:a)"           (and-fgrp "i" #"a" nil)))
+    (is (=' #"(?i:a)"           (and-fgrp "i" #"a" #"")))  ; Optimisation
+    (is (=' #"(?i:b)"           (and-fgrp "i" #"" #"b")))  ; Optimisation
+    (is (=' #"(?i:aa)"          (and-fgrp "i" #"a" #"a")))  ; Optimisation
+    (is (=' #"(?i:ab|ba)"       (and-fgrp "i" #"a" #"b")))
+    (is (=' #"(?i:ab|ba)"       (and-fgrp "i" #"a" #"b" nil)))
+    (is (=' #"(?i:a\s+b|b\s+a)" (and-fgrp "i" #"a" #"b" #"\s+")))))
 
 (deftest or-variant-tests
   (testing "or'"
@@ -719,7 +850,18 @@
     (is (=' #"(?<groupName>aa|a)"            (or-ncg "groupName" #"a" #"a")))  ; Optimisation
     (is (=' #"(?<groupName>ab|ba|a|b)"       (or-ncg "groupName" #"a" #"b")))
     (is (=' #"(?<groupName>ab|ba|a|b)"       (or-ncg "groupName" #"a" #"b" nil)))
-    (is (=' #"(?<groupName>a\s+b|b\s+a|a|b)" (or-ncg "groupName" #"a" #"b" #"\s+")))))
+    (is (=' #"(?<groupName>a\s+b|b\s+a|a|b)" (or-ncg "groupName" #"a" #"b" #"\s+"))))
+  (testing "or-fgrp"
+    (is (nil?                       (or-fgrp nil nil nil)))
+    (is (nil?                       (or-fgrp nil nil nil nil)))
+    (is (nil?                       (or-fgrp "i" nil nil nil)))
+    (is (=' #"(?i:a)"               (or-fgrp "i" #"a" nil)))
+    (is (=' #"(?i:a|)"              (or-fgrp "i" #"a" #"")))  ; Optimisation
+    (is (=' #"(?i:b|)"              (or-fgrp "i" #"" #"b")))  ; Note how order is not what we might expect (but it is correct!)
+    (is (=' #"(?i:aa|a)"            (or-fgrp "i" #"a" #"a")))  ; Optimisation
+    (is (=' #"(?i:ab|ba|a|b)"       (or-fgrp "i" #"a" #"b")))
+    (is (=' #"(?i:ab|ba|a|b)"       (or-fgrp "i" #"a" #"b" nil)))
+    (is (=' #"(?i:a\s+b|b\s+a|a|b)" (or-fgrp "i" #"a" #"b" #"\s+")))))
 
 (deftest xor-variant-tests
   (testing "xor'"
@@ -751,7 +893,15 @@
     (is (=' #"(?<groupName>a|)"  (xor-ncg "groupName" #"a" #"")))
     (is (=' #"(?<groupName>|b)"  (xor-ncg "groupName" #"" #"b")))
     (is (=' #"(?<groupName>a)"   (xor-ncg "groupName" #"a" #"a")))  ; Optimisation
-    (is (=' #"(?<groupName>a|b)" (xor-ncg "groupName" #"a" #"b")))))
+    (is (=' #"(?<groupName>a|b)" (xor-ncg "groupName" #"a" #"b"))))
+  (testing "xor-fgrp"
+    (is (nil?                    (xor-fgrp nil nil nil)))
+    (is (nil?                    (xor-fgrp "i" nil nil)))
+    (is (=' #"(?i:a)"   (xor-fgrp "i" #"a" nil)))
+    (is (=' #"(?i:a|)"  (xor-fgrp "i" #"a" #"")))
+    (is (=' #"(?i:|b)"  (xor-fgrp "i" #"" #"b")))
+    (is (=' #"(?i:a)"   (xor-fgrp "i" #"a" #"a")))  ; Optimisation
+    (is (=' #"(?i:a|b)" (xor-fgrp "i" #"a" #"b")))))
 
 (defn- matches?
   [re s]
@@ -763,17 +913,19 @@
 
 #?(:clj
 (deftest composite-tests
-  ; The following regex ends up being ~300 characters long, partly because of the sheer number of times the words
-  ; "Lesser" and "Library" appear in it (in order to implement the nested alt/or)
-  (let [lorl-re (or-grp "Lesser" "Library" (alt-grp #"\s*/\s*" #"\s+or\s+"))
+  (let [ws      (chcl #"\p{Space}\p{IsWhitespace}")
+        ows     (zom ws)
+        mws     (oom ws)
+        lorl-re (or-grp "Lesser" "Library" (alt-grp (join ows "/" ows) (join mws "or" mws)))
+        ; The following regex ends up being ~800 characters long, and yet it's easy to reason about
         lgpl-re (join
                   #"(?<!\w)"
-                  (flags-grp "i"
+                  (fgrp "i"
                     (alt-ncg "lgpl"
                       "LGPL"
-                      (join "GNU" #"\s+" lorl-re #"\s+" "GPL")
-                      (join "GNU" #"\s+" lorl-re)
-                      (join lorl-re #"\s+" "GPL")))
+                      (join "GNU" mws lorl-re mws "GPL")
+                      (join "GNU" mws lorl-re)
+                      (join lorl-re mws "GPL")))
                   #"(?!\w)")]
     (testing "Matching tests"
       ; Matches

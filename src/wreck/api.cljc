@@ -100,7 +100,7 @@
 
   Note:
 
-  * **[[flags-grp]] is almost always a better choice than this function!**
+  * **[[fgrp]] is almost always a better choice than this function!**
     `embed-flags` is primarily intended for internal use by `wreck`, but may be
     useful in those rare cases where Clojure(Script) code receives a 3rd party
     regex, wishes to use it as part of composing a larger regex, doesn't
@@ -112,7 +112,7 @@
     matched case-insensitively by the result, which is _not_ the same as the
     original (which matches lower-case `a` only).  This is an unavoidable
     consequence of how the JVM regex engine reports flags.  If you really need
-    to use embedded flag(s) midway through a regex, use [[flags-grp]] to ensure
+    to use embedded flag(s) midway through a regex, use [[fgrp]] to ensure
     proper scoping of the flag(s).
   * ⚠️ On the JVM, the programmatic flags `LITERAL` and `CANON_EQ` have no
     embeddable equivalent, and will be silently dropped by this function.
@@ -129,26 +129,26 @@
 ;; FUNDAMENTAL PRIMITIVES
 
 (defn regex?
-  "Is `o` a regex?
+  "Is `x` a regex?
 
   Notes:
 
   * ClojureScript already has a `regexp?` predicate in `cljs.core`, but
     ClojureJVM doesn't.  See [this ask.clojure.org post](https://ask.clojure.org/index.php/1127/add-clojure-core-pattern-predicate)."
-  [o]
-  (wi/regex? o))  ; Ideally should eliminate this redundant call
+  [x]
+  (wi/regex? x))  ; Ideally should eliminate this redundant call
 
 (defn str'
-  "Returns the `String` representation of `o`, with special handling for
+  "Returns the `String` representation of `x`, with special handling for
   `RegExp` objects on ClojureScript in an attempt to correct JavaScript's
   **APPALLING** default stringification.
 
   Notes:
 
   * Embeds flags (as per [[embed-flags]])."
-  [o]
-  (when o
-    (-> o
+  [x]
+  (when x
+    (-> x
         embed-flags
         wi/raw-str)))
 
@@ -269,10 +269,8 @@
 
   * ⚠️ On ClojureScript nested character classes don't work as one might expect,
     even though they will compile just fine.  For example, this code matches as
-    expected on ClojureJVM, but does not on ClojureScript:
-    `(re-matches #\"[a[b[c]]]+\" \"abc\")`.  As a result it's worth being
-    particularly careful when composing character classes programmatically, to
-    avoid accidentally nesting them."
+    expected on ClojureJVM, but does not on ClojureScript (despite the regex
+    compiling): `(re-matches #\"[[a-m][o-z]]+\" \"az\")`."
   [& res]
   (when-let [res (seq (filter identity res))]
     (let [exp (apply join res)]
@@ -317,8 +315,8 @@
     (when-let [res (seq (filter identity res))]
       (join "(?<" nm ">" (apply join res) ")"))))  ; Note: don't optimise empty named capturing groups, because that will throw out code that indexes into capturing groups
 
-(defn flags-grp
-  "As for [[grp]], but prefixes the group with `flgs` (a `String`):
+(defn fgrp
+  "As for [[grp]], but creates an embedded flag group with `flgs` (a `String`):
 
   * `(?flgs:res)`
 
@@ -333,9 +331,8 @@
     `(?i)`) have no explicit scope and so cannot be reliably used to compose
     larger regexes.  `wreck` makes a best effort to always convert such
     'unscoped' flags into their embedded (scoped) equivalents (using
-    [[embed-flags]]) when composing larger regexes , but using `flags-grp`
-    explicitly in the first place is easier to reason about and avoids potential
-    footguns.
+    [[embed-flags]]) when composing larger regexes , but using `fgrp` voids
+    potential footguns.
   * Removes any ungrouped embedded flags in `re` (e.g. `(?i)ab`), but does _not_
     add them to `flgs` if they aren't already there.
   * ⚠️ On the JVM, ungrouped embedded flags _in the middle of `re`_ (e.g.
@@ -353,6 +350,10 @@
   (when-not (s/blank? flgs)
     (when-let [res (seq (filter identity res))]
       (wi/set-flags (apply join res) flgs))))
+
+(def ^:deprecated flags-grp
+  "See [[fgrp]]"
+  fgrp)
 
 
 ;; OPTIONAL
@@ -390,6 +391,23 @@
     (when-let [res (seq (filter identity res))]
       (opt (apply (partial ncg nm) res)))))
 
+(defn opt-fgrp
+  "[[fgrp]] then [[opt]]:
+
+  * `(?flgs:res)?`"
+  [flgs & res]
+  (when-not (s/blank? flgs)
+    (when-let [res (seq (filter identity res))]
+      (opt (apply (partial fgrp flgs) res)))))
+
+(defn opt-chcl
+  "[[chcl]] then [[opt]]:
+
+  * `[res]?`"
+  [& res]
+  (when-let [res (seq (filter identity res))]
+    (opt (apply chcl res))))
+
 
 ;; ZERO OR MORE
 
@@ -426,6 +444,23 @@
     (when-let [res (seq (filter identity res))]
       (zom (apply (partial ncg nm) res)))))
 
+(defn zom-fgrp
+  "[[fgrp]] then [[zom]]:
+
+  * `(?flgs:res)*`"
+  [flgs & res]
+  (when-not (s/blank? flgs)
+    (when-let [res (seq (filter identity res))]
+      (zom (apply (partial fgrp flgs) res)))))
+
+(defn zom-chcl
+  "[[chcl]] then [[zom]]:
+
+  * `[res]*`"
+  [& res]
+  (when-let [res (seq (filter identity res))]
+    (zom (apply chcl res))))
+
 
 ;; ONE OR MORE
 
@@ -461,6 +496,23 @@
   (when-not (s/blank? nm)
     (when-let [res (seq (filter identity res))]
       (oom (apply (partial ncg nm) res)))))
+
+(defn oom-fgrp
+  "[[fgrp]] then [[oom]]:
+
+  * `(?flgs:res)+`"
+  [flgs & res]
+  (when-not (s/blank? flgs)
+    (when-let [res (seq (filter identity res))]
+      (oom (apply (partial fgrp flgs) res)))))
+
+(defn oom-chcl
+  "[[chcl]] then [[oom]]:
+
+  * `[res]+`"
+  [& res]
+  (when-let [res (seq (filter identity res))]
+    (oom (apply chcl res))))
 
 
 ;; N OR MORE
@@ -500,6 +552,23 @@
     (when-let [res (seq (filter identity res))]
       (nom n (apply (partial ncg nm) res)))))
 
+(defn nom-fgrp
+  "[[fgrp]] then [[nom]]:
+
+  * `(?flgs:res){n,}`"
+  [flgs n & res]
+  (when-not (s/blank? flgs)
+    (when-let [res (seq (filter identity res))]
+      (nom n (apply (partial fgrp flgs) res)))))
+
+(defn nom-chcl
+  "[[chcl]] then [[nom]]:
+
+  * `[res]{n,}`"
+  [n & res]
+  (when-let [res (seq (filter identity res))]
+    (nom n (apply chcl res))))
+
 
 ;; EXACTLY N
 
@@ -538,6 +607,23 @@
     (when-let [res (seq (filter identity res))]
       (exn n (apply (partial ncg nm) res)))))
 
+(defn exn-fgrp
+  "[[fgrp]] then [[exn]]:
+
+  * `(?flgs:res){n}`"
+  [flgs n & res]
+  (when-not (s/blank? flgs)
+    (when-let [res (seq (filter identity res))]
+      (exn n (apply (partial fgrp flgs) res)))))
+
+(defn exn-chcl
+  "[[chcl]] then [[exn]]:
+
+  * `[res]{n}`"
+  [n & res]
+  (when-let [res (seq (filter identity res))]
+    (exn n (apply chcl res))))
+
 
 ;; N TO M
 
@@ -575,6 +661,23 @@
   (when (and (not (s/blank? nm)) n m)
     (when-let [res (seq (filter identity res))]
       (n2m n m (apply (partial ncg nm) res)))))
+
+(defn n2m-fgrp
+  "[[fgrp]] then [[n2m]]:
+
+  * `(?flgs:res){n,m}`"
+  [flgs n m & res]
+  (when-not (s/blank? flgs)
+    (when-let [res (seq (filter identity res))]
+      (n2m n m (apply (partial fgrp flgs) res)))))
+
+(defn n2m-chcl
+  "[[chcl]] then [[n2m]]:
+
+  * `[res]{n,m}`"
+  [n m & res]
+  (when-let [res (seq (filter identity res))]
+    (n2m n m (apply chcl res))))
 
 
 ;; ALTERNATION
@@ -617,6 +720,15 @@
   * `(?<nm>re|re|re|...)`"
   [nm & res]
   (ncg nm (apply alt res)))
+
+(defn alt-fgrp
+  "[[alt]] then [[fgrp]]:
+
+  * `(?flgs:re|re|re|...)`"
+  [flgs & res]
+  (fgrp flgs (apply alt res)))
+
+; Note: no -chcl variant for alt, since that doesn't make sense
 
 
 ;; LOGICAL OPERATORS
@@ -681,6 +793,21 @@
   ([nm a b s]
    (ncg nm (and' a b s))))
 
+(defn and-fgrp
+  "[[and']] then [[fgrp]]:
+
+  * `(?flgs:asb|bsa)`
+
+  Notes:
+
+  * Unlike most other `-fgrp` fns, this one does _not_ accept any number of res.
+  * May optimise the expression (via de-duplication in [[alt]])."
+  ([flgs a b] (and-fgrp flgs a b nil))
+  ([flgs a b s]
+   (fgrp flgs (and' a b s))))
+
+; Note: no -chcl variant for and, since that doesn't make sense
+
 (defn or'
   "Returns an 'inclusive or' regex that will match `a` or `b`, or both, in any
   order, and with the separator regex `s` (if provided) between them:
@@ -741,6 +868,21 @@
   ([nm a b s]
    (ncg nm (or' a b s))))
 
+(defn or-fgrp
+  "[[or']] then [[fgrp]]:
+
+  * `(?flgs:asb|bsa|a|b)`
+
+  Notes:
+
+  * Unlike most other `-flgs` fns, this one does _not_ accept any number of res.
+  * May optimise the expression (via de-duplication in [[alt]])."
+  ([flgs a b] (or-fgrp flgs a b nil))
+  ([flgs a b s]
+   (fgrp flgs (or' a b s))))
+
+; Note: no -chcl variant for or, since that doesn't make sense
+
 (defn xor'
   "Returns an 'exclusive or' regex that will match `a` or `b`, but _not_ both:
 
@@ -796,3 +938,17 @@
   * May optimise the expression (via de-duplication in [[alt]])."
   [nm a b]
   (ncg nm (xor' a b)))
+
+(defn xor-fgrp
+  "[[xor']] then [[fgrp]]:
+
+  * `(?flgs:a|b)`
+
+  Notes:
+
+  * Unlike most other `-fgrp` fns, this one does _not_ accept any number of res.
+  * May optimise the expression (via de-duplication in [[alt]])."
+  [flgs a b]
+  (fgrp flgs (xor' a b)))
+
+; Note: no -chcl variant for xor, since that doesn't make sense

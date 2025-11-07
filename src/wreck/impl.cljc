@@ -18,14 +18,14 @@
 ;; FUNDAMENTAL PRIMITIVES
 
 (defn regex?
-  "Is `o` a regex?
+  "Is `x` a regex?
 
   Notes:
 
   * ClojureScript already has a `regexp?` predicate in `cljs.core`, but
     ClojureJVM doesn't.  See [this ask.clojure.org post](https://ask.clojure.org/index.php/1127/add-clojure-core-pattern-predicate)."
-  [o]
-  (instance? #?(:clj java.util.regex.Pattern :cljs js/RegExp) o))
+  [x]
+  (instance? #?(:clj java.util.regex.Pattern :cljs js/RegExp) x))
 
 ; We have to do this chicanery because regexes and strings don't round-trip in JavaScript  🙄
 ; This awful code is a best effort to handle this lunacy.
@@ -44,14 +44,14 @@
   Note:
 
   * Ignores all programmatic (non-embedded) flags in the regex."
-  [o]
-  (when o
+  [x]
+  (when x
 #?(:clj
-     (str o)  ; No special handling needed on the JVM
+     (str x)  ; No special handling needed on the JVM
    :cljs
-    (if-not (regex? o)
-      (str o)
-      (let [src (goog.object/get o "source")]  ; Remove leading and trailing "/" (inserted by JavaScript's idiotic RegExp class)
+    (if-not (regex? x)
+      (str x)
+      (let [src (goog.object/get x "source")]  ; Remove leading and trailing "/" (inserted by JavaScript's idiotic RegExp class)
         (-> src
             (s/replace "(?:)" "")              ; Remove redundant non capturing groups (inserted by JavaScript's idiotic RegExp class when a regex is blank)
             (s/replace "\\/"  "/")))))))       ; Remove redundant escapings of "/" (inserted by JavaScript's idiotic RegExp class)
