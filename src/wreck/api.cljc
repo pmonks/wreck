@@ -120,7 +120,7 @@
   * ⚠️ On JavaScript, only the flags `i`, `m`, and `s` can be embedded.  All
     other flags will be silently dropped by this function."
   [re]
-  (if-let [rf (wi/raw-flags re)]  ; Check raw flags, in case we have to strip some
+  (if-let [rf (wi/raw-flags re)]  ; Check raw flags, in case there are non-embeddable flags on the JVM that need to be stripped (wi/flags ignores non-embeddable flags)
     (let [f #?(:clj  (wi/flags re)
                :cljs (s/join (set/intersection embeddable-flags (set (seq rf)))))]
       (wi/set-flags re f))
