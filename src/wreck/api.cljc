@@ -41,6 +41,7 @@
    #?(:cljs [clojure.set    :as set])
    #?(:cljs [goog.object])))
 
+(def ^:private empty-regex #"")
 
 ;; FLAGS HANDLING
 
@@ -75,7 +76,7 @@
     `LITERAL` and `CANON_EQ`.
   * On JavaScript, this is every flag _except_ `i`, `m`, and `s`."
   [re]
-  (if-let [flgs (wi/raw-flags re)]
+  (if-let [^String flgs (wi/raw-flags re)]
 #?(:clj
     (boolean (seq (filter (complement zero?) (map #(bit-and flgs %) non-embeddable-flags))))
   :cljs
@@ -119,11 +120,13 @@
   * ⚠️ On JavaScript, only the flags `i`, `m`, and `s` can be embedded.  All
     other flags will be silently dropped by this function."
   [re]
-  (if-let [rf (wi/raw-flags re)]  ; Check raw flags, in case we have to strip some
+  (if-let [rf (wi/raw-flags re)]  ; Check raw flags, in case there are non-embeddable flags on the JVM that need to be stripped (wi/flags ignores non-embeddable flags)
     (let [f #?(:clj  (wi/flags re)
                :cljs (s/join (set/intersection embeddable-flags (set (seq rf)))))]
       (wi/set-flags re f))
-    re))
+    (if (nil? re)
+      empty-regex
+      re)))
 
 
 ;; FUNDAMENTAL PRIMITIVES
@@ -183,7 +186,7 @@
 
   * Unlike `clojure.core/distinct`, returns `nil` if the result is empty.
   * Flags in each re are embedded, as per [[embed-flags]], before checking for
-    equality, though the result contains the original re and may ."
+    equality, and the embedded version will be returned."
   [res]
   (when res
     (loop [[f & r] res
@@ -204,24 +207,26 @@
   * Takes flags (if any) into account."
   [re]
   (or (nil? re)
-      (=' #"" re)))
+      (=' empty-regex re)))
 
 (defn join
   "Returns a regex that is all of the `res` joined together. Each element in
   `res` can be a regex, a `String` or something that can be turned into a
-  `String` (including numbers, etc.).  Ignores `nil` values in `res`, and
-  returns `nil` when no `res` are provided or they're all `nil`.
+  `String` (including numbers, etc.).  Returns an empty regex (`#\"\"`) if no
+  `res` are provided, or they're all [[empty?']].
 
   Notes:
 
   * ⚠️ In ClojureScript be cautious about using numbers in these calls, since
     JavaScript's number handling is a 🤡show.  See the unit tests for examples."
   [& res]
-  (when-let [res (seq (filter identity res))]
-    (re-pattern (s/join (map str' res)))))
+  (if-let [res (seq (filter identity res))]
+    (re-pattern (s/join (map str' res)))
+    empty-regex))
 
 (defn esc
-  "Escapes `s` (a `String`) for use in a regex, returning a `String`.
+  "Escapes `s` (a `String`) for use in a regex, returning a `String`.  Returns
+  `nil` if `s` is `nil`.
 
   Notes:
 
@@ -252,9 +257,12 @@
 (defn qot
   "Quotes `re`:
 
-  * `\\Qre\\E`"
+  * `\\Qre\\E`
+
+  Returns an empty regex (`#\"\"`) if `re` is [[empty?']]."
   [re]
-  (when re
+  (if (empty?' re)
+    empty-regex
     (join "\\Q" re "\\E")))
 
 
@@ -265,6 +273,9 @@
 
   * `[res]`
 
+  Returns an empty regex (`#\"\"`) if no `res` are provided, or they're all
+  [[empty?']].
+
   Notes:
 
   * ⚠️ On ClojureScript nested character classes don't work as one might expect,
@@ -272,11 +283,10 @@
     expected on ClojureJVM, but does not on ClojureScript (despite the regex
     compiling): `(re-matches #\"[[a-m][o-z]]+\" \"az\")`."
   [& res]
-  (when-let [res (seq (filter identity res))]
-    (let [exp (apply join res)]
-      (if (empty?' exp)
-        #""
-        (join "[" exp "]")))))
+  (let [exp (apply join res)]
+    (if (empty?' exp)
+      empty-regex
+      (join "[" exp "]"))))
 
 
 ;; GROUPS
@@ -285,44 +295,51 @@
   "As for [[join]], but encloses the joined `res` into a single non-capturing
   group:
 
-  * `(?:res)`"
+  * `(?:res)`
+
+  Returns an empty regex (`#\"\"`) if no `res` are provided, or they're all
+  [[empty?']]."
   [& res]
-  (when-let [res (seq (filter identity res))]
-    ; Here we optimise out an empty non-capturing group
-    (let [exp (apply join res)]
-      (if (empty?' exp)
-        #""
-        (join "(?:" exp ")")))))
+  ; Here we optimise out an empty non-capturing group, which does NOT break code that indexes into capturing groups (since non-capturing groups never have an index!)
+  (let [exp (apply join res)]
+    (if (empty?' exp)
+      empty-regex
+      (join "(?:" exp ")"))))
 
 (defn cg
-  "As for [[grp]], but uses a capturing group:
+  "As for [[grp]], but emits a capturing group:
 
-  * `(res)`"
+  * `(res)`
+
+  Returns an empty capturing group (`#\"()\"`) if no `res` are provided, or
+  they're all [[empty?']]. It does this to ensure that capturing groups are
+  preserved during composition, even if they're empty (since not doing so will
+  break code that uses indexes to access matched group content)."
   [& res]
-  (when-let [res (seq (filter identity res))]
-    (join "(" (apply join res) ")")))  ; Note: don't optimise empty capturing groups, because that will throw out code that indexes into capturing groups
+  ; Note: don't optimise empty capturing groups, because that will break code that indexes into capturing groups
+  (join "(" (apply join res) ")"))
 
 (defn ncg
-  "As for [[grp]], but uses a named capturing group named `nm`:
+  "As for [[grp]], but emits a named capturing group named `nm`:
 
   * `(?<nm>res)`
 
-  Returns `nil` if `nm` is `nil` or blank. Throws if `nm` is an invalid name for
-  a named capturing group (alphanumeric only, must start with an alphabetical
+  Devolves to [[cg]] if `nm` is blank. Throws if `nm` is an invalid name for a
+  named capturing group (alphanumeric only, must start with an alphabetical
   character, must be unique within the regex)."
-  [nm & res]
-  (when-not (s/blank? nm)
-    (when-let [res (seq (filter identity res))]
-      (join "(?<" nm ">" (apply join res) ")"))))  ; Note: don't optimise empty named capturing groups, because that will throw out code that indexes into capturing groups
+  [^String nm & res]
+  ; Note: don't optimise empty named capturing groups, because that will break code that indexes into capturing groups
+  (if (s/blank? nm)
+    (apply cg res)
+    (join "(?<" nm ">" (apply join res) ")")))
 
 (defn fgrp
-  "As for [[grp]], but creates an embedded flag group with `flgs` (a `String`):
+  "As for [[grp]], but emits an embedded flag group with `flgs` (a `String`):
 
   * `(?flgs:res)`
 
-  Returns `nil` if `flgs` is `nil` or empty.  Throws if `flgs` contains an
-  invalid flag character, including those that (ClojureScript only) cannot be
-  embedded.
+  Devolves to [[grp]] if `flgs` is blank.  Throws if `flgs` contains an invalid
+  flag character, including those that (ClojureScript only) cannot be embedded.
 
   Notes:
 
@@ -346,10 +363,13 @@
   * For JavaScript, see the [`RegExp` flags reference](https://www.w3schools.com/js/js_regexp_flags.asp)
     for the set of valid flag characters (while keeping in mind most of them
     can't be embedded)."
-  [flgs & res]
-  (when-not (s/blank? flgs)
-    (when-let [res (seq (filter identity res))]
-      (wi/set-flags (apply join res) flgs))))
+  [^String flgs & res]
+  (let [exp (apply join res)]
+    (if (empty?' exp)
+      empty-regex
+      (if (s/blank? flgs)
+        (apply grp res)
+        (wi/set-flags exp flgs)))))
 
 (def ^:deprecated flags-grp
   "See [[fgrp]]"
@@ -361,9 +381,12 @@
 (defn opt
   "Returns a regex where `re` is optional:
 
-  * `re?`"
+  * `re?`
+
+  Returns an empty regex (`#\"\"`) if `re` is [[empty?']]."
   [re]
-  (when re
+  (if (empty?' re)
+    empty-regex
     (join re "?")))
 
 (defn opt-grp
@@ -371,42 +394,35 @@
 
   * `(?:res)?`"
   [& res]
-  (when-let [res (seq (filter identity res))]
-    (opt (apply grp res))))
+  (opt (apply grp res)))
 
 (defn opt-cg
   "[[cg]] then [[opt]]:
 
   * `(res)?`"
   [& res]
-  (when-let [res (seq (filter identity res))]
-    (opt (apply cg res))))
+  (opt (apply cg res)))
 
 (defn opt-ncg
   "[[ncg]] then [[opt]]:
 
   * `(?<nm>res)?`"
-  [nm & res]
-  (when-not (s/blank? nm)
-    (when-let [res (seq (filter identity res))]
-      (opt (apply (partial ncg nm) res)))))
+  [^String nm & res]
+  (opt (apply (partial ncg nm) res)))
 
 (defn opt-fgrp
   "[[fgrp]] then [[opt]]:
 
   * `(?flgs:res)?`"
-  [flgs & res]
-  (when-not (s/blank? flgs)
-    (when-let [res (seq (filter identity res))]
-      (opt (apply (partial fgrp flgs) res)))))
+  [^String flgs & res]
+  (opt (apply (partial fgrp flgs) res)))
 
 (defn opt-chcl
   "[[chcl]] then [[opt]]:
 
   * `[res]?`"
   [& res]
-  (when-let [res (seq (filter identity res))]
-    (opt (apply chcl res))))
+  (opt (apply chcl res)))
 
 
 ;; ZERO OR MORE
@@ -414,9 +430,12 @@
 (defn zom
   "Returns a regex where `re` will match zero or more times:
 
-  * `re*`"
+  * `re*`
+
+  Returns an empty regex (`#\"\"`) if `re` is [[empty?']]."
   [re]
-  (when re
+  (if (empty?' re)
+    empty-regex
     (join re "*")))
 
 (defn zom-grp
@@ -424,42 +443,35 @@
 
   * `(?:res)*`"
   [& res]
-  (when-let [res (seq (filter identity res))]
-    (zom (apply grp res))))
+  (zom (apply grp res)))
 
 (defn zom-cg
   "[[cg]] then [[zom]]:
 
   * `(res)*`"
   [& res]
-  (when-let [res (seq (filter identity res))]
-    (zom (apply cg res))))
+  (zom (apply cg res)))
 
 (defn zom-ncg
   "[[ncg]] then [[zom]]:
 
   * `(?<nm>res)*`"
-  [nm & res]
-  (when-not (s/blank? nm)
-    (when-let [res (seq (filter identity res))]
-      (zom (apply (partial ncg nm) res)))))
+  [^String nm & res]
+  (zom (apply (partial ncg nm) res)))
 
 (defn zom-fgrp
   "[[fgrp]] then [[zom]]:
 
   * `(?flgs:res)*`"
-  [flgs & res]
-  (when-not (s/blank? flgs)
-    (when-let [res (seq (filter identity res))]
-      (zom (apply (partial fgrp flgs) res)))))
+  [^String flgs & res]
+  (zom (apply (partial fgrp flgs) res)))
 
 (defn zom-chcl
   "[[chcl]] then [[zom]]:
 
   * `[res]*`"
   [& res]
-  (when-let [res (seq (filter identity res))]
-    (zom (apply chcl res))))
+  (zom (apply chcl res)))
 
 
 ;; ONE OR MORE
@@ -467,9 +479,12 @@
 (defn oom
   "Returns a regex where `re` will match one or more times:
 
-  * `re+`"
+  * `re+`
+
+  Returns an empty regex (`#\"\"`) if `re` is [[empty?']]."
   [re]
-  (when re
+  (if (empty?' re)
+    empty-regex
     (join re "+")))
 
 (defn oom-grp
@@ -477,42 +492,35 @@
 
   * `(?:res)+`"
   [& res]
-  (when-let [res (seq (filter identity res))]
-    (oom (apply grp res))))
+  (oom (apply grp res)))
 
 (defn oom-cg
   "[[cg]] then [[oom]]:
 
   * `(res)+`"
   [& res]
-  (when-let [res (seq (filter identity res))]
-    (oom (apply cg res))))
+  (oom (apply cg res)))
 
 (defn oom-ncg
   "[[ncg]] then [[oom]]:
 
   * `(?<nm>res)+`"
-  [nm & res]
-  (when-not (s/blank? nm)
-    (when-let [res (seq (filter identity res))]
-      (oom (apply (partial ncg nm) res)))))
+  [^String nm & res]
+  (oom (apply (partial ncg nm) res)))
 
 (defn oom-fgrp
   "[[fgrp]] then [[oom]]:
 
   * `(?flgs:res)+`"
-  [flgs & res]
-  (when-not (s/blank? flgs)
-    (when-let [res (seq (filter identity res))]
-      (oom (apply (partial fgrp flgs) res)))))
+  [^String flgs & res]
+  (oom (apply (partial fgrp flgs) res)))
 
 (defn oom-chcl
   "[[chcl]] then [[oom]]:
 
   * `[res]+`"
   [& res]
-  (when-let [res (seq (filter identity res))]
-    (oom (apply chcl res))))
+  (oom (apply chcl res)))
 
 
 ;; N OR MORE
@@ -520,54 +528,48 @@
 (defn nom
   "Returns a regex where `re` will match `n` or more times:
 
-  * `re{n,}`"
-  [n re]
-  (when (and n re)
+  * `re{n,}`
+
+  Returns an empty regex (`#\"\"`) if `re` is [[empty?']]."
+  [^Long n re]
+  (if (empty?' re)
+    empty-regex
     (join re "{" n ",}")))
 
 (defn nom-grp
   "[[grp]] then [[nom]]:
 
   * `(?:res){n,}`"
-  [n & res]
-  (when n
-    (when-let [res (seq (filter identity res))]
-      (nom n (apply grp res)))))
+  [^Long n & res]
+  (nom n (apply grp res)))
 
 (defn nom-cg
   "[[cg]] then [[nom]]:
 
   * `(res){n,}`"
-  [n & res]
-  (when n
-    (when-let [res (seq (filter identity res))]
-      (nom n (apply cg res)))))
+  [^Long n & res]
+  (nom n (apply cg res)))
 
 (defn nom-ncg
   "[[ncg]] then [[nom]]:
 
   * `(?<nm>res){n,}`"
-  [nm n & res]
-  (when (and (not (s/blank? nm)) n)
-    (when-let [res (seq (filter identity res))]
-      (nom n (apply (partial ncg nm) res)))))
+  [^String nm ^Long n & res]
+  (nom n (apply (partial ncg nm) res)))
 
 (defn nom-fgrp
   "[[fgrp]] then [[nom]]:
 
   * `(?flgs:res){n,}`"
-  [flgs n & res]
-  (when-not (s/blank? flgs)
-    (when-let [res (seq (filter identity res))]
-      (nom n (apply (partial fgrp flgs) res)))))
+  [^String flgs ^Long n & res]
+  (nom n (apply (partial fgrp flgs) res)))
 
 (defn nom-chcl
   "[[chcl]] then [[nom]]:
 
   * `[res]{n,}`"
-  [n & res]
-  (when-let [res (seq (filter identity res))]
-    (nom n (apply chcl res))))
+  [^Long n & res]
+  (nom n (apply chcl res)))
 
 
 ;; EXACTLY N
@@ -575,54 +577,48 @@
 (defn exn
   "Returns a regex where `re` will match exactly `n` times:
 
-  * `re{n}`"
-  [n re]
-  (when (and n re)
+  * `re{n}`
+
+  Returns an empty regex (`#\"\"`) if `re` is [[empty?']]."
+  [^Long n re]
+  (if (empty?' re)
+    empty-regex
     (join re "{" n "}")))
 
 (defn exn-grp
   "[[grp]] then [[exn]]:
 
   * `(?:res){n}`"
-  [n & res]
-  (when n
-    (when-let [res (seq (filter identity res))]
-      (exn n (apply grp res)))))
+  [^Long n & res]
+  (exn n (apply grp res)))
 
 (defn exn-cg
   "[[cg]] then [[exn]]:
 
   * `(res){n}`"
-  [n & res]
-  (when n
-    (when-let [res (seq (filter identity res))]
-      (exn n (apply cg res)))))
+  [^Long n & res]
+  (exn n (apply cg res)))
 
 (defn exn-ncg
   "[[ncg]] then [[exn]]:
 
   * `(?<nm>res){n}`"
-  [nm n & res]
-  (when (and (not (s/blank? nm)) n)
-    (when-let [res (seq (filter identity res))]
-      (exn n (apply (partial ncg nm) res)))))
+  [^String nm ^Long n & res]
+  (exn n (apply (partial ncg nm) res)))
 
 (defn exn-fgrp
   "[[fgrp]] then [[exn]]:
 
   * `(?flgs:res){n}`"
-  [flgs n & res]
-  (when-not (s/blank? flgs)
-    (when-let [res (seq (filter identity res))]
-      (exn n (apply (partial fgrp flgs) res)))))
+  [^String flgs ^Long n & res]
+  (exn n (apply (partial fgrp flgs) res)))
 
 (defn exn-chcl
   "[[chcl]] then [[exn]]:
 
   * `[res]{n}`"
-  [n & res]
-  (when-let [res (seq (filter identity res))]
-    (exn n (apply chcl res))))
+  [^Long n & res]
+  (exn n (apply chcl res)))
 
 
 ;; N TO M
@@ -630,54 +626,48 @@
 (defn n2m
   "Returns a regex where `re` will match from `n` to `m` times:
 
-  * `re{n,m}`"
-  [n m re]
-  (when (and n m re)
+  * `re{n,m}`
+
+  Returns an empty regex (`#\"\"`) if `re` is [[empty?']]."
+  [^Long n ^Long m re]
+  (if (empty?' re)
+    empty-regex
     (join re "{" n "," m "}")))
 
 (defn n2m-grp
   "[[grp]] then [[n2m]]:
 
   * `(?:res){n,m}`"
-  [n m & res]
-  (when (and n m)
-    (when-let [res (seq (filter identity res))]
-      (n2m n m (apply grp res)))))
+  [^Long n ^Long m & res]
+  (n2m n m (apply grp res)))
 
 (defn n2m-cg
   "[[cg]] then [[n2m]]:
 
   * `(res){n,m}`"
-  [n m & res]
-  (when (and n m)
-    (when-let [res (seq (filter identity res))]
-      (n2m n m (apply cg res)))))
+  [^Long n ^Long m & res]
+  (n2m n m (apply cg res)))
 
 (defn n2m-ncg
   "[[ncg]] then [[n2m]]:
 
   * `(?<nm>res){n,m}`"
-  [nm n m & res]
-  (when (and (not (s/blank? nm)) n m)
-    (when-let [res (seq (filter identity res))]
-      (n2m n m (apply (partial ncg nm) res)))))
+  [^String nm ^Long n ^Long m & res]
+  (n2m n m (apply (partial ncg nm) res)))
 
 (defn n2m-fgrp
   "[[fgrp]] then [[n2m]]:
 
   * `(?flgs:res){n,m}`"
-  [flgs n m & res]
-  (when-not (s/blank? flgs)
-    (when-let [res (seq (filter identity res))]
-      (n2m n m (apply (partial fgrp flgs) res)))))
+  [^String flgs ^Long n ^Long m & res]
+  (n2m n m (apply (partial fgrp flgs) res)))
 
 (defn n2m-chcl
   "[[chcl]] then [[n2m]]:
 
   * `[res]{n,m}`"
-  [n m & res]
-  (when-let [res (seq (filter identity res))]
-    (n2m n m (apply chcl res))))
+  [^Long n ^Long m & res]
+  (n2m n m (apply chcl res)))
 
 
 ;; ALTERNATION
@@ -686,6 +676,9 @@
   "Returns a regex that will match any one of `res`, via alternation:
 
   * `re|re|re|...`
+
+  Returns an empty regex (`#\"\"`) if no `res` are provided, or they're all
+  [[empty?']].
 
   Notes:
 
@@ -697,35 +690,36 @@
     further regexes.
     tl;dr - one of the grouping variants should _almost always_ be preferred."
   [& res]
-  (when-let [res (distinct' (filter identity res))]
-    (apply join (interpose "|" res))))
+  (if-let [res (distinct' (filter identity res))]
+    (apply join (interpose "|" res))
+    empty-regex))
 
 (defn alt-grp
   "[[alt]] then [[grp]]:
 
   * `(?:re|re|re|...)`"
   [& res]
-   (grp (apply alt res)))
+  (grp (apply alt res)))
 
 (defn alt-cg
   "[[alt]] then [[cg]]:
 
   * `(re|re|re|...)`"
   [& res]
-   (cg (apply alt res)))
+  (cg (apply alt res)))
 
 (defn alt-ncg
   "[[alt]] then [[ncg]]:
 
   * `(?<nm>re|re|re|...)`"
-  [nm & res]
+  [^String nm & res]
   (ncg nm (apply alt res)))
 
 (defn alt-fgrp
   "[[alt]] then [[fgrp]]:
 
   * `(?flgs:re|re|re|...)`"
-  [flgs & res]
+  [^String flgs & res]
   (fgrp flgs (apply alt res)))
 
 ; Note: no -chcl variant for alt, since that doesn't make sense
@@ -739,6 +733,8 @@
 
   * `asb|bsa`
 
+  Returns an empty regex (`#\"\"`) if `re` is [[empty?']].
+
   Notes:
 
   * `a` and `b` must be distinct (must not match the same text) or else the
@@ -751,7 +747,8 @@
     tl;dr - one of the grouping variants should _almost always_ be preferred."
   ([a b] (and' a b nil))
   ([a b s]
-   (when-not (and (empty?' a) (empty?' b))
+   (if (and (empty?' a) (empty?' b))
+     empty-regex
      (alt (join a s b) (join b s a)))))
 
 (defn and-grp
@@ -789,8 +786,8 @@
 
   * Unlike most other `-ncg` fns, this one does _not_ accept any number of res.
   * May optimise the expression (via de-duplication in [[alt]])."
-  ([nm a b] (and-ncg nm a b nil))
-  ([nm a b s]
+  ([^String nm a b] (and-ncg nm a b nil))
+  ([^String nm a b s]
    (ncg nm (and' a b s))))
 
 (defn and-fgrp
@@ -802,8 +799,8 @@
 
   * Unlike most other `-fgrp` fns, this one does _not_ accept any number of res.
   * May optimise the expression (via de-duplication in [[alt]])."
-  ([flgs a b] (and-fgrp flgs a b nil))
-  ([flgs a b s]
+  ([^String flgs a b] (and-fgrp flgs a b nil))
+  ([^String flgs a b s]
    (fgrp flgs (and' a b s))))
 
 ; Note: no -chcl variant for and, since that doesn't make sense
@@ -813,6 +810,8 @@
   order, and with the separator regex `s` (if provided) between them:
 
   * `asb|bsa|a|b`
+
+  Returns an empty regex (`#\"\"`) if `re` is [[empty?']].
 
   Notes:
 
@@ -826,7 +825,8 @@
     tl;dr - one of the grouping variants should _almost always_ be preferred."
   ([a b] (or' a b nil))
   ([a b s]
-   (when-not (and (empty?' a) (empty?' b))
+   (if (and (empty?' a) (empty?' b))
+     empty-regex
      (alt (join a s b) (join b s a) a b))))
 
 (defn or-grp
@@ -864,8 +864,8 @@
 
   * Unlike most other `-ncg` fns, this one does _not_ accept any number of res.
   * May optimise the expression (via de-duplication in [[alt]])."
-  ([nm a b] (or-ncg nm a b nil))
-  ([nm a b s]
+  ([^String nm a b] (or-ncg nm a b nil))
+  ([^String nm a b s]
    (ncg nm (or' a b s))))
 
 (defn or-fgrp
@@ -877,8 +877,8 @@
 
   * Unlike most other `-flgs` fns, this one does _not_ accept any number of res.
   * May optimise the expression (via de-duplication in [[alt]])."
-  ([flgs a b] (or-fgrp flgs a b nil))
-  ([flgs a b s]
+  ([^String flgs a b] (or-fgrp flgs a b nil))
+  ([^String flgs a b s]
    (fgrp flgs (or' a b s))))
 
 ; Note: no -chcl variant for or, since that doesn't make sense
@@ -936,7 +936,7 @@
 
   * Unlike most other `-ncg` fns, this one does _not_ accept any number of res.
   * May optimise the expression (via de-duplication in [[alt]])."
-  [nm a b]
+  [^String nm a b]
   (ncg nm (xor' a b)))
 
 (defn xor-fgrp
@@ -948,7 +948,7 @@
 
   * Unlike most other `-fgrp` fns, this one does _not_ accept any number of res.
   * May optimise the expression (via de-duplication in [[alt]])."
-  [flgs a b]
+  [^String flgs a b]
   (fgrp flgs (xor' a b)))
 
 ; Note: no -chcl variant for xor, since that doesn't make sense

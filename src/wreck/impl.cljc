@@ -102,7 +102,7 @@
    :clj
     ; JVM flags are a bit set (int), so we have to manually determine the characters
     (when-let [chs (seq (filter identity
-                                (map (fn [[bit ch]] (when-not (zero? (bit-and flgs bit)) ch))
+                                (map (fn [[bit ch]] (when (pos? (bit-and flgs bit)) ch))
                                      flag->embedded-char)))]
       (s/join (sort chs))))))
 
