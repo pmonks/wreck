@@ -732,7 +732,7 @@
 
   * `asb|bsa`
 
-  Returns an empty regex (`#\"\"`) if `re` is [[empty?']].
+  Returns an empty regex (`#\"\"`) if `a` and `b` are [[empty?']].
 
   Notes:
 
@@ -810,7 +810,7 @@
 
   * `asb|bsa|a|b`
 
-  Returns an empty regex (`#\"\"`) if `re` is [[empty?']].
+  Returns an empty regex (`#\"\"`) if `a` and `b` are [[empty?']].
 
   Notes:
 
@@ -886,6 +886,8 @@
   "Returns an 'exclusive or' regex that will match `a` or `b`, but _not_ both:
 
   * `a|b`
+
+  Returns an empty regex (`#\"\"`) if `a` and `b` are [[empty?']].
 
   This is identical to [[alt]] called with 2 arguments, but is provided as a
   convenience for those who might be building up large logic based regexes and
