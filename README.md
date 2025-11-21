@@ -189,9 +189,9 @@ $ deps-try com.github.pmonks/wreck
 (def mws (re/oom ws))
 ;=> #"[\p{Space}\p{IsWhitespace}]+"
 
-; "Lesser" or "Library", but in any order, or either word by itself, with either a forward
-; slash or the word "or" as a separator
-(def lorl-re (re/or-grp "Lesser" "Library" (re/alt-grp (re/join ows "/" ows)
+; "Lesser" or "Library" but in any order or either word by itself, with either a forward
+; slash or the word "or" as a separator between them
+(def lorl-re (re/or-grp "Lesser" "Library" (re/xor-grp (re/join ows "/" ows)
                                                        (re/join mws "or" mws))))
 ;=> #"(?:Lesser(?:[\p{Space}\p{IsWhitespace}]*/[\p{Space}\p{IsWhitespace}]*|[\p{Space}
 ;=>   \p{IsWhitespace}]+or[\p{Space}\p{IsWhitespace}]+)Library|Library(?:[\p{Space}

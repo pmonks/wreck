@@ -954,7 +954,7 @@
   (let [ws      (chcl #"\p{Space}\p{IsWhitespace}")
         ows     (zom ws)
         mws     (oom ws)
-        lorl-re (or-grp "Lesser" "Library" (alt-grp (join ows "/" ows) (join mws "or" mws)))
+        lorl-re (or-grp "Lesser" "Library" (xor-grp (join ows "/" ows) (join mws "or" mws)))
         ; The following regex ends up being ~800 characters long, and yet it's easy to reason about
         lgpl-re (join
                   #"(?<!\w)"
