@@ -13,10 +13,9 @@
 
   Notes:
 
-  * Apart from passing through `nil`, this library does minimal argument
-    checking, since the rules for regexes vary from platform to platform, and it
-    is a first class requirement that callers be allowed to construct platform
-    specific regexes if they wish.
+  * This library does minimal argument checking, since the rules for regexes
+    vary from platform to platform, and it is a first class requirement that
+    callers be allowed to construct platform specific regexes if they wish.
   * As a result, all functions have the potential to throw platform-specific
     exceptions if the resulting regex is syntactically invalid. On the JVM,
     these will typically be instances of the `java.util.regex.PatternSyntaxException`
