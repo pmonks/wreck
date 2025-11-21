@@ -13,29 +13,46 @@
 
   Notes:
 
-  * Apart from passing through `nil`, this library does minimal argument
-    checking, since the rules for regexes vary from platform to platform, and it
-    is a first class requirement that callers be allowed to construct platform
-    specific regexes if they wish.
+  * This library does minimal argument checking, since the rules for regexes
+    vary from platform to platform, and it is a first class requirement that
+    callers are able to construct platform specific regexes if they wish.
   * As a result, all functions have the potential to throw platform-specific
     exceptions if the resulting regex is syntactically invalid. On the JVM,
-    these will typically be instances of the `java.util.regex.PatternSyntaxException`
-    class. On JavaScript, these will typically be a `js/SyntaxError`.
+    these will typically be instances of the [`java.util.regex.PatternSyntaxException`
+    class ](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/regex/PatternSyntaxException.html).
+    On JavaScript, these will typically be a [`js/SyntaxError`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SyntaxError).
   * Platform specific behaviour is particularly notable for short / empty
     regexes, such as `#\"{}\"` (an error on the JVM, fine but
     nonsensical on JS) and `#\"{1}\"` (ironically fine but nonsensical on the
     JVM, but an error on JS).  🤡
-  * Furthemore, JavaScript fundamentally doesn't support lossless round-tripping
-    of `RegExp` objects to `String`s and back, something this library does
-    extensively.  The library makes a best effort to correct JavaScript's
-    problematic implementation, but because it's fundamentally lossy there are
-    some cases that (on ClojureScript only) may change your regexes in
-    unexpected (though _probably_ not semantically significant) ways.
+  * All of the regex composition functions in this namespace will return an
+    empty regex rather than `nil`, in the event that they produce no result.
+    This is primarily done so that the results can be used directly with
+    Clojure's core regex functions, without having to check for `nil` first
+    (since those core functions are not `nil`-tolerant; they throw). But note
+    that empty regexes will match empty input text, which may be unexpected.
+  * Because of the way capturing group indexing works, these 'empty' regexes may
+    actually contain an empty capturing group (`#\"()\"`). This guarantees that
+    the same number of capturing groups are included in a composed regex, even
+    if some of those groups end up being empty during composition. This is
+    important to avoid breaking (fragile) code that uses indexes to access
+    text matched by capturing groups. A far more robust approach is to use
+    named capturing groups instead (and on the JVM you might use [`rencg`](https://github.com/pmonks/rencg)
+    to make this easier). Of course an even better solution is to ensure that
+    your regex construction logic doesn't ever produce empty capturing groups,
+    so that you aren't reliant on `wreck`'s default behaviour for this corner
+    case.
   * Regex flags are supported to the best ability of the library, but please
     carefully review the [usage notes in README.md](https://github.com/pmonks/wreck?tab=readme-ov-file#regex-flags)
     for various caveats when flags are used.
   * None of these functions perform `String` escaping or quoting automatically.
-    You can use [[esc]] or [[qot]] for this."
+    You can use [[esc]] or [[qot]] for this.
+  * JavaScript fundamentally doesn't support lossless round-tripping of `RegExp`
+    objects to `String`s and back, something this library does extensively.  The
+    library makes a best effort to correct JavaScript's problematic
+    implementation, but because it's fundamentally lossy there are some cases
+    that (on ClojureScript only) may change your regexes in unexpected (though
+    _probably_ not semantically significant) ways."
   (:require [clojure.string :as s]
             [wreck.impl     :as wi]
    #?(:cljs [clojure.set    :as set])
@@ -313,8 +330,12 @@
 
   Returns an empty capturing group (`#\"()\"`) if no `res` are provided, or
   they're all [[empty?']]. It does this to ensure that capturing groups are
-  preserved during composition, even if they're empty (since not doing so will
-  break code that uses indexes to access matched group content)."
+  preserved during regex composition even if they're empty, since silently
+  dropping capturing groups will break (fragile) downstream code that uses
+  indexes to access matched capturing group text. Because of this inherent
+  fragility, it is strongly recommended that named capturing groups ([[ncg]])
+  are used instead, and access to matched capturing group text is done via those
+  names (e.g. using something like [`rencg`](https://github.com/pmonks/rencg))."
   [& res]
   ; Note: don't optimise empty capturing groups, because that will break code that indexes into capturing groups
   (join "(" (apply join res) ")"))
@@ -733,7 +754,7 @@
 
   * `asb|bsa`
 
-  Returns an empty regex (`#\"\"`) if `re` is [[empty?']].
+  Returns an empty regex (`#\"\"`) if `a` and `b` are [[empty?']].
 
   Notes:
 
@@ -811,7 +832,7 @@
 
   * `asb|bsa|a|b`
 
-  Returns an empty regex (`#\"\"`) if `re` is [[empty?']].
+  Returns an empty regex (`#\"\"`) if `a` and `b` are [[empty?']].
 
   Notes:
 
@@ -887,6 +908,8 @@
   "Returns an 'exclusive or' regex that will match `a` or `b`, but _not_ both:
 
   * `a|b`
+
+  Returns an empty regex (`#\"\"`) if `a` and `b` are [[empty?']].
 
   This is identical to [[alt]] called with 2 arguments, but is provided as a
   convenience for those who might be building up large logic based regexes and
