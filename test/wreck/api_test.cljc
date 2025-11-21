@@ -62,7 +62,7 @@
 
 (deftest embed-flags-tests
   (testing "Basic cases - nil etc."
-    (is (nil?     (embed-flags nil)))
+    (is (=' #""   (embed-flags nil)))
     (is (=' #""   (embed-flags #"")))
     (is (=' #".*" (embed-flags #".*"))))
   (testing "Ungrouped embedded flags (note: this is emulated by ClojureScript and NOT supported by native JavaScript!)"
@@ -213,9 +213,9 @@
 
 (deftest join-tests
   (testing "join - nil, empty or blank"
-    (is (nil?     (join)))
-    (is (nil?     (join nil)))
-    (is (nil?     (join nil nil)))
+    (is (=' #""   (join)))
+    (is (=' #""   (join nil)))
+    (is (=' #""   (join nil nil)))
     (is (=' #""   (join #"")))
     (is (=' #""   (join #"" #"")))
     (is (=' #"a"  (join nil nil nil nil #"a" nil nil)))
@@ -251,8 +251,8 @@
 
 (deftest qot-tests
   (testing "qot - nil, empty or blank"
-    (is (nil?        (qot nil)))
-    (is (=' #"\Q\E"  (qot "")))
+    (is (=' #""      (qot nil)))
+    (is (=' #""      (qot "")))
     (is (=' #"\Q \E" (qot " "))))
     ; Note: whitespace literals (such as \n, \r and \t) act strangely inside Clojure regex literals, so we don't test with them
   (testing "qot"
@@ -266,61 +266,62 @@
 
 (deftest basic-grouping-tests
   (testing "grp"
-    (is (nil?                                           (grp)))
-    (is (nil?                                           (grp nil)))
+    (is (=' #""                                         (grp)))
+    (is (=' #""                                         (grp nil)))
     (is (=' #""                                         (grp #"")))
     (is (=' #"(?:.*)"                                   (grp #".*")))
     (is (=' #"(?:.*)"                                   (grp #"" #".*")))
     (is (=' #"(?:foo.*)"                                (grp #"foo" #".*")))
     (is (=' #"(?:Apache(\s+Software)?(\s+Licen[cs]e)?)" (grp "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
   (testing "cg"
-    (is (nil?                                         (cg)))
-    (is (nil?                                         (cg nil)))
+    (is (=' #"()"                                     (cg)))
+    (is (=' #"()"                                     (cg nil)))
     (is (=' #"()"                                     (cg #"")))
     (is (=' #"(.*)"                                   (cg #".*")))
     (is (=' #"(.*)"                                   (cg #"" #".*")))
     (is (=' #"(foo.*)"                                (cg #"foo" #".*")))
     (is (=' #"(Apache(\s+Software)?(\s+Licen[cs]e)?)" (cg "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
   (testing "ncg"
-    (is (nil?                                                  (ncg nil)))
-    (is (nil?                                                  (ncg "")))
-    (is (nil?                                                  (ncg "  ")))
-    (is (nil?                                                  (ncg "\n")))
-    (is (nil?                                                  (ncg "\n   \r\n  \t ")))
-    (is (nil?                                                  (ncg nil nil)))
-    (is (nil?                                                  (ncg "" nil)))
+    (is (=' #"()"                                              (ncg nil)))
+    (is (=' #"()"                                              (ncg "")))
+    (is (=' #"()"                                              (ncg "  ")))
+    (is (=' #"()"                                              (ncg "\n")))
+    (is (=' #"()"                                              (ncg "\n   \r\n  \t ")))
+    (is (=' #"()"                                              (ncg nil nil)))
+    (is (=' #"()"                                              (ncg "" nil)))
+    (is (=' #"(.*)"                                            (ncg nil #".*")))
+    (is (=' #"(.*)"                                            (ncg "" #".*")))
     (is (=' #"(?<groupName>)"                                  (ncg "groupName" #"")))
     (is (=' #"(?<groupName>.*)"                                (ncg "groupName" #".*")))
     (is (=' #"(?<groupName>.*)"                                (ncg "groupName" #"" #".*")))
     (is (=' #"(?<groupName>foo.*)"                             (ncg "groupName" #"foo" #".*")))
     (is (=' #"(?<apache>Apache(\s+Software)?(\s+Licen[cs]e)?)" (ncg "apache" "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
   (testing "fgrp"
-    (is (nil?                                             (fgrp nil)))
-    (is (nil?                                             (fgrp "")))
-    (is (nil?                                             (fgrp " ")))
-    (is (nil?                                             (fgrp "\n")))
-    (is (nil?                                             (fgrp "\n   \r\n  \t ")))
-    (is (nil?                                             (fgrp nil nil)))
-    (is (nil?                                             (fgrp "" nil)))
-    (is (nil?                                             (fgrp " " nil)))
-    (is (nil?                                             (fgrp "\n" nil)))
-    (is (nil?                                             (fgrp "\n   \r\n  \t " nil)))
-    (is (nil?                                             (fgrp nil #"")))
-    (is (nil?                                             (fgrp nil #".*")))
-    (is (nil?                                             (fgrp nil #"ab" #"cd")))
-    (is (nil?                                             (fgrp ""  #"foo" #".*")))
-    (is (nil?                                             (fgrp "  " #"")))
-    (is (=' #"(?i:)"                                      (fgrp "i" #"")))
-    (is (=' #"(?i:)"                                      (fgrp "i" #"")))
+    (is (=' #""                                           (fgrp nil)))
+    (is (=' #""                                           (fgrp "")))
+    (is (=' #""                                           (fgrp " ")))
+    (is (=' #""                                           (fgrp "\n")))
+    (is (=' #""                                           (fgrp "\n   \r\n  \t ")))
+    (is (=' #""                                           (fgrp nil nil)))
+    (is (=' #""                                           (fgrp "" nil)))
+    (is (=' #""                                           (fgrp " " nil)))
+    (is (=' #""                                           (fgrp "\n" nil)))
+    (is (=' #""                                           (fgrp "\n   \r\n  \t " nil)))
+    (is (=' #""                                           (fgrp nil #"")))
+    (is (=' #"(?:.*)"                                     (fgrp nil #".*")))         ; Conversion to non capturing group
+    (is (=' #"(?:abcd)"                                   (fgrp nil #"ab" #"cd")))   ; Conversion to non capturing group
+    (is (=' #"(?:foo.*)"                                  (fgrp ""  #"foo" #".*")))  ; Conversion to non capturing group
+    (is (=' #""                                           (fgrp "  " #"")))
+    (is (=' #""                                           (fgrp "i" #"")))
+    (is (=' #""                                           (fgrp "mi" #"")))
     (is (=' #"(?i:.*)"                                    (fgrp "i" #".*")))
     (is (=' #"(?im:.*)"                                   (fgrp "mi" #".*")))
-    (is (=' #"(?im:)"                                     (fgrp "mi" #"")))
     (is (=' #"(?im:Apache(\s+Software)?(\s+Licen[cs]e)?)" (fgrp "mi" "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?")))
     (is (thrown? #?(:clj  java.util.regex.PatternSyntaxException
                     :cljs js/SyntaxError)                 (fgrp "42" #".*"))))
   (testing "chcl"
-    (is (nil?                       (chcl)))
-    (is (nil?                       (chcl nil)))
+    (is (=' #""                     (chcl)))
+    (is (=' #""                     (chcl nil)))
     (is (=' #""                     (chcl "")))
     (is (=' #""                     (chcl #"")))
     (is (=' #"[ ]"                  (chcl " ")))
@@ -339,26 +340,24 @@
 
 (deftest opt-variant-tests
   (testing "opt"
-    (is (nil?                                           (opt nil)))
-    (is (thrown? #?(:clj  java.util.regex.PatternSyntaxException
-                    :cljs js/SyntaxError)               (opt #"")))
-    (is (=' #"x?"                                       (opt #"x")))
-    (is (=' #".*?"                                      (opt #".*")))
-    (is (=' #"foo?"                                     (opt #"foo")))
-    (is (=' #"Apache?"                                  (opt "Apache"))))
+    (is (=' #""        (opt nil)))
+    (is (=' #""        (opt #"")))
+    (is (=' #"x?"      (opt #"x")))
+    (is (=' #".*?"     (opt #".*")))
+    (is (=' #"foo?"    (opt #"foo")))
+    (is (=' #"Apache?" (opt "Apache"))))
   (testing "opt-grp"
-    (is (nil?                                            (opt-grp)))
-    (is (nil?                                            (opt-grp nil)))
-    (is (thrown? #?(:clj  java.util.regex.PatternSyntaxException
-                    :cljs js/SyntaxError)                (opt-grp #"")))  ; Throws because of optimisation of empty non-capturing groups
+    (is (=' #""                                          (opt-grp)))
+    (is (=' #""                                          (opt-grp nil)))
+    (is (=' #""                                          (opt-grp #"")))
     (is (=' #"(?:x)?"                                    (opt-grp #"x")))
     (is (=' #"(?:.*)?"                                   (opt-grp #".*")))
     (is (=' #"(?:foo)?"                                  (opt-grp #"foo")))
     (is (=' #"(?:Apache)?"                               (opt-grp "Apache")))
     (is (=' #"(?:Apache(\s+Software)?(\s+Licen[cs]e)?)?" (opt-grp "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
   (testing "opt-cg"
-    (is (nil?                                          (opt-cg)))
-    (is (nil?                                          (opt-cg nil)))
+    (is (=' #"()?"                                     (opt-cg)))
+    (is (=' #"()?"                                     (opt-cg nil)))
     (is (=' #"()?"                                     (opt-cg #"")))
     (is (=' #"(x)?"                                    (opt-cg #"x")))
     (is (=' #"(.*)?"                                   (opt-cg #".*")))
@@ -366,9 +365,9 @@
     (is (=' #"(Apache)?"                               (opt-cg "Apache")))
     (is (=' #"(Apache(\s+Software)?(\s+Licen[cs]e)?)?" (opt-cg "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
   (testing "opt-ncg"
-    (is (nil?                                                   (opt-ncg nil)))
-    (is (nil?                                                   (opt-ncg nil nil)))
-    (is (nil?                                                   (opt-ncg "groupName" nil)))
+    (is (=' #"()?"                                              (opt-ncg nil)))
+    (is (=' #"()?"                                              (opt-ncg nil nil)))
+    (is (=' #"(?<groupName>)?"                                  (opt-ncg "groupName" nil)))
     (is (=' #"(?<groupName>)?"                                  (opt-ncg "groupName" #"")))
     (is (=' #"(?<groupName>x)?"                                 (opt-ncg "groupName" #"x")))
     (is (=' #"(?<groupName>.*)?"                                (opt-ncg "groupName" #".*")))
@@ -376,48 +375,45 @@
     (is (=' #"(?<apache>Apache)?"                               (opt-ncg "apache"    "Apache")))
     (is (=' #"(?<apache>Apache(\s+Software)?(\s+Licen[cs]e)?)?" (opt-ncg "apache"    "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
   (testing "opt-fgrp"
-    (is (nil?                                             (opt-fgrp nil)))
-    (is (nil?                                             (opt-fgrp nil nil)))
-    (is (nil?                                             (opt-fgrp "i" nil)))
-    (is (=' #"(?i:)?"                                     (opt-fgrp "i" #"")))
+    (is (=' #""                                           (opt-fgrp nil)))
+    (is (=' #""                                           (opt-fgrp nil nil)))
+    (is (=' #""                                           (opt-fgrp "i" nil)))
+    (is (=' #""                                           (opt-fgrp "i" #"")))
     (is (=' #"(?i:x)?"                                    (opt-fgrp "i" #"x")))
     (is (=' #"(?i:.*)?"                                   (opt-fgrp "i" #".*")))
     (is (=' #"(?i:foo)?"                                  (opt-fgrp "i" #"foo")))
     (is (=' #"(?i:Apache)?"                               (opt-fgrp "i" "Apache")))
     (is (=' #"(?i:Apache(\s+Software)?(\s+Licen[cs]e)?)?" (opt-fgrp "i" "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
   (testing "opt-chcl"
-    (is (nil?                             (opt-chcl)))
-    (is (nil?                             (opt-chcl nil)))
-    (is (thrown? #?(:clj  java.util.regex.PatternSyntaxException
-                    :cljs js/SyntaxError) (opt-chcl #"")))
-    (is (=' #"[x]?"                       (opt-chcl #"x")))
-    (is (=' #"[a-z]?"                     (opt-chcl #"a-z")))
-    (is (=' #"[abc]?"                     (opt-chcl "a" "b" "c")))
-    (is (=' #"[abc]?"                     (opt-chcl #"a" #"b" #"c")))))
+    (is (=' #""       (opt-chcl)))
+    (is (=' #""       (opt-chcl nil)))
+    (is (=' #""       (opt-chcl #"")))
+    (is (=' #"[x]?"   (opt-chcl #"x")))
+    (is (=' #"[a-z]?" (opt-chcl #"a-z")))
+    (is (=' #"[abc]?" (opt-chcl "a" "b" "c")))
+    (is (=' #"[abc]?" (opt-chcl #"a" #"b" #"c")))))
 
 (deftest zom-variant-tests
   (testing "zom"
-    (is (nil?                                           (zom nil)))
-    (is (thrown? #?(:clj  java.util.regex.PatternSyntaxException
-                    :cljs js/SyntaxError)               (zom #"")))
+    (is (=' #""                                         (zom nil)))
+    (is (=' #""                                         (zom #"")))
     (is (=' #"x*")                                      (zom #"x"))
     (is (thrown? #?(:clj  java.util.regex.PatternSyntaxException
                     :cljs js/SyntaxError)               (zom #".*")))
     (is (=' #"foo*"                                     (zom #"foo")))
     (is (=' #"Apache*"                                  (zom "Apache"))))
   (testing "zom-grp"
-    (is (nil?                                            (zom-grp)))
-    (is (nil?                                            (zom-grp nil)))
-    (is (thrown? #?(:clj  java.util.regex.PatternSyntaxException
-                    :cljs js/SyntaxError)                (zom-grp #"")))  ; Throws because of optimisation of empty non-capturing groups
+    (is (=' #""                                          (zom-grp)))
+    (is (=' #""                                          (zom-grp nil)))
+    (is (=' #""                                          (zom-grp #"")))
     (is (=' #"(?:x)*"                                    (zom-grp #"x")))
     (is (=' #"(?:.*)*"                                   (zom-grp #".*")))
     (is (=' #"(?:foo)*"                                  (zom-grp #"foo")))
     (is (=' #"(?:Apache)*"                               (zom-grp "Apache")))
     (is (=' #"(?:Apache(\s+Software)?(\s+Licen[cs]e)?)*" (zom-grp "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
   (testing "zom-cg"
-    (is (nil?                                          (zom-cg)))
-    (is (nil?                                          (zom-cg nil)))
+    (is (=' #"()*"                                     (zom-cg)))
+    (is (=' #"()*"                                     (zom-cg nil)))
     (is (=' #"()*"                                     (zom-cg #"")))
     (is (=' #"(x)*"                                    (zom-cg #"x")))
     (is (=' #"(.*)*"                                   (zom-cg #".*")))
@@ -425,9 +421,9 @@
     (is (=' #"(Apache)*"                               (zom-cg "Apache")))
     (is (=' #"(Apache(\s+Software)?(\s+Licen[cs]e)?)*" (zom-cg "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
   (testing "zom-ncg"
-    (is (nil?                                                   (zom-ncg nil)))
-    (is (nil?                                                   (zom-ncg nil nil)))
-    (is (nil?                                                   (zom-ncg "groupName" nil)))
+    (is (=' #"()*"                                              (zom-ncg nil)))
+    (is (=' #"()*"                                              (zom-ncg nil nil)))
+    (is (=' #"(?<groupName>)*"                                  (zom-ncg "groupName" nil)))
     (is (=' #"(?<groupName>)*"                                  (zom-ncg "groupName" #"")))
     (is (=' #"(?<groupName>x)*"                                 (zom-ncg "groupName" #"x")))
     (is (=' #"(?<groupName>.*)*"                                (zom-ncg "groupName" #".*")))
@@ -435,48 +431,45 @@
     (is (=' #"(?<apache>Apache)*"                               (zom-ncg "apache"    "Apache")))
     (is (=' #"(?<apache>Apache(\s+Software)?(\s+Licen[cs]e)?)*" (zom-ncg "apache"    "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
   (testing "zom-fgrp"
-    (is (nil?                                             (zom-fgrp nil)))
-    (is (nil?                                             (zom-fgrp nil nil)))
-    (is (nil?                                             (zom-fgrp "i" nil)))
-    (is (=' #"(?i:)*"                                     (zom-fgrp "i" #"")))
+    (is (=' #""                                           (zom-fgrp nil)))
+    (is (=' #""                                           (zom-fgrp nil nil)))
+    (is (=' #""                                           (zom-fgrp "i" nil)))
+    (is (=' #""                                           (zom-fgrp "i" #"")))
     (is (=' #"(?i:x)*"                                    (zom-fgrp "i" #"x")))
     (is (=' #"(?i:.*)*"                                   (zom-fgrp "i" #".*")))
     (is (=' #"(?i:foo)*"                                  (zom-fgrp "i" #"foo")))
     (is (=' #"(?i:Apache)*"                               (zom-fgrp "i" "Apache")))
     (is (=' #"(?i:Apache(\s+Software)?(\s+Licen[cs]e)?)*" (zom-fgrp "i" "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
   (testing "zom-chcl"
-    (is (nil?                             (zom-chcl)))
-    (is (nil?                             (zom-chcl nil)))
-    (is (thrown? #?(:clj  java.util.regex.PatternSyntaxException
-                    :cljs js/SyntaxError) (zom-chcl #"")))
-    (is (=' #"[x]*"                       (zom-chcl #"x")))
-    (is (=' #"[a-z]*"                     (zom-chcl #"a-z")))
-    (is (=' #"[abc]*"                     (zom-chcl "a" "b" "c")))
-    (is (=' #"[abc]*"                     (zom-chcl #"a" #"b" #"c")))))
+    (is (=' #""       (zom-chcl)))
+    (is (=' #""       (zom-chcl nil)))
+    (is (=' #""       (zom-chcl #"")))
+    (is (=' #"[x]*"   (zom-chcl #"x")))
+    (is (=' #"[a-z]*" (zom-chcl #"a-z")))
+    (is (=' #"[abc]*" (zom-chcl "a" "b" "c")))
+    (is (=' #"[abc]*" (zom-chcl #"a" #"b" #"c")))))
 
 (deftest oom-variant-tests
   (testing "oom"
-    (is (nil?                                           (oom nil)))
-    (is (thrown? #?(:clj  java.util.regex.PatternSyntaxException
-                    :cljs js/SyntaxError)               (oom #"")))
-    (is (=' #"x+")                                      (oom #"x"))
-#?(:clj  (is (=' #".*+"                                 (oom #".*")))   ; Valid (but nonsensical) regex on ClojureJVM
-   :cljs (is (thrown? js/SyntaxError                    (oom #".*"))))  ; Invalid regex on ClojureScript
-    (is (=' #"foo+"                                     (oom #"foo")))
-    (is (=' #"Apache+"                                  (oom "Apache"))))
+    (is (=' #""                      (oom nil)))
+    (is (=' #""                      (oom #"")))
+    (is (=' #"x+")                   (oom #"x"))
+#?(:clj  (is (=' #".*+"              (oom #".*")))   ; Valid (but nonsensical) regex on ClojureJVM
+   :cljs (is (thrown? js/SyntaxError (oom #".*"))))  ; Invalid regex on ClojureScript
+    (is (=' #"foo+"                  (oom #"foo")))
+    (is (=' #"Apache+"               (oom "Apache"))))
   (testing "oom-grp"
-    (is (nil?                                            (oom-grp)))
-    (is (nil?                                            (oom-grp nil)))
-    (is (thrown? #?(:clj  java.util.regex.PatternSyntaxException
-                    :cljs js/SyntaxError)                (oom-grp #"")))  ; Throws because of optimisation of empty non-capturing groups
+    (is (=' #""                                          (oom-grp)))
+    (is (=' #""                                          (oom-grp nil)))
+    (is (=' #""                                          (oom-grp #"")))
     (is (=' #"(?:x)+"                                    (oom-grp #"x")))
     (is (=' #"(?:.*)+"                                   (oom-grp #".*")))
     (is (=' #"(?:foo)+"                                  (oom-grp #"foo")))
     (is (=' #"(?:Apache)+"                               (oom-grp "Apache")))
     (is (=' #"(?:Apache(\s+Software)?(\s+Licen[cs]e)?)+" (oom-grp "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
   (testing "oom-cg"
-    (is (nil?                                          (oom-cg)))
-    (is (nil?                                          (oom-cg nil)))
+    (is (=' #"()+"                                     (oom-cg)))
+    (is (=' #"()+"                                     (oom-cg nil)))
     (is (=' #"()+"                                     (oom-cg #"")))
     (is (=' #"(x)+"                                    (oom-cg #"x")))
     (is (=' #"(.*)+"                                   (oom-cg #".*")))
@@ -484,9 +477,9 @@
     (is (=' #"(Apache)+"                               (oom-cg "Apache")))
     (is (=' #"(Apache(\s+Software)?(\s+Licen[cs]e)?)+" (oom-cg "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
   (testing "oom-ncg"
-    (is (nil?                                                   (oom-ncg nil)))
-    (is (nil?                                                   (oom-ncg nil nil)))
-    (is (nil?                                                   (oom-ncg "groupName" nil)))
+    (is (=' #"()+"                                              (oom-ncg nil)))
+    (is (=' #"()+"                                              (oom-ncg nil nil)))
+    (is (=' #"(?<groupName>)+"                                  (oom-ncg "groupName" nil)))
     (is (=' #"(?<groupName>)+"                                  (oom-ncg "groupName" #"")))
     (is (=' #"(?<groupName>x)+"                                 (oom-ncg "groupName" #"x")))
     (is (=' #"(?<groupName>.*)+"                                (oom-ncg "groupName" #".*")))
@@ -494,210 +487,248 @@
     (is (=' #"(?<apache>Apache)+"                               (oom-ncg "apache"    "Apache")))
     (is (=' #"(?<apache>Apache(\s+Software)?(\s+Licen[cs]e)?)+" (oom-ncg "apache"    "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
   (testing "oom-fgrp"
-    (is (nil?                                             (oom-fgrp nil)))
-    (is (nil?                                             (oom-fgrp nil nil)))
-    (is (nil?                                             (oom-fgrp "i" nil)))
-    (is (=' #"(?i:)+"                                     (oom-fgrp "i" #"")))
+    (is (=' #""                                           (oom-fgrp nil)))
+    (is (=' #""                                           (oom-fgrp nil nil)))
+    (is (=' #""                                           (oom-fgrp "i" nil)))
+    (is (=' #""                                           (oom-fgrp "i" #"")))
     (is (=' #"(?i:x)+"                                    (oom-fgrp "i" #"x")))
     (is (=' #"(?i:.*)+"                                   (oom-fgrp "i" #".*")))
     (is (=' #"(?i:foo)+"                                  (oom-fgrp "i" #"foo")))
     (is (=' #"(?i:Apache)+"                               (oom-fgrp "i" "Apache")))
     (is (=' #"(?i:Apache(\s+Software)?(\s+Licen[cs]e)?)+" (oom-fgrp "i" "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
   (testing "oom-chcl"
-    (is (nil?                             (oom-chcl)))
-    (is (nil?                             (oom-chcl nil)))
-    (is (thrown? #?(:clj  java.util.regex.PatternSyntaxException
-                    :cljs js/SyntaxError) (oom-chcl #"")))
-    (is (=' #"[x]+"                       (oom-chcl #"x")))
-    (is (=' #"[a-z]+"                     (oom-chcl #"a-z")))
-    (is (=' #"[abc]+"                     (oom-chcl "a" "b" "c")))
-    (is (=' #"[abc]+"                     (oom-chcl #"a" #"b" #"c")))))
+    (is (=' #""       (oom-chcl)))
+    (is (=' #""       (oom-chcl nil)))
+    (is (=' #""       (oom-chcl #"")))
+    (is (=' #"[x]+"   (oom-chcl #"x")))
+    (is (=' #"[a-z]+" (oom-chcl #"a-z")))
+    (is (=' #"[abc]+" (oom-chcl "a" "b" "c")))
+    (is (=' #"[abc]+" (oom-chcl #"a" #"b" #"c")))))
 
 (deftest nom-variant-tests
   (testing "nom"
-    (is (nil?                        (nom nil nil)))
-    (is (nil?                        (nom nil #"")))
-    (is (nil?                        (nom 2 nil)))
+    (is (=' #""                      (nom nil nil)))
+    (is (=' #""                      (nom nil #"")))
+    (is (=' #""                      (nom 2 nil)))
     (is (=' #"x{5,}"                 (nom 5 #"x")))
 #?(:clj  (is (=' #".*{3,}"           (nom 3 #".*")))   ; Valid (but nonsensical) regex on ClojureJVM
    :cljs (is (thrown? js/SyntaxError (nom 3 #".*"))))  ; Invalid regex on ClojureScript
     (is (=' #"foo{2,}"               (nom 2 #"foo")))  ; Note how this doesn't result in optionality being applied to the entirety of the input - that's what nom-grp etc. are for
     (is (=' #"Apache{17,}"           (nom 17 "Apache"))))
   (testing "nom-grp"
-    (is (nil?                                               (nom-grp nil nil)))
-    (is (nil?                                               (nom-grp 3 nil)))
-#?(:clj  (is (=' #"{246,}"                                  (nom-grp 246 #"")))   ; Valid (but nonsensical) regex on ClojureJVM
-   :cljs (is (thrown? js/SyntaxError                        (nom-grp 246 #""))))  ; Invalid regex on ClojureScript
-    (is (=' #"(?:x){0,}"                                    (nom-grp 0 #"x")))
-    (is (=' #"(?:.*){7,}"                                   (nom-grp 7 #".*")))
-    (is (=' #"(?:foo){42,}"                                 (nom-grp 42 #"foo")))
-    (is (=' #"(?:Apache){12,}"                              (nom-grp 12 "Apache")))
-    (is (=' #"(?:Apache(\s+Software)?(\s+Licen[cs]e)?){5,}" (nom-grp 5 "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
+    (is (=' #""                                              (nom-grp nil nil)))
+    (is (=' #""                                              (nom-grp 3 nil)))
+    (is (=' #""                                              (nom-grp 246 #"")))
+    (is (=' #"(?:x){0,}"                                     (nom-grp 0 #"x")))
+#?(:clj  (is (thrown? java.util.regex.PatternSyntaxException (nom-grp nil #"x")))   ; Invalid regex on ClojureJVM
+   :cljs (is (=' (re-pattern "(?:x){,}")                     (nom-grp nil #"x"))))  ; Valid (but nonsensical) regex on ClojureScript
+    (is (=' #"(?:.*){7,}"                                    (nom-grp 7 #".*")))
+    (is (=' #"(?:foo){42,}"                                  (nom-grp 42 #"foo")))
+    (is (=' #"(?:Apache){12,}"                               (nom-grp 12 "Apache")))
+    (is (=' #"(?:Apache(\s+Software)?(\s+Licen[cs]e)?){5,}"  (nom-grp 5 "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
   (testing "nom-cg"
-    (is (nil?                                             (nom-cg nil nil)))
-    (is (=' #"(){3,}"                                     (nom-cg 3 #"")))
-    (is (=' #"(x){4,}"                                    (nom-cg 4 #"x")))
-    (is (=' #"(.*){5,}"                                   (nom-cg 5 #".*")))
-    (is (=' #"(foo){6,}"                                  (nom-cg 6 #"foo")))
-    (is (=' #"(Apache){7,}"                               (nom-cg 7 "Apache")))
-    (is (=' #"(Apache(\s+Software)?(\s+Licen[cs]e)?){8,}" (nom-cg 8 "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
+#?(:clj  (is (thrown? java.util.regex.PatternSyntaxException (nom-cg nil nil)))   ; Invalid regex on ClojureJVM
+   :cljs (is (=' (re-pattern "(){,}")                        (nom-cg nil nil))))  ; Valid (but nonsensical) regex on ClojureScript
+    (is (=' #"(){3,}"                                        (nom-cg 3 #"")))
+    (is (=' #"(x){4,}"                                       (nom-cg 4 #"x")))
+#?(:clj  (is (thrown? java.util.regex.PatternSyntaxException (nom-cg nil #"x")))   ; Invalid regex on ClojureJVM
+   :cljs (is (=' (re-pattern "(x){,}")                       (nom-cg nil #"x"))))  ; Valid (but nonsensical) regex on ClojureScript
+    (is (=' #"(.*){5,}"                                      (nom-cg 5 #".*")))
+    (is (=' #"(foo){6,}"                                     (nom-cg 6 #"foo")))
+    (is (=' #"(Apache){7,}"                                  (nom-cg 7 "Apache")))
+    (is (=' #"(Apache(\s+Software)?(\s+Licen[cs]e)?){8,}"    (nom-cg 8 "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
   (testing "nom-ncg"
-    (is (nil?                                                      (nom-ncg nil nil)))
-    (is (nil?                                                      (nom-ncg nil nil nil)))
-    (is (nil?                                                      (nom-ncg "groupName" 7 nil)))
+#?(:clj  (is (thrown? java.util.regex.PatternSyntaxException       (nom-ncg nil nil)))       ; Invalid regex on ClojureJVM
+   :cljs (is (=' (re-pattern "(){,}")                              (nom-ncg nil nil))))      ; Valid (but nonsensical) regex on ClojureScript
+#?(:clj  (is (thrown? java.util.regex.PatternSyntaxException       (nom-ncg nil nil nil)))   ; Invalid regex on ClojureJVM
+   :cljs (is (=' (re-pattern "(){,}")                              (nom-ncg nil nil nil))))  ; Valid (but nonsensical) regex on ClojureScript
+    (is (=' #"(?<groupName>){7,}"                                  (nom-ncg "groupName" 7 nil)))
     (is (=' #"(?<groupName>){6,}"                                  (nom-ncg "groupName" 6 #"")))
     (is (=' #"(?<groupName>x){5,}"                                 (nom-ncg "groupName" 5 #"x")))
+#?(:clj  (is (thrown? java.util.regex.PatternSyntaxException       (nom-ncg "groupName" nil #"x")))   ; Invalid regex on ClojureJVM
+   :cljs (is (=' (re-pattern "(?<groupName>x){,}")                 (nom-ncg "groupName" nil #"x"))))  ; Valid (but nonsensical) regex on ClojureScript
     (is (=' #"(?<groupName>.*){4,}"                                (nom-ncg "groupName" 4 #".*")))
     (is (=' #"(?<groupName>foo){3,}"                               (nom-ncg "groupName" 3 #"foo")))
     (is (=' #"(?<apache>Apache){2,}"                               (nom-ncg "apache"    2 "Apache")))
     (is (=' #"(?<apache>Apache(\s+Software)?(\s+Licen[cs]e)?){1,}" (nom-ncg "apache"    1 "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
   (testing "nom-fgrp"
-    (is (nil?                                                (nom-fgrp nil nil)))
-    (is (nil?                                                (nom-fgrp nil nil nil)))
-    (is (nil?                                                (nom-fgrp "i" 2 nil)))
-    (is (=' #"(?i:){5,}"                                     (nom-fgrp "i" 5 #"")))
+    (is (=' #""                                              (nom-fgrp nil nil)))
+    (is (=' #""                                              (nom-fgrp nil nil nil)))
+    (is (=' #""                                              (nom-fgrp "i" 2 nil)))
+    (is (=' #""                                              (nom-fgrp "i" 5 #"")))
     (is (=' #"(?i:x){6,}"                                    (nom-fgrp "i" 6 #"x")))
+#?(:clj  (is (thrown? java.util.regex.PatternSyntaxException (nom-fgrp "i" nil #"x")))   ; Invalid regex on ClojureJVM
+   :cljs (is (=' (re-pattern "(?i:x){,}")                    (nom-fgrp "i" nil #"x"))))  ; Valid (but nonsensical) regex on ClojureScript
     (is (=' #"(?i:.*){2,}"                                   (nom-fgrp "i" 2 #".*")))
     (is (=' #"(?i:foo){7,}"                                  (nom-fgrp "i" 7 #"foo")))
     (is (=' #"(?i:Apache){8,}"                               (nom-fgrp "i" 8 "Apache")))
     (is (=' #"(?i:Apache(\s+Software)?(\s+Licen[cs]e)?){5,}" (nom-fgrp "i" 5 "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
   (testing "nom-chcl"
-    (is (nil?                        (nom-chcl nil)))
-    (is (nil?                        (nom-chcl nil nil)))
-#?(:clj  (is (=' #"{4,}"             (nom-chcl 4 #"")))   ; Valid (but nonsensical) regex on ClojureJVM
-   :cljs (is (thrown? js/SyntaxError (nom-chcl 4 #""))))  ; Invalid regex on ClojureScript
-    (is (=' #"[x]{7,}"               (nom-chcl 7 #"x")))
-    (is (=' #"[a-z]{2,}"             (nom-chcl 2 #"a-z")))
-    (is (=' #"[abc]{8,}"             (nom-chcl 8 "a" "b" "c")))
-    (is (=' #"[abc]{1,}"             (nom-chcl 1 #"a" #"b" #"c")))))
+    (is (=' #""          (nom-chcl nil)))
+    (is (=' #""          (nom-chcl nil nil)))
+    (is (=' #""          (nom-chcl 4 #"")))
+    (is (=' #"[x]{7,}"   (nom-chcl 7 #"x")))
+    (is (=' #"[a-z]{2,}" (nom-chcl 2 #"a-z")))
+    (is (=' #"[abc]{8,}" (nom-chcl 8 "a" "b" "c")))
+    (is (=' #"[abc]{1,}" (nom-chcl 1 #"a" #"b" #"c")))))
 
 (deftest exn-variant-tests
   (testing "exn"
-    (is (nil?                        (exn nil nil)))
-    (is (nil?                        (exn nil #"")))
-    (is (nil?                        (exn 2 nil)))
-#?(:clj  (is (=' #"{2}"              (exn 2 #"")))   ; Valid (but nonsensical) regex on ClojureJVM
-   :cljs (is (thrown? js/SyntaxError (exn 2 #""))))  ; Invalid regex on ClojureScript
-    (is (=' #"x{5}"                  (exn 5 #"x")))
-#?(:clj  (is (=' #".*{3}"            (exn 3 #".*")))   ; Valid (but nonsensical) regex on ClojureJVM
-   :cljs (is (thrown? js/SyntaxError (exn 3 #".*"))))  ; Invalid regex on ClojureScript
-    (is (=' #"foo{2}"                (exn 2 #"foo")))  ; Note how this doesn't result in optionality being applied to the entirety of the input - that's what nom-grp etc. are for
-    (is (=' #"Apache{17}"            (exn 17 "Apache"))))
+    (is (=' #""                                              (exn nil nil)))
+    (is (=' #""                                              (exn nil #"")))
+    (is (=' #""                                              (exn 2 nil)))
+    (is (=' #""                                              (exn 2 #"")))
+    (is (=' #"x{5}"                                          (exn 5 #"x")))
+#?(:clj  (is (thrown? java.util.regex.PatternSyntaxException (exn nil #"x")))   ; Invalid regex on ClojureJVM
+   :cljs (is (=' (re-pattern "x{}")                          (exn nil #"x"))))  ; Valid (but nonsensical) regex on ClojureScript
+#?(:clj  (is (=' #".*{3}"                                    (exn 3 #".*")))   ; Valid (but nonsensical) regex on ClojureJVM
+   :cljs (is (thrown? js/SyntaxError                         (exn 3 #".*"))))  ; Invalid regex on ClojureScript
+    (is (=' #"foo{2}"                                        (exn 2 #"foo")))  ; Note how this doesn't result in optionality being applied to the entirety of the input - that's what nom-grp etc. are for
+    (is (=' #"Apache{17}"                                    (exn 17 "Apache"))))
   (testing "exn-grp"
-    (is (nil?                                              (exn-grp nil nil)))
-    (is (nil?                                              (exn-grp 3 nil)))
-#?(:clj  (is (=' #"{246}"                                  (exn-grp 246 #"")))   ; Valid (but nonsensical) regex on ClojureJVM
-   :cljs (is (thrown? js/SyntaxError                       (exn-grp 246 #""))))  ; Invalid regex on ClojureScript
-    (is (=' #"(?:x){0}"                                    (exn-grp 0 #"x")))
-    (is (=' #"(?:.*){7}"                                   (exn-grp 7 #".*")))
-    (is (=' #"(?:foo){42}"                                 (exn-grp 42 #"foo")))
-    (is (=' #"(?:Apache){12}"                              (exn-grp 12 "Apache")))
-    (is (=' #"(?:Apache(\s+Software)?(\s+Licen[cs]e)?){5}" (exn-grp 5 "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
+    (is (=' #""                                              (exn-grp nil nil)))
+    (is (=' #""                                              (exn-grp 3 nil)))
+    (is (=' #""                                              (exn-grp 246 #"")))
+    (is (=' #"(?:x){0}"                                      (exn-grp 0 #"x")))
+#?(:clj  (is (thrown? java.util.regex.PatternSyntaxException (exn-grp nil #"x")))   ; Invalid regex on ClojureJVM
+   :cljs (is (=' (re-pattern "(?:x){}")                      (exn-grp nil #"x"))))  ; Valid (but nonsensical) regex on ClojureScript
+    (is (=' #"(?:.*){7}"                                     (exn-grp 7 #".*")))
+    (is (=' #"(?:foo){42}"                                   (exn-grp 42 #"foo")))
+    (is (=' #"(?:Apache){12}"                                (exn-grp 12 "Apache")))
+    (is (=' #"(?:Apache(\s+Software)?(\s+Licen[cs]e)?){5}"   (exn-grp 5 "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
   (testing "exn-cg"
-    (is (nil?                                            (exn-cg nil nil)))
-    (is (nil?                                            (exn-cg 3 nil)))
-    (is (=' #"(){3}"                                     (exn-cg 3 #"")))  ; Note: empty capturing groups are _not_ optimised out, since doing so could break code that indexes into the matched groups
-    (is (=' #"(x){4}"                                    (exn-cg 4 #"x")))
-    (is (=' #"(.*){5}"                                   (exn-cg 5 #".*")))
-    (is (=' #"(foo){6}"                                  (exn-cg 6 #"foo")))
-    (is (=' #"(Apache){7}"                               (exn-cg 7 "Apache")))
-    (is (=' #"(Apache(\s+Software)?(\s+Licen[cs]e)?){8}" (exn-cg 8 "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
+#?(:clj  (is (thrown? java.util.regex.PatternSyntaxException (exn-cg nil nil)))       ; Invalid regex on ClojureJVM
+   :cljs (is (=' (re-pattern "(){}")                         (exn-cg nil nil))))      ; Valid (but nonsensical) regex on ClojureScript
+    (is (=' #"(){3}"                                         (exn-cg 3 nil)))  ; Note: empty capturing groups are _not_ optimised out, since doing so could break code that indexes into the matched groups
+    (is (=' #"(){3}"                                         (exn-cg 3 #"")))
+    (is (=' #"(x){4}"                                        (exn-cg 4 #"x")))
+#?(:clj  (is (thrown? java.util.regex.PatternSyntaxException (exn-cg nil #"x")))   ; Invalid regex on ClojureJVM
+   :cljs (is (=' (re-pattern "(x){}")                        (exn-cg nil #"x"))))  ; Valid (but nonsensical) regex on ClojureScript
+    (is (=' #"(.*){5}"                                       (exn-cg 5 #".*")))
+    (is (=' #"(foo){6}"                                      (exn-cg 6 #"foo")))
+    (is (=' #"(Apache){7}"                                   (exn-cg 7 "Apache")))
+    (is (=' #"(Apache(\s+Software)?(\s+Licen[cs]e)?){8}"     (exn-cg 8 "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
   (testing "exn-ncg"
-    (is (nil?                                                     (exn-ncg nil nil)))
-    (is (nil?                                                     (exn-ncg nil nil nil)))
-    (is (nil?                                                     (exn-ncg "groupName" 7 nil)))
+#?(:clj  (is (thrown? java.util.regex.PatternSyntaxException      (exn-ncg nil nil)))       ; Invalid regex on ClojureJVM
+   :cljs (is (=' (re-pattern "(){}")                              (exn-ncg nil nil))))      ; Valid (but nonsensical) regex on ClojureScript
+#?(:clj  (is (thrown? java.util.regex.PatternSyntaxException      (exn-ncg nil nil nil)))   ; Invalid regex on ClojureJVM
+   :cljs (is (=' (re-pattern "(){}")                              (exn-ncg nil nil nil))))  ; Valid (but nonsensical) regex on ClojureScript
+    (is (=' #"(?<groupName>){7}"                                  (exn-ncg "groupName" 7 nil)))
     (is (=' #"(?<groupName>){6}"                                  (exn-ncg "groupName" 6 #"")))
     (is (=' #"(?<groupName>x){5}"                                 (exn-ncg "groupName" 5 #"x")))
+#?(:clj  (is (thrown? java.util.regex.PatternSyntaxException      (exn-ncg "groupName" nil #"x")))   ; Invalid regex on ClojureJVM
+   :cljs (is (=' (re-pattern "(?<groupName>x){}")                 (exn-ncg "groupName" nil #"x"))))  ; Valid (but nonsensical) regex on ClojureScript
     (is (=' #"(?<groupName>.*){4}"                                (exn-ncg "groupName" 4 #".*")))
     (is (=' #"(?<groupName>foo){3}"                               (exn-ncg "groupName" 3 #"foo")))
     (is (=' #"(?<apache>Apache){2}"                               (exn-ncg "apache"    2 "Apache")))
     (is (=' #"(?<apache>Apache(\s+Software)?(\s+Licen[cs]e)?){1}" (exn-ncg "apache"    1 "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
   (testing "exn-fgrp"
-    (is (nil?                                               (exn-fgrp nil nil)))
-    (is (nil?                                               (exn-fgrp nil nil nil)))
-    (is (nil?                                               (exn-fgrp "i" 2 nil)))
-    (is (=' #"(?i:){5}"                                     (exn-fgrp "i" 5 #"")))
-    (is (=' #"(?i:x){6}"                                    (exn-fgrp "i" 6 #"x")))
-    (is (=' #"(?i:.*){2}"                                   (exn-fgrp "i" 2 #".*")))
-    (is (=' #"(?i:foo){7}"                                  (exn-fgrp "i" 7 #"foo")))
-    (is (=' #"(?i:Apache){8}"                               (exn-fgrp "i" 8 "Apache")))
-    (is (=' #"(?i:Apache(\s+Software)?(\s+Licen[cs]e)?){5}" (exn-fgrp "i" 5 "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
+    (is (=' #""                                              (exn-fgrp nil nil)))
+    (is (=' #""                                              (exn-fgrp nil nil nil)))
+    (is (=' #""                                              (exn-fgrp "i" 2 nil)))
+    (is (=' #""                                              (exn-fgrp "i" 5 #"")))
+    (is (=' #"(?i:x){6}"                                     (exn-fgrp "i" 6 #"x")))
+#?(:clj  (is (thrown? java.util.regex.PatternSyntaxException (exn-fgrp "i" nil #"x")))   ; Invalid regex on ClojureJVM
+   :cljs (is (=' (re-pattern "(?i:x){}")                     (exn-fgrp "i" nil #"x"))))  ; Valid (but nonsensical) regex on ClojureScript
+    (is (=' #"(?i:.*){2}"                                    (exn-fgrp "i" 2 #".*")))
+    (is (=' #"(?i:foo){7}"                                   (exn-fgrp "i" 7 #"foo")))
+    (is (=' #"(?i:Apache){8}"                                (exn-fgrp "i" 8 "Apache")))
+    (is (=' #"(?i:Apache(\s+Software)?(\s+Licen[cs]e)?){5}"  (exn-fgrp "i" 5 "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
   (testing "exn-chcl"
-    (is (nil?                        (exn-chcl nil)))
-    (is (nil?                        (exn-chcl nil nil)))
-#?(:clj  (is (=' #"{4}"              (exn-chcl 4 #"")))   ; Valid (but nonsensical) regex on ClojureJVM
-   :cljs (is (thrown? js/SyntaxError (exn-chcl 4 #""))))  ; Invalid regex on ClojureScript
-    (is (=' #"[x]{7}"                (exn-chcl 7 #"x")))
-    (is (=' #"[a-z]{2}"              (exn-chcl 2 #"a-z")))
-    (is (=' #"[abc]{8}"              (exn-chcl 8 "a" "b" "c")))
-    (is (=' #"[abc]{1}"              (exn-chcl 1 #"a" #"b" #"c")))))
+    (is (=' #""                                              (exn-chcl nil)))
+    (is (=' #""                                              (exn-chcl nil nil)))
+    (is (=' #""                                              (exn-chcl 4 nil)))
+    (is (=' #""                                              (exn-chcl 4 #"")))
+    (is (=' #"[x]{7}"                                        (exn-chcl 7 #"x")))
+#?(:clj  (is (thrown? java.util.regex.PatternSyntaxException (exn-chcl nil #"x")))   ; Invalid regex on ClojureJVM
+   :cljs (is (=' (re-pattern "[x]{}")                        (exn-chcl nil #"x"))))  ; Valid (but nonsensical) regex on ClojureScript
+    (is (=' #"[a-z]{2}"                                      (exn-chcl 2 #"a-z")))
+    (is (=' #"[abc]{8}"                                      (exn-chcl 8 "a" "b" "c")))
+    (is (=' #"[abc]{1}"                                      (exn-chcl 1 #"a" #"b" #"c")))))
 
 (deftest n2m-variant-tests
   (testing "n2m"
-    (is (nil?                        (n2m nil nil nil)))
-    (is (nil?                        (n2m nil nil #"")))
-    (is (nil?                        (n2m 2 nil nil)))
-    (is (nil?                        (n2m nil 4 nil)))
-    (is (nil?                        (n2m 2 4 nil)))
-#?(:clj  (is (=' #"{2,4}"            (n2m 2 4 #"")))   ; Valid (but nonsensical) regex on ClojureJVM
-   :cljs (is (thrown? js/SyntaxError (n2m 2 4 #""))))  ; Invalid regex on ClojureScript
-    (is (=' #"x{2,4}"                (n2m 2 4 #"x")))
-#?(:clj  (is (=' #".*{3,7}"          (n2m 3 7 #".*")))   ; Valid (but nonsensical) regex on ClojureJVM
-   :cljs (is (thrown? js/SyntaxError (n2m 3 7 #".*"))))  ; Invalid regex on ClojureScript
-    (is (=' #"foo{2,2}"              (n2m 2 2 #"foo")))  ; Note how this doesn't result in optionality being applied to the entirety of the input - that's what nom-grp etc. are for
-    (is (=' #"Apache{17,21}"         (n2m 17 21 "Apache"))))
+    (is (=' #""                                              (n2m nil nil nil)))
+    (is (=' #""                                              (n2m nil nil #"")))
+    (is (=' #""                                              (n2m 2 nil nil)))
+    (is (=' #""                                              (n2m nil 4 nil)))
+    (is (=' #""                                              (n2m 2 4 nil)))
+    (is (=' #""                                              (n2m 2 4 #"")))
+    (is (=' #"x{2,4}"                                        (n2m 2 4 #"x")))
+    (is (=' #"x{2,}"                                         (n2m 2 nil #"x")))   ; This turns into nom
+#?(:clj  (is (thrown? java.util.regex.PatternSyntaxException (n2m nil 7 #"x")))   ; Invalid regex on ClojureJVM
+   :cljs (is (=' (re-pattern "x{,7}")                        (n2m nil 7 #"x"))))  ; Valid (but nonsensical) regex on ClojureScript
+#?(:clj  (is (=' #".*{3,7}"                                  (n2m 3 7 #".*")))    ; Valid (but nonsensical) regex on ClojureJVM
+   :cljs (is (thrown? js/SyntaxError                         (n2m 3 7 #".*"))))   ; Invalid regex on ClojureScript
+    (is (=' #"foo{2,2}"                                      (n2m 2 2 #"foo")))   ; Note how this doesn't result in optionality being applied to the entirety of the input - that's what nom-grp etc. are for
+    (is (=' #"Apache{17,21}"                                 (n2m 17 21 "Apache"))))
   (testing "n2m-grp"
-    (is (nil?                                                 (n2m-grp nil nil nil)))
-    (is (nil?                                                 (n2m-grp 3 100 nil)))
-#?(:clj  (is (=' #"{246,250}"                                 (n2m-grp 246 250 #"")))   ; Valid (but nonsensical) regex on ClojureJVM
-   :cljs (is (thrown? js/SyntaxError                          (n2m-grp 246 250 #""))))  ; Invalid regex on ClojureScript
-    (is (=' #"(?:x){0,3}"                                     (n2m-grp 0 3 #"x")))
+    (is (=' #""                                               (n2m-grp nil nil nil)))
+    (is (=' #""                                               (n2m-grp 3 100 nil)))
+    (is (=' #""                                               (n2m-grp 246 250 #"")))
+#?(:clj  (is (thrown? java.util.regex.PatternSyntaxException  (n2m-grp nil 3 #"x")))   ; Invalid regex on ClojureJVM
+   :cljs (is (=' (re-pattern "(?:x){,3}")                     (n2m-grp nil 3 #"x"))))  ; Valid (but nonsensical) regex on ClojureScript (it doesn't do what you might think it does...)
+    (is (=' #"(?:x){0,}"                                      (n2m-grp 0 nil #"x")))   ; This turns into nom-grp
     (is (=' #"(?:.*){7,8}"                                    (n2m-grp 7 8 #".*")))
     (is (=' #"(?:foo){42,69}"                                 (n2m-grp 42 69 #"foo")))
     (is (=' #"(?:Apache){12,13}"                              (n2m-grp 12 13 "Apache")))
     (is (=' #"(?:Apache(\s+Software)?(\s+Licen[cs]e)?){5,99}" (n2m-grp 5 99 "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
   (testing "n2m-cg"
-    (is (nil?                                              (n2m-cg nil nil nil)))
-    (is (=' #"(){3,4}"                                     (n2m-cg 3 4 #"")))
-    (is (=' #"(x){4,5}"                                    (n2m-cg 4 5 #"x")))
-    (is (=' #"(.*){5,6}"                                   (n2m-cg 5 6 #".*")))
-    (is (=' #"(foo){6,7}"                                  (n2m-cg 6 7 #"foo")))
-    (is (=' #"(Apache){7,8}"                               (n2m-cg 7 8 "Apache")))
-    (is (=' #"(Apache(\s+Software)?(\s+Licen[cs]e)?){8,9}" (n2m-cg 8 9 "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
+#?(:clj  (is (thrown? java.util.regex.PatternSyntaxException (n2m-cg nil nil nil)))   ; Invalid regex on ClojureJVM
+   :cljs (is (=' (re-pattern "(){,}")                        (n2m-cg nil nil nil))))  ; Valid (but nonsensical) regex on ClojureScript
+    (is (=' #"(){3,4}"                                       (n2m-cg 3 4 #"")))
+    (is (=' #"(x){4,5}"                                      (n2m-cg 4 5 #"x")))
+    (is (=' #"(x){5,}"                                       (n2m-cg 5 nil #"x")))   ; This turns into nom-cg
+#?(:clj  (is (thrown? java.util.regex.PatternSyntaxException (n2m-cg nil 3 #"x")))   ; Invalid regex on ClojureJVM
+   :cljs (is (=' (re-pattern "(x){,3}")                      (n2m-cg nil 3 #"x"))))  ; Valid (but nonsensical) regex on ClojureScript (it doesn't do what you might think it does...)
+    (is (=' #"(.*){5,6}"                                     (n2m-cg 5 6 #".*")))
+    (is (=' #"(foo){6,7}"                                    (n2m-cg 6 7 #"foo")))
+    (is (=' #"(Apache){7,8}"                                 (n2m-cg 7 8 "Apache")))
+    (is (=' #"(Apache(\s+Software)?(\s+Licen[cs]e)?){8,9}"   (n2m-cg 8 9 "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
   (testing "n2m-ncg"
-    (is (nil?                                                        (n2m-ncg nil nil nil)))
-    (is (nil?                                                        (n2m-ncg nil nil nil nil)))
-    (is (nil?                                                        (n2m-ncg "groupName" 7  8 nil)))
+#?(:clj  (is (thrown? java.util.regex.PatternSyntaxException         (n2m-ncg nil nil nil)))       ; Invalid regex on ClojureJVM
+   :cljs (is (=' (re-pattern "(){,}")                                (n2m-ncg nil nil nil))))      ; Valid (but nonsensical) regex on ClojureScript
+#?(:clj  (is (thrown? java.util.regex.PatternSyntaxException         (n2m-ncg nil nil nil nil)))   ; Invalid regex on ClojureJVM
+   :cljs (is (=' (re-pattern "(){,}")                                (n2m-ncg nil nil nil nil))))  ; Valid (but nonsensical) regex on ClojureScript
+    (is (=' #"(?<groupName>){7,8}"                                   (n2m-ncg "groupName" 7  8 nil)))
     (is (=' #"(?<groupName>){6,9}"                                   (n2m-ncg "groupName" 6  9 #"")))
     (is (=' #"(?<groupName>x){5,10}"                                 (n2m-ncg "groupName" 5 10 #"x")))
+    (is (=' #"(?<groupName>x){8,}"                                   (n2m-ncg "groupName" 8 nil #"x")))   ; This turns into nom-ncg
+#?(:clj  (is (thrown? java.util.regex.PatternSyntaxException         (n2m-ncg "groupName" nil 3 #"x")))   ; Invalid regex on ClojureJVM
+   :cljs (is (=' (re-pattern "(?<groupName>x){,3}")                  (n2m-ncg "groupName" nil 3 #"x"))))  ; Valid (but nonsensical) regex on ClojureScript (it doesn't do what you might think it does...)
     (is (=' #"(?<groupName>.*){4,11}"                                (n2m-ncg "groupName" 4 11 #".*")))
     (is (=' #"(?<groupName>foo){3,12}"                               (n2m-ncg "groupName" 3 12 #"foo")))
     (is (=' #"(?<apache>Apache){2,13}"                               (n2m-ncg "apache"    2 13 "Apache")))
     (is (=' #"(?<apache>Apache(\s+Software)?(\s+Licen[cs]e)?){1,14}" (n2m-ncg "apache"    1 14 "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
   (testing "n2m-fgrp"
-    (is (nil?                                                  (n2m-fgrp nil nil nil)))
-    (is (nil?                                                  (n2m-fgrp nil nil nil nil)))
-    (is (nil?                                                  (n2m-fgrp "i" 2 4  nil)))
-    (is (=' #"(?i:){5,9}"                                      (n2m-fgrp "i" 5 9  #"")))
+    (is (=' #""                                                (n2m-fgrp nil nil nil)))
+    (is (=' #""                                                (n2m-fgrp nil nil nil nil)))
+    (is (=' #""                                                (n2m-fgrp "i" 2 4  nil)))
+    (is (=' #""                                                (n2m-fgrp "i" 5 9  #"")))
     (is (=' #"(?i:x){6,7}"                                     (n2m-fgrp "i" 6 7  #"x")))
+    (is (=' #"(?i:x){8,}"                                      (n2m-fgrp "i" 8 nil #"x")))   ; This turns into nom-fgrp
+#?(:clj  (is (thrown? java.util.regex.PatternSyntaxException   (n2m-fgrp "i" nil 3 #"x")))   ; Invalid regex on ClojureJVM
+   :cljs (is (=' (re-pattern "(?i:x){,3}")                     (n2m-fgrp "i" nil 3 #"x"))))  ; Valid (but nonsensical) regex on ClojureScript (it doesn't do what you might think it does...)
     (is (=' #"(?i:.*){2,99}"                                   (n2m-fgrp "i" 2 99 #".*")))
     (is (=' #"(?i:foo){7,13}"                                  (n2m-fgrp "i" 7 13 #"foo")))
     (is (=' #"(?i:Apache){8,8}"                                (n2m-fgrp "i" 8 8  "Apache")))
     (is (=' #"(?i:Apache(\s+Software)?(\s+Licen[cs]e)?){5,17}" (n2m-fgrp "i" 5 17 "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
   (testing "n2m-chcl"
-    (is (nil?                        (n2m-chcl nil nil)))
-    (is (nil?                        (n2m-chcl nil nil nil)))
-#?(:clj  (is (=' #"{4,4}"            (n2m-chcl 4 4  #"")))   ; Valid (but nonsensical) regex on ClojureJVM
-   :cljs (is (thrown? js/SyntaxError (n2m-chcl 4 4  #""))))  ; Invalid regex on ClojureScript
-    (is (=' #"[x]{7,9}"              (n2m-chcl 7 9  #"x")))
-    (is (=' #"[a-z]{2,99}"           (n2m-chcl 2 99 #"a-z")))
-    (is (=' #"[abc]{8,13}"           (n2m-chcl 8 13 "a" "b" "c")))
-    (is (=' #"[abc]{1,10}"           (n2m-chcl 1 10 #"a" #"b" #"c")))))
+    (is (=' #""                                              (n2m-chcl nil nil)))
+    (is (=' #""                                              (n2m-chcl nil nil nil)))
+    (is (=' #""                                              (n2m-chcl 4 4 #"")))
+    (is (=' #"[x]{7,9}"                                      (n2m-chcl 7 9  #"x")))
+    (is (=' #"[x]{8,}"                                       (n2m-chcl 8 nil #"x")))   ; This turns into nom-chcl
+#?(:clj  (is (thrown? java.util.regex.PatternSyntaxException (n2m-chcl nil 3 #"x")))   ; Invalid regex on ClojureJVM
+   :cljs (is (=' (re-pattern "[x]{,3}")                      (n2m-chcl nil 3 #"x"))))  ; Valid (but nonsensical) regex on ClojureScript (it doesn't do what you might think it does...)
+    (is (=' #"[a-z]{2,99}"                                   (n2m-chcl 2 99 #"a-z")))
+    (is (=' #"[abc]{8,13}"                                   (n2m-chcl 8 13 "a" "b" "c")))
+    (is (=' #"[abc]{1,10}"                                   (n2m-chcl 1 10 #"a" #"b" #"c")))))
 
 (deftest alt-variant-tests
   (testing "alt"
-    (is (nil?                      (alt nil)))
-    (is (nil?                      (alt nil nil)))
+    (is (=' #""                    (alt nil)))
+    (is (=' #""                    (alt nil nil)))
     (is (=' #""                    (alt #"")))
     (is (=' #"a"                   (alt #"a")))
     (is (=' #""                    (alt #"" #"")))
@@ -709,8 +740,8 @@
    :cljs (is (=' #"(?ims:ab)"      (alt #"(?ims:ab)" (doto (js/RegExp.) (.compile "ab" "msiydgv"))))))  ; Deduplication with flags with ⚠️ footgun: non-embeddable flags are silently dropped
     (is (=' #"0|1|2|3|4|5|6|7|8|9" (apply alt (range 10)))))
   (testing "alt-grp"
-    (is (nil?                          (alt-grp nil)))
-    (is (nil?                          (alt-grp nil nil)))
+    (is (=' #""                        (alt-grp nil)))
+    (is (=' #""                        (alt-grp nil nil)))
     (is (=' #""                        (alt-grp #"")))  ; Optimisation of empty non-capturing groups
     (is (=' #"(?:a)"                   (alt-grp #"a")))
     (is (=' #""                        (alt-grp #"" #"")))  ; Optimisation of empty non-capturing groups
@@ -718,40 +749,40 @@
     (is (=' #"(?:0|1|2|3|4|5|6|7|8|9)" (apply alt-grp (range 10))))
     (is (=' #"(?:0|1|2|3|4|5|6|7|8|9)" (apply alt-grp (concat (range 10) (map str (range 10)))))))  ; Deduplication of equivalent regexes
   (testing "alt-cg"
-    (is (nil?                        (alt-cg nil)))
-    (is (nil?                        (alt-cg nil nil)))
+    (is (=' #"()"                    (alt-cg nil)))
+    (is (=' #"()"                    (alt-cg nil nil)))
     (is (=' #"()"                    (alt-cg #"")))
+    (is (=' #"()"                    (alt-cg #"" #"")))
     (is (=' #"(a)"                   (alt-cg #"a")))
-    (is (=' #"()"                    (alt-cg #"" #"")))  ; Nonsensical, but ensure we have well defined behaviour anyway
     (is (=' #"(foo|bar)"             (alt-cg #"foo" #"bar")))
     (is (=' #"(0|1|2|3|4|5|6|7|8|9)" (apply alt-cg (range 10))))
     (is (=' #"(0|1|2|3|4|5|6|7|8|9)" (apply alt-cg (concat (range 10) (map str (range 10)))))))  ; Deduplication of equivalent regexes
   (testing "alt-ncg"
-    (is (nil?                                  (alt-ncg nil nil)))
-    (is (nil?                                  (alt-ncg nil nil)))
-    (is (nil?                                  (alt-ncg nil nil nil)))
-    (is (nil?                                  (alt-ncg "groupName" nil)))
+    (is (=' #"()"                              (alt-ncg nil nil)))
+    (is (=' #"()"                              (alt-ncg nil nil)))
+    (is (=' #"()"                              (alt-ncg nil nil nil)))
+    (is (=' #"(?<groupName>)"                  (alt-ncg "groupName" nil)))
     (is (=' #"(?<groupName>)"                  (alt-ncg "groupName" #"")))
+    (is (=' #"(?<groupName>)"                  (alt-ncg "groupName" #"" #"")))
     (is (=' #"(?<groupName>a)"                 (alt-ncg "groupName" #"a")))
-    (is (=' #"(?<groupName>)"                  (alt-ncg "groupName" #"" #"")))  ; Nonsensical, but ensure we have well defined behaviour anyway
     (is (=' #"(?<groupName>foo|bar)"           (alt-ncg "groupName" #"foo" #"bar")))
     (is (=' #"(?<numbers>0|1|2|3|4|5|6|7|8|9)" (apply (partial alt-ncg "numbers") (range 10))))
     (is (=' #"(?<numbers>0|1|2|3|4|5|6|7|8|9)" (apply (partial alt-ncg "numbers") (concat (range 10) (map str (range 10)))))))  ; Deduplication of equivalent regexes
   (testing "alt-fgrp"
-    (is (nil?                           (alt-fgrp nil)))
-    (is (nil?                           (alt-fgrp nil nil)))
-    (is (nil?                           (alt-fgrp "i" nil)))
-    (is (=' #"(?i:)"                    (alt-fgrp "i" #"")))
+    (is (=' #""                         (alt-fgrp nil)))
+    (is (=' #""                         (alt-fgrp nil nil)))
+    (is (=' #""                         (alt-fgrp "i" nil)))
+    (is (=' #""                         (alt-fgrp "i" #"")))
+    (is (=' #""                         (alt-fgrp "i" #"" #"")))
     (is (=' #"(?i:x)"                   (alt-fgrp "i" #"x")))
-    (is (=' #"(?i:)"                    (alt-fgrp "i" #"" #"")))  ; Nonsensical, but ensure we have well defined behaviour anyway
     (is (=' #"(?i:foo|bar)"             (alt-fgrp "i" #"foo" #"bar")))
     (is (=' #"(?i:0|1|2|3|4|5|6|7|8|9)" (apply (partial alt-fgrp "i") (range 10))))))
 
 (deftest and-variant-tests
   (testing "and'"
-    (is (nil?              (and' nil nil)))
-    (is (nil?              (and' nil nil nil)))
-    (is (nil?              (and' nil nil #"\s+")))
+    (is (=' #""            (and' nil nil)))
+    (is (=' #""            (and' nil nil nil)))
+    (is (=' #""            (and' nil nil #"\s+")))
     (is (=' #"a"           (and' #"a" nil)))
     (is (=' #"b"           (and' nil #"b")))
     (is (=' #"b"           (and' nil #"b" nil)))
@@ -764,8 +795,8 @@
     (is (=' #"ab|ba"       (and' #"a" #"b" nil)))
     (is (=' #"a\s+b|b\s+a" (and' #"a" #"b" #"\s+"))))
   (testing "and-grp"
-    (is (nil?                  (and-grp nil nil)))
-    (is (nil?                  (and-grp nil nil nil)))
+    (is (=' #""                (and-grp nil nil)))
+    (is (=' #""                (and-grp nil nil nil)))
     (is (=' #"(?:a)"           (and-grp #"a" nil)))
     (is (=' #"(?:a)"           (and-grp #"a" #"")))  ; Optimisation
     (is (=' #"(?:b)"           (and-grp #"" #"b")))  ; Optimisation
@@ -774,8 +805,9 @@
     (is (=' #"(?:ab|ba)"       (and-grp #"a" #"b" nil)))
     (is (=' #"(?:a\s+b|b\s+a)" (and-grp #"a" #"b" #"\s+"))))
   (testing "and-cg"
-    (is (nil?                (and-cg nil nil)))
-    (is (nil?                (and-cg nil nil nil)))
+    (is (=' #"()"            (and-cg nil nil)))
+    (is (=' #"()"            (and-cg nil nil nil)))
+    (is (=' #"()"            (and-cg #""  nil)))
     (is (=' #"(a)"           (and-cg #"a" nil)))
     (is (=' #"(a)"           (and-cg #"a" #"")))  ; Optimisation
     (is (=' #"(b)"           (and-cg #"" #"b")))  ; Optimisation
@@ -784,8 +816,10 @@
     (is (=' #"(ab|ba)"       (and-cg #"a" #"b" nil)))
     (is (=' #"(a\s+b|b\s+a)" (and-cg #"a" #"b" #"\s+"))))
   (testing "and-ncg"
-    (is (nil?                            (and-ncg nil nil nil)))
-    (is (nil?                            (and-ncg nil nil nil nil)))
+    (is (=' #"()"                        (and-ncg nil nil nil)))
+    (is (=' #"()"                        (and-ncg nil nil nil nil)))
+    (is (=' #"(?<groupName>)"            (and-ncg "groupName" nil nil nil)))
+    (is (=' #"(?<groupName>)"            (and-ncg "groupName" #"" nil)))
     (is (=' #"(?<groupName>a)"           (and-ncg "groupName" #"a" nil)))
     (is (=' #"(?<groupName>a)"           (and-ncg "groupName" #"a" #"")))  ; Optimisation
     (is (=' #"(?<groupName>b)"           (and-ncg "groupName" #"" #"b")))  ; Optimisation
@@ -794,8 +828,10 @@
     (is (=' #"(?<groupName>ab|ba)"       (and-ncg "groupName" #"a" #"b" nil)))
     (is (=' #"(?<groupName>a\s+b|b\s+a)" (and-ncg "groupName" #"a" #"b" #"\s+"))))
   (testing "and-fgrp"
-    (is (nil?                   (and-fgrp nil nil nil)))
-    (is (nil?                   (and-fgrp nil nil nil nil)))
+    (is (=' #""                 (and-fgrp nil nil nil)))
+    (is (=' #""                 (and-fgrp nil nil nil nil)))
+    (is (=' #""                 (and-fgrp "i" nil nil nil)))
+    (is (=' #""                 (and-fgrp "i" #"" nil)))
     (is (=' #"(?i:a)"           (and-fgrp "i" #"a" nil)))
     (is (=' #"(?i:a)"           (and-fgrp "i" #"a" #"")))  ; Optimisation
     (is (=' #"(?i:b)"           (and-fgrp "i" #"" #"b")))  ; Optimisation
@@ -806,9 +842,9 @@
 
 (deftest or-variant-tests
   (testing "or'"
-    (is (nil?                  (or' nil nil)))
-    (is (nil?                  (or' nil nil nil)))
-    (is (nil?                  (or' nil nil #"\s+")))
+    (is (=' #""                (or' nil nil)))
+    (is (=' #""                (or' nil nil nil)))
+    (is (=' #""                (or' nil nil #"\s+")))
     (is (=' #"a"               (or' #"a" nil)))
     (is (=' #"b"               (or' nil #"b")))
     (is (=' #"b"               (or' nil #"b" nil)))
@@ -821,8 +857,8 @@
     (is (=' #"ab|ba|a|b"       (or' #"a" #"b" nil)))
     (is (=' #"a\s+b|b\s+a|a|b" (or' #"a" #"b" #"\s+"))))
   (testing "or-grp"
-    (is (nil?                      (or-grp nil nil)))
-    (is (nil?                      (or-grp nil nil nil)))
+    (is (=' #""                    (or-grp nil nil)))
+    (is (=' #""                    (or-grp nil nil nil)))
     (is (=' #"(?:a)"               (or-grp #"a" nil)))
     (is (=' #"(?:a|)"              (or-grp #"a" #"")))  ; Optimisation
     (is (=' #"(?:b|)"              (or-grp #"" #"b")))  ; Note how order is not what we might expect (but it is correct!)
@@ -831,8 +867,8 @@
     (is (=' #"(?:ab|ba|a|b)"       (or-grp #"a" #"b" nil)))
     (is (=' #"(?:a\s+b|b\s+a|a|b)" (or-grp #"a" #"b" #"\s+"))))
   (testing "or-cg"
-    (is (nil?                    (or-cg nil nil)))
-    (is (nil?                    (or-cg nil nil nil)))
+    (is (=' #"()"                (or-cg nil nil)))
+    (is (=' #"()"                (or-cg nil nil nil)))
     (is (=' #"(a)"               (or-cg #"a" nil)))
     (is (=' #"(a|)"              (or-cg #"a" #"")))  ; Optimisation
     (is (=' #"(b|)"              (or-cg #"" #"b")))  ; Note how order is not what we might expect (but it is correct!)
@@ -841,9 +877,9 @@
     (is (=' #"(ab|ba|a|b)"       (or-cg #"a" #"b" nil)))
     (is (=' #"(a\s+b|b\s+a|a|b)" (or-cg #"a" #"b" #"\s+"))))
   (testing "or-ncg"
-    (is (nil?                                (or-ncg nil nil nil)))
-    (is (nil?                                (or-ncg nil nil nil nil)))
-    (is (nil?                                (or-ncg "groupName" nil nil nil)))
+    (is (=' #"()"                            (or-ncg nil nil nil)))
+    (is (=' #"()"                            (or-ncg nil nil nil nil)))
+    (is (=' #"(?<groupName>)"                (or-ncg "groupName" nil nil nil)))
     (is (=' #"(?<groupName>a)"               (or-ncg "groupName" #"a" nil)))
     (is (=' #"(?<groupName>a|)"              (or-ncg "groupName" #"a" #"")))  ; Optimisation
     (is (=' #"(?<groupName>b|)"              (or-ncg "groupName" #"" #"b")))  ; Note how order is not what we might expect (but it is correct!)
@@ -852,9 +888,10 @@
     (is (=' #"(?<groupName>ab|ba|a|b)"       (or-ncg "groupName" #"a" #"b" nil)))
     (is (=' #"(?<groupName>a\s+b|b\s+a|a|b)" (or-ncg "groupName" #"a" #"b" #"\s+"))))
   (testing "or-fgrp"
-    (is (nil?                       (or-fgrp nil nil nil)))
-    (is (nil?                       (or-fgrp nil nil nil nil)))
-    (is (nil?                       (or-fgrp "i" nil nil nil)))
+    (is (=' #""                     (or-fgrp nil nil nil)))
+    (is (=' #""                     (or-fgrp nil nil nil nil)))
+    (is (=' #""                     (or-fgrp "i" nil nil nil)))
+    (is (=' #""                     (or-fgrp "i" #""  nil)))
     (is (=' #"(?i:a)"               (or-fgrp "i" #"a" nil)))
     (is (=' #"(?i:a|)"              (or-fgrp "i" #"a" #"")))  ; Optimisation
     (is (=' #"(?i:b|)"              (or-fgrp "i" #"" #"b")))  ; Note how order is not what we might expect (but it is correct!)
@@ -865,42 +902,43 @@
 
 (deftest xor-variant-tests
   (testing "xor'"
-    (is (nil?      (xor' nil nil)))
+    (is (=' #""    (xor' nil nil)))
     (is (=' #"a"   (xor' #"a" nil)))
     (is (=' #"b"   (xor' nil #"b")))
     (is (=' #"a|"  (xor' #"a" #"")))
     (is (=' #"|b"  (xor' #"" #"b")))
-    (is (=' #"a"   (xor' #"a" #"a")))  ; Optimisation
+    (is (=' #"a"   (xor' #"a" #"a")))  ; Deduplication
     (is (=' #"a|b" (xor' #"a" #"b"))))
   (testing "xor-grp"
-    (is (nil?          (xor-grp nil nil)))
+    (is (=' #""        (xor-grp nil nil)))
     (is (=' #"(?:a)"   (xor-grp #"a" nil)))
     (is (=' #"(?:a|)"  (xor-grp #"a" #"")))
     (is (=' #"(?:|b)"  (xor-grp #"" #"b")))
-    (is (=' #"(?:a)"   (xor-grp #"a" #"a")))  ; Optimisation
+    (is (=' #"(?:a)"   (xor-grp #"a" #"a")))  ; Deduplication
     (is (=' #"(?:a|b)" (xor-grp #"a" #"b"))))
   (testing "xor-cg"
-    (is (nil?        (xor-cg nil nil)))
+    (is (=' #"()"    (xor-cg nil nil)))
     (is (=' #"(a)"   (xor-cg #"a" nil)))
     (is (=' #"(a|)"  (xor-cg #"a" #"")))
     (is (=' #"(|b)"  (xor-cg #"" #"b")))
-    (is (=' #"(a)"   (xor-cg #"a" #"a")))  ; Optimisation
+    (is (=' #"(a)"   (xor-cg #"a" #"a")))  ; Deduplication
     (is (=' #"(a|b)" (xor-cg #"a" #"b"))))
   (testing "xor-ncg"
-    (is (nil?                    (xor-ncg nil nil nil)))
-    (is (nil?                    (xor-ncg "groupName" nil nil)))
+    (is (=' #"()"                (xor-ncg nil nil nil)))
+    (is (=' #"(?<groupName>)"    (xor-ncg "groupName" nil nil)))
+    (is (=' #"(?<groupName>)"    (xor-ncg "groupName" #"" nil)))
     (is (=' #"(?<groupName>a)"   (xor-ncg "groupName" #"a" nil)))
     (is (=' #"(?<groupName>a|)"  (xor-ncg "groupName" #"a" #"")))
     (is (=' #"(?<groupName>|b)"  (xor-ncg "groupName" #"" #"b")))
-    (is (=' #"(?<groupName>a)"   (xor-ncg "groupName" #"a" #"a")))  ; Optimisation
+    (is (=' #"(?<groupName>a)"   (xor-ncg "groupName" #"a" #"a")))  ; Deduplication
     (is (=' #"(?<groupName>a|b)" (xor-ncg "groupName" #"a" #"b"))))
   (testing "xor-fgrp"
-    (is (nil?                    (xor-fgrp nil nil nil)))
-    (is (nil?                    (xor-fgrp "i" nil nil)))
+    (is (=' #""                  (xor-fgrp nil nil nil)))
+    (is (=' #""                  (xor-fgrp "i" nil nil)))
     (is (=' #"(?i:a)"   (xor-fgrp "i" #"a" nil)))
     (is (=' #"(?i:a|)"  (xor-fgrp "i" #"a" #"")))
     (is (=' #"(?i:|b)"  (xor-fgrp "i" #"" #"b")))
-    (is (=' #"(?i:a)"   (xor-fgrp "i" #"a" #"a")))  ; Optimisation
+    (is (=' #"(?i:a)"   (xor-fgrp "i" #"a" #"a")))  ; Deduplication
     (is (=' #"(?i:a|b)" (xor-fgrp "i" #"a" #"b")))))
 
 (defn- matches?
