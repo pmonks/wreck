@@ -16,6 +16,7 @@
       :cljs [wreck.test-utils :refer-macros [time-execution]])
             [wreck.api        :refer [has-non-embeddable-flags? embed-flags  regex?
                                       str' =' empty?' join esc qot
+                                      +lb -lb +la -la
                                                grp     cg     ncg     fgrp     chcl
                                       opt  opt-grp opt-cg opt-ncg opt-fgrp opt-chcl
                                       zom  zom-grp zom-cg zom-ncg zom-fgrp zom-chcl
@@ -26,7 +27,8 @@
                                       alt  alt-grp alt-cg alt-ncg alt-fgrp
                                       and' and-grp and-cg and-ncg and-fgrp
                                       or'  or-grp  or-cg  or-ncg  or-fgrp
-                                      xor' xor-grp xor-cg xor-ncg xor-fgrp]]))
+                                      xor' xor-grp xor-cg xor-ncg xor-fgrp] :as re]
+   #?(:clj  [wreck.api        :refer [inline]])))
 
 ; Important note: because of the way reader conditionals work, regexes in _ALL_
 ; branches _ALWAYS_ get compiled on _ALL_ hosts. This means that platform-
@@ -263,6 +265,40 @@
     (is (=' #"\Qtrue\E" (qot true)))
     (is (=' #"\Qfoo\E" (qot #"foo")))  ; Technically quoting regexes is a Bad Idea™, but we test a simple example just in case
     (is (=' #"\Q.*\E"  (qot ".*")))))
+
+(deftest lookahead-and-lookbehind-tests
+  (testing "+lb"
+    (is (=' #""                                          (+lb)))
+    (is (=' #""                                          (+lb nil)))
+    (is (=' #""                                          (+lb #"")))
+    (is (=' #"(?<=.*)"                                   (+lb #".*")))
+    (is (=' #"(?<=.*)"                                   (+lb #"" #".*")))
+    (is (=' #"(?<=foo.*)"                                (+lb #"foo" #".*")))
+    (is (=' #"(?<=Apache(\s+Software)?(\s+Licen[cs]e)?)" (+lb "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
+  (testing "-lb"
+    (is (=' #""                                          (-lb)))
+    (is (=' #""                                          (-lb nil)))
+    (is (=' #""                                          (-lb #"")))
+    (is (=' #"(?<!.*)"                                   (-lb #".*")))
+    (is (=' #"(?<!.*)"                                   (-lb #"" #".*")))
+    (is (=' #"(?<!foo.*)"                                (-lb #"foo" #".*")))
+    (is (=' #"(?<!Apache(\s+Software)?(\s+Licen[cs]e)?)" (-lb "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
+  (testing "+la"
+    (is (=' #""                                         (+la)))
+    (is (=' #""                                         (+la nil)))
+    (is (=' #""                                         (+la #"")))
+    (is (=' #"(?=.*)"                                   (+la #".*")))
+    (is (=' #"(?=.*)"                                   (+la #"" #".*")))
+    (is (=' #"(?=foo.*)"                                (+la #"foo" #".*")))
+    (is (=' #"(?=Apache(\s+Software)?(\s+Licen[cs]e)?)" (+la "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?"))))
+  (testing "-la"
+    (is (=' #""                                         (-la)))
+    (is (=' #""                                         (-la nil)))
+    (is (=' #""                                         (-la #"")))
+    (is (=' #"(?!.*)"                                   (-la #".*")))
+    (is (=' #"(?!.*)"                                   (-la #"" #".*")))
+    (is (=' #"(?!foo.*)"                                (-la #"foo" #".*")))
+    (is (=' #"(?!Apache(\s+Software)?(\s+Licen[cs]e)?)" (-la "Apache" #"(\s+Software)?" #"(\s+Licen[cs]e)?")))))
 
 (deftest basic-grouping-tests
   (testing "grp"
@@ -957,14 +993,14 @@
         lorl-re (or-grp "Lesser" "Library" (xor-grp (join ows "/" ows) (join mws "or" mws)))
         ; The following regex ends up being ~800 characters long, and yet it's easy to reason about
         lgpl-re (join
-                  #"(?<!\w)"
+                  (-lb #"\w")
                   (fgrp "i"
                     (alt-ncg "lgpl"
                       "LGPL"
                       (join "GNU" mws lorl-re mws "GPL")
                       (join "GNU" mws lorl-re)
                       (join lorl-re mws "GPL")))
-                  #"(?!\w)")]
+                  (-la #"\w"))]
     (testing "Matching tests"
       ; Matches
       (is (true?  (matches? lgpl-re "LGPL")))
@@ -1029,3 +1065,53 @@
       (is (false? (finds? lgpl-re "some text Library or Lesser or more text")))
       (is (false? (finds? lgpl-re "some text GPL Library or Lesser or more text")))
       (is (false? (finds? lgpl-re "some text Library or Lesser GNU or more text")))))))
+
+; Adapted from https://stackoverflow.com/a/78537921/369849
+#?(:clj
+(defmacro inline-exception-thrown?
+  [body]
+  (try
+    (eval body)
+    false
+    (catch clojure.lang.Compiler$CompilerException ce
+      (boolean (re-find (re-pattern (re/esc "Illegal use of wreck.api/inline")) (str ce))))
+    (catch Exception _
+      false))))
+
+#?(:clj
+(deftest inline-tests
+  (testing "inline - literals"
+    (is (=' #""                            (inline nil)))
+    (is (=' #""                            (inline #"")))
+    (is (inline-exception-thrown?          (inline "string value")))
+    (is (inline-exception-thrown?          (inline 10)))
+    (is (inline-exception-thrown?          (inline true)))
+    (is (inline-exception-thrown?          (inline [])))
+    (is (inline-exception-thrown?          (inline {})))
+    (is (=' #".*"                          (inline #".*")))
+    (is (=' #"Apache(\s+Software)?License" (inline #"Apache(\s+Software)?License"))))
+  (testing "inline - forms"
+    (is (=' #""                   (inline (join))))
+    (is (=' #""                   (inline (re/join))))
+    (is (=' #""                   (inline (wreck.api/join))))
+    (is (=' #"foobar"             (inline (join "foo" "bar"))))
+    (is (=' #"foobar"             (inline (re/join "foo" "bar"))))
+    (is (=' #"foobar"             (inline (wreck.api/join "foo" "bar"))))
+    (is (inline-exception-thrown? (inline (+ 1 1))))
+    (is (inline-exception-thrown? (inline (s/join "," ["foo" "bar"]))))
+    (is (inline-exception-thrown? (inline (apply join ["foo" "bar"]))))
+    (is (=' #"(?i:foobar)"        (inline (fgrp "i" "foo" "bar"))))
+    (is (=' #"(?i:foobar)"        (inline (wreck.api/fgrp "i" "foo" "bar"))))
+    (is (=' #"(?:foo|bar)"        (inline (grp (apply alt ["foo" "bar"])))))  ; This demonstrates how simplistic the validation in inline is
+    (is (=' #"(?:foo|bar)"        (inline (wreck.api/grp (clojure.core/apply wreck.api/alt ["foo" "bar"]))))))
+  (testing "inline - local state"
+    (let [res [#"foo" #"bar" #"blah"]]
+      (is (inline-exception-thrown? (inline (grp (apply alt res)))))))  ; Illegal, since res is runtime state
+  (testing "inline - performance"
+    (let [non-inline-time (:time (time-execution (run! (fn [_] (join #"foo" #"bar" #"blah"))           (range 1000000))))
+          inline-time     (:time (time-execution (run! (fn [_] (inline (join  #"foo" #"bar" #"blah"))) (range 1000000))))]
+      (println "ℹ️ inline was approx." (int (/ non-inline-time inline-time)) "times faster than non-inline")
+      (is (< inline-time (/ non-inline-time 2)))))))  ; Typically it's around 100X faster, but we conservatively test that it's "only" twice as fast
+
+; Note: Ideally here we'd also test that inline is actually doing what it says it's doing e.g. using macroexpand-1,
+; but it turns out macroexpand-1 doesn't work properly inside clojure.test unit tests - see https://stackoverflow.com/a/43815570/369849

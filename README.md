@@ -199,14 +199,14 @@ $ deps-try com.github.pmonks/wreck
 ;=>   [\p{Space}\p{IsWhitespace}]+)Lesser|Lesser|Library)"
 
 (def lgpl-re (re/join
-               #"(?<!\w)"                                 ; No word character before
+               (re/-lb #"\w")                             ; No word character before
                (re/fgrp "i"                               ; Flags (in a group)
                  (re/alt-ncg "lgpl"                       ; Alternations, in NCG called "lgpl"
                    "LGPL"                                 ; LGPL literal (string)
                    (re/join "GNU" mws lorl-re mws "GPL")  ; GNU <lorl regex> GPL
                    (re/join "GNU" mws lorl-re)            ; GNU <lorl regex>
                    (re/join lorl-re mws "GPL")))          ; <lorl regex> GPL
-               #"(?!\w)"))                                ; No word character after
+               (re/-la #"\w")))                           ; No word character after
 ;=> #"(?<!\w)(?i:(?<lgpl>LGPL|GNU[\p{Space}\p{IsWhitespace}]+(?:Lesser(?:[\p{Space}
 ;=>   \p{IsWhitespace}]*/[\p{Space}\p{IsWhitespace}]*|[\p{Space}\p{IsWhitespace}]+or[\p{Space}
 ;=>   \p{IsWhitespace}]+)Library|Library(?:[\p{Space}\p{IsWhitespace}]*/[\p{Space}
