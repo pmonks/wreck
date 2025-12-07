@@ -283,10 +283,142 @@
     (join "\\Q" re "\\E")))
 
 
+;; REGEX LITERAL INLINING (JVM only)
+
+#?(:clj  ; Note: this doesn't actually work for macros (since ClojureScript macros are typically expanded by ClojureJVM...) but it's included here to help make the intent clear
+(defmacro inline
+  "Evaluates `regex-construction-form` _at macro expansion time_, emitting the
+  result of that evaluation (i.e. a regex literal) into the code.  This is only
+  intended to be used if you're constructing a constant regex inside other
+  forms, don't want to incur the cost of construction more than once, but also
+  don't want to move it out to its own top-level `def` (which is usually a
+  better choice).  This macro is most useful in cases where a constant regex is
+  used repeatedly (so the cost of redundantly constructing it becomes
+  substantial) and readability would be impaired by moving the regex
+  construction logic away from where the regex is used (i.e. to a `def`).
+
+  For example:
+  ```clojure
+  (defn mentions-clojure?
+    [s]
+    (boolean
+      (some->> s
+        (re-find
+          (re/inline
+            (re/fgrp \"i\"
+                     (re/-lb #\"\\w\")
+                     \"clojure\"
+                     (re/opt (re/alt-grp \"script\" \"clr\"))
+                     (re/-la #\"\\w\")))))))
+  ```
+  In this case, the constructed regex `#\"(?i:(?<!\\w)clojure(?:script|clr)?(?!\\w))\"`
+  will be inlined into the call to `re-find` once, at macro expansion time,
+  instead of being reconstructed every time the `mentions-clojure?` function is
+  called.
+
+  Notes:
+
+  * For various reasons related to ClojureScript's bonkers macro expansion
+    implementation, this macro is JVM only.
+  * ⚠️ This macro uses [clojure.core/eval](https://clojuredocs.org/clojure.core/eval)
+    to evaluate `regex-construction-form`, so should be used with caution!
+  * There is some validation logic to try to ensure `regex-construction-form` is
+    only being used to construct a regex, but it is far from comprehensive.
+    Validation failures throw an `ex-info` with a message that starts with
+    `\"Illegal use of wreck.api/inline\"`, which Clojure's macro expansion
+    machinery wraps in a `clojure.lang.Compiler$CompilerException`.
+  * `regex-construction-form` cannot make use of any runtime state (for obvious
+    reasons - it's not being evaluated at runtime)"
+  [regex-construction-form]
+  ; ClojureScript's macro implementation is so bad we have to do this check at macro expansion time - we can't easily elide the macro entirely on ClojureScript 🙄
+  (when (:ns &env) (throw (ex-info "Illegal use of wreck.api/inline: ClojureScript is not supported" {})))
+
+  (cond
+    ; Regex literal
+    (regex? regex-construction-form)
+      regex-construction-form
+
+    ; List i.e. code
+    (list? regex-construction-form)
+      (if (= "wreck.api" (str (:ns (meta (resolve (first regex-construction-form))))))
+        (let [result (try
+                       (eval regex-construction-form)
+                       (catch java.lang.NoSuchMethodException nsme  ; Clojure compiler throws NoSuchMethodException when runtime state is referenced in regex-construction-form
+                         (throw (ex-info "Illegal use of wreck.api/inline: regex-construction-form referenced runtime state" {} nsme))))]
+          (if (regex? result)
+            result
+            (throw (ex-info "Illegal use of wreck.api/inline: evaluating regex-construction-form did not produce a regex" {}))))
+        (throw (ex-info "Illegal use of wreck.api/inline: regex-construction-form is not using wreck.api fns" {})))
+
+    ; nil
+    (nil? regex-construction-form)
+      empty-regex
+
+    ; Something else
+    :else
+      (throw (ex-info "Illegal use of wreck.api/inline: the only literals that are supported are regexes" {}))))
+)
+
+
+;; LOOKBEHINDS / LOOKAHEADS
+
+(defn +lb
+  "As for [[join]], but encloses the joined `res` in a positive lookbehind:
+
+  * `(?<=res)`
+
+  Returns an empty regex (`#\"\"`) if no `res` are provided, or they're all
+  [[empty?']]."
+  [& res]
+  (let [exp (apply join res)]
+    (if (empty?' exp)
+      empty-regex
+      (join "(?<=" exp ")"))))
+
+(defn -lb
+  "As for [[join]], but encloses the joined `res` in a negative lookbehind:
+
+  * `(?<!res)`
+
+  Returns an empty regex (`#\"\"`) if no `res` are provided, or they're all
+  [[empty?']]."
+  [& res]
+  (let [exp (apply join res)]
+    (if (empty?' exp)
+      empty-regex
+      (join "(?<!" exp ")"))))
+
+(defn +la
+  "As for [[join]], but encloses the joined `res` in a positive lookahead:
+
+  * `(?=res)`
+
+  Returns an empty regex (`#\"\"`) if no `res` are provided, or they're all
+  [[empty?']]."
+  [& res]
+  (let [exp (apply join res)]
+    (if (empty?' exp)
+      empty-regex
+      (join "(?=" exp ")"))))
+
+(defn -la
+  "As for [[join]], but encloses the joined `res` in a negative lookahead:
+
+  * `(?!res)`
+
+  Returns an empty regex (`#\"\"`) if no `res` are provided, or they're all
+  [[empty?']]."
+  [& res]
+  (let [exp (apply join res)]
+    (if (empty?' exp)
+      empty-regex
+      (join "(?!" exp ")"))))
+
+
 ;; CHARACTER CLASSES
 
 (defn chcl
-  "As for [[join]], but encloses the joined `res` into a character class:
+  "As for [[join]], but encloses the joined `res` in a character class:
 
   * `[res]`
 
@@ -309,7 +441,7 @@
 ;; GROUPS
 
 (defn grp
-  "As for [[join]], but encloses the joined `res` into a single non-capturing
+  "As for [[join]], but encloses the joined `res` in a single non-capturing
   group:
 
   * `(?:res)`
