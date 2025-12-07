@@ -285,15 +285,17 @@
 
 ;; REGEX LITERAL INLINING (JVM only)
 
+#?(:clj  ; Note: this doesn't actually work for macros (since ClojureScript macros are typically expanded by ClojureJVM...) but it's included here to help make the intent clear
 (defmacro inline
   "Evaluates `regex-construction-form` _at macro expansion time_, emitting the
   result of that evaluation (i.e. a regex literal) into the code.  This is only
   intended to be used if you're constructing a constant regex inside other
   forms, don't want to incur the cost of construction more than once, but also
   don't want to move it out to its own top-level `def` (which is usually a
-  better choice).  This macro is most useful in cases where readability would be
-  impaired by moving the regex construction logic away from where the regex is
-  used, and it's used repeatedly.
+  better choice).  This macro is most useful in cases where a constant regex is
+  used repeatedly (so the cost of redundantly constructing it becomes
+  substantial) and readability would be impaired by moving the regex
+  construction logic away from where the regex is used (i.e. to a `def`).
 
   For example:
   ```clojure
@@ -316,7 +318,8 @@
 
   Notes:
 
-  * This macro is JVM only.
+  * For various reasons related to ClojureScript's bonkers macro expansion
+    implementation, this macro is JVM only.
   * ⚠️ This macro uses [clojure.core/eval](https://clojuredocs.org/clojure.core/eval)
     to evaluate `regex-construction-form`, so should be used with caution!
   * There is some validation logic to try to ensure `regex-construction-form` is
@@ -327,7 +330,7 @@
   * `regex-construction-form` cannot make use of any runtime state (for obvious
     reasons - it's not being evaluated at runtime)"
   [regex-construction-form]
-  ; ClojureScript's macro implementation is so bad we have to do this check at macro expansion time - we can't simply elide the macro entirely 🙄
+  ; ClojureScript's macro implementation is so bad we have to do this check at macro expansion time - we can't easily elide the macro entirely on ClojureScript 🙄
   (when (:ns &env) (throw (ex-info "Illegal use of wreck.api/inline: ClojureScript is not supported" {})))
 
   (cond
@@ -354,6 +357,7 @@
     ; Something else
     :else
       (throw (ex-info "Illegal use of wreck.api/inline: the only literals that are supported are regexes" {}))))
+)
 
 
 ;; LOOKBEHINDS / LOOKAHEADS
