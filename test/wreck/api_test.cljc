@@ -171,8 +171,8 @@
   (testing "JVM specific cases"
     (is (true?  (=' #"(?i:a+)" (embed-flags (java.util.regex.Pattern/compile "a+" java.util.regex.Pattern/CASE_INSENSITIVE)))))
     (is (true?  (=' #"(?i:a+)" (embed-flags #"(?i)a+") (embed-flags (java.util.regex.Pattern/compile "a+" java.util.regex.Pattern/CASE_INSENSITIVE)))))
-    (is (true?  (=' (embed-flags #"(?i)ab") (embed-flags #"a(?i)b"))))  ; ⚠️ footgun: prior to embedding the flags, these regexes have different semantics
-    (is (false? (=' #"(?i)ab" #"a(?i)b")))
+    (is (true?  (='            (embed-flags #"(?i)ab") (embed-flags #"a(?i)b"))))  ; ⚠️ footgun: prior to embedding the flags, these regexes have different semantics
+    (is (false? (=' #"(?i)ab"  #"a(?i)b")))
     (is (false? (=' #"a+"      (java.util.regex.Pattern/compile "a+" java.util.regex.Pattern/CASE_INSENSITIVE))))
     (is (false? (=' (java.util.regex.Pattern/compile "a+" java.util.regex.Pattern/CASE_INSENSITIVE)
                     (java.util.regex.Pattern/compile "a+" (+ java.util.regex.Pattern/CASE_INSENSITIVE java.util.regex.Pattern/LITERAL))))))   ; Ensure all flags are considered in equality , even if they can't be embedded ; Ensure all flags are considered, even if we normally drop them
