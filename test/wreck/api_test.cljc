@@ -171,8 +171,8 @@
   (testing "JVM specific cases"
     (is (true?  (=' #"(?i:a+)" (embed-flags (java.util.regex.Pattern/compile "a+" java.util.regex.Pattern/CASE_INSENSITIVE)))))
     (is (true?  (=' #"(?i:a+)" (embed-flags #"(?i)a+") (embed-flags (java.util.regex.Pattern/compile "a+" java.util.regex.Pattern/CASE_INSENSITIVE)))))
-    (is (true?  (=' (embed-flags #"(?i)ab") (embed-flags #"a(?i)b"))))  ; ⚠️ footgun: prior to embedding the flags, these regexes have different semantics
-    (is (false? (=' #"(?i)ab" #"a(?i)b")))
+    (is (true?  (='            (embed-flags #"(?i)ab") (embed-flags #"a(?i)b"))))  ; ⚠️ footgun: prior to embedding the flags, these regexes have different semantics
+    (is (false? (=' #"(?i)ab"  #"a(?i)b")))
     (is (false? (=' #"a+"      (java.util.regex.Pattern/compile "a+" java.util.regex.Pattern/CASE_INSENSITIVE))))
     (is (false? (=' (java.util.regex.Pattern/compile "a+" java.util.regex.Pattern/CASE_INSENSITIVE)
                     (java.util.regex.Pattern/compile "a+" (+ java.util.regex.Pattern/CASE_INSENSITIVE java.util.regex.Pattern/LITERAL))))))   ; Ensure all flags are considered in equality , even if they can't be embedded ; Ensure all flags are considered, even if we normally drop them
@@ -977,6 +977,78 @@
     (is (=' #"(?i:a)"   (xor-fgrp "i" #"a" #"a")))  ; Deduplication
     (is (=' #"(?i:a|b)" (xor-fgrp "i" #"a" #"b")))))
 
+
+; Adapted from https://stackoverflow.com/a/78537921/369849
+#?(:clj
+(defmacro inline-exception-thrown?
+  [body]
+  (try
+    (eval body)
+    false
+    (catch clojure.lang.Compiler$CompilerException ce
+      (boolean (re-find (re-pattern (re/esc "Illegal use of wreck.api/inline")) (str ce))))
+    (catch Exception _
+      false))))
+
+#?(:clj (def example-global-state [#"foo" #"bar" #"blah"]))
+
+#?(:clj
+(deftest inline-tests
+  (testing "inline - literals"
+    (is (=' #""                            (inline nil)))
+    (is (=' #""                            (inline #"")))
+    (is (inline-exception-thrown?          (inline "string value")))
+    (is (inline-exception-thrown?          (inline 10)))
+    (is (inline-exception-thrown?          (inline true)))
+    (is (inline-exception-thrown?          (inline [])))
+    (is (inline-exception-thrown?          (inline {})))
+    (is (=' #".*"                          (inline #".*")))
+    (is (=' #"Apache(\s+Software)?License" (inline #"Apache(\s+Software)?License"))))
+  (testing "inline - forms"
+    (is (=' #""                   (inline (join))))
+    (is (=' #""                   (inline (re/join))))
+    (is (=' #""                   (inline (wreck.api/join))))
+    (is (=' #"foobar"             (inline (join "foo" "bar"))))
+    (is (=' #"foobar"             (inline (re/join "foo" "bar"))))
+    (is (=' #"foobar"             (inline (wreck.api/join "foo" "bar"))))
+    (is (inline-exception-thrown? (inline (+ 1 1))))                       ; Illegal - not a regex construction form
+    (is (inline-exception-thrown? (inline (s/join "," ["foo" "bar"]))))    ; Illegal - not a regex construction form
+    (is (inline-exception-thrown? (inline (apply join ["foo" "bar"]))))    ; Illegal - not a regex construction form
+    (is (inline-exception-thrown? (inline (str' #"foo"))))                 ; Illegal - not a regex construction form (wreck.api/str' returns a string)
+    (is (=' #"(?i:foobar)"        (inline (fgrp "i" "foo" "bar"))))
+    (is (=' #"(?i:foobar)"        (inline (wreck.api/fgrp "i" "foo" "bar"))))
+    (is (=' #"(?:foo|bar)"        (inline (grp (apply alt ["foo" "bar"])))))  ; This demonstrates how simplistic the validation in inline is
+    (is (=' #"(?:foo|bar)"        (inline (wreck.api/grp (clojure.core/apply wreck.api/alt ["foo" "bar"]))))))
+  (testing "inline - state"
+    (let [res [#"foo" #"bar" #"blah"]]
+      (is (inline-exception-thrown? (inline (grp (apply alt res))))))                                                 ; Illegal, since res is runtime state
+    (is (=' #"foobarblah"           (inline (let [res [#"foo" #"bar" #"blah"]]              (apply join res)))))   ; Legal, since the let is 'inside' the inlined form
+    (is (=' #"foobarblah"           (inline (clojure.core/let [res [#"foo" #"bar" #"blah"]] (apply join res)))))   ; Legal, since the let is 'inside' the inlined form
+    (is (=' #"foobarblah"           (inline (join (apply join example-global-state)))))                         ; Legal, since example-global-state exists at macro expansion time. The use of the outer re/join is a bit bogus, but then this entire unit test is pretty contrived...
+    (is (regex?                     (inline (let [ws      (chcl #"\p{Space}\p{IsWhitespace}")
+                                                  ows     (zom ws)
+                                                  mws     (oom ws)
+                                                  lorl-re (or-grp "Lesser" "Library" (xor-grp (join ows "/" ows) (join mws "or" mws)))]
+                                              (join (-lb #"\w")
+                                                    (fgrp "i"
+                                                      (alt-ncg "lgpl"
+                                                        "LGPL"
+                                                        (join "GNU" mws lorl-re mws "GPL")
+                                                        (join "GNU" mws lorl-re)
+                                                        (join lorl-re mws "GPL")))
+                                                    (-la #"\w")))))))
+  (testing "inline - performance"
+    (let [non-inline-time (:time (time-execution (run! (fn [_] (join #"foo" #"bar" #"blah"))           (range 1000000))))
+          inline-time     (:time (time-execution (run! (fn [_] (inline (join  #"foo" #"bar" #"blah"))) (range 1000000))))]
+      (println "ℹ️ inline was approx." (int (/ non-inline-time inline-time)) "times faster than non-inline")
+      (is (< inline-time (/ non-inline-time 2)))))))  ; Typically it's around 100X faster, but we conservatively test that it's "only" twice as fast
+
+; Note: Ideally here we'd also test that inline is actually doing what it says it's doing e.g. using macroexpand-1,
+; but it turns out macroexpand-1 doesn't work properly inside clojure.test unit tests - see https://stackoverflow.com/a/43815570/369849
+
+
+;; PUTTING IT ALL TOGETHER AND TESTING THAT THE COMPOSED REGEX ACTUALLY WORKS
+
 (defn- matches?
   [re s]
   (boolean (re-matches re s)))
@@ -1065,53 +1137,3 @@
       (is (false? (finds? lgpl-re "some text Library or Lesser or more text")))
       (is (false? (finds? lgpl-re "some text GPL Library or Lesser or more text")))
       (is (false? (finds? lgpl-re "some text Library or Lesser GNU or more text")))))))
-
-; Adapted from https://stackoverflow.com/a/78537921/369849
-#?(:clj
-(defmacro inline-exception-thrown?
-  [body]
-  (try
-    (eval body)
-    false
-    (catch clojure.lang.Compiler$CompilerException ce
-      (boolean (re-find (re-pattern (re/esc "Illegal use of wreck.api/inline")) (str ce))))
-    (catch Exception _
-      false))))
-
-#?(:clj
-(deftest inline-tests
-  (testing "inline - literals"
-    (is (=' #""                            (inline nil)))
-    (is (=' #""                            (inline #"")))
-    (is (inline-exception-thrown?          (inline "string value")))
-    (is (inline-exception-thrown?          (inline 10)))
-    (is (inline-exception-thrown?          (inline true)))
-    (is (inline-exception-thrown?          (inline [])))
-    (is (inline-exception-thrown?          (inline {})))
-    (is (=' #".*"                          (inline #".*")))
-    (is (=' #"Apache(\s+Software)?License" (inline #"Apache(\s+Software)?License"))))
-  (testing "inline - forms"
-    (is (=' #""                   (inline (join))))
-    (is (=' #""                   (inline (re/join))))
-    (is (=' #""                   (inline (wreck.api/join))))
-    (is (=' #"foobar"             (inline (join "foo" "bar"))))
-    (is (=' #"foobar"             (inline (re/join "foo" "bar"))))
-    (is (=' #"foobar"             (inline (wreck.api/join "foo" "bar"))))
-    (is (inline-exception-thrown? (inline (+ 1 1))))
-    (is (inline-exception-thrown? (inline (s/join "," ["foo" "bar"]))))
-    (is (inline-exception-thrown? (inline (apply join ["foo" "bar"]))))
-    (is (=' #"(?i:foobar)"        (inline (fgrp "i" "foo" "bar"))))
-    (is (=' #"(?i:foobar)"        (inline (wreck.api/fgrp "i" "foo" "bar"))))
-    (is (=' #"(?:foo|bar)"        (inline (grp (apply alt ["foo" "bar"])))))  ; This demonstrates how simplistic the validation in inline is
-    (is (=' #"(?:foo|bar)"        (inline (wreck.api/grp (clojure.core/apply wreck.api/alt ["foo" "bar"]))))))
-  (testing "inline - local state"
-    (let [res [#"foo" #"bar" #"blah"]]
-      (is (inline-exception-thrown? (inline (grp (apply alt res)))))))  ; Illegal, since res is runtime state
-  (testing "inline - performance"
-    (let [non-inline-time (:time (time-execution (run! (fn [_] (join #"foo" #"bar" #"blah"))           (range 1000000))))
-          inline-time     (:time (time-execution (run! (fn [_] (inline (join  #"foo" #"bar" #"blah"))) (range 1000000))))]
-      (println "ℹ️ inline was approx." (int (/ non-inline-time inline-time)) "times faster than non-inline")
-      (is (< inline-time (/ non-inline-time 2)))))))  ; Typically it's around 100X faster, but we conservatively test that it's "only" twice as fast
-
-; Note: Ideally here we'd also test that inline is actually doing what it says it's doing e.g. using macroexpand-1,
-; but it turns out macroexpand-1 doesn't work properly inside clojure.test unit tests - see https://stackoverflow.com/a/43815570/369849
