@@ -237,7 +237,7 @@
   * ⚠️ In ClojureScript be cautious about using numbers in these calls, since
     JavaScript's number handling is a 🤡show.  See the unit tests for examples."
   [& res]
-  (if-let [res (seq (filter identity res))]
+  (if-let [res (seq (filter (complement empty?') res))]
     (re-pattern (s/join (map str' res)))
     empty-regex))
 
@@ -330,7 +330,7 @@
   * `regex-construction-form` cannot make use of any runtime state (for obvious
     reasons - it's not being evaluated at runtime)"
   [regex-construction-form]
-  ; ClojureScript's macro implementation is so bad we have to do this check at macro expansion time - we can't easily elide the macro entirely on ClojureScript 🙄
+  ; ClojureScript's macro implementation is bonkers so we have to do this check at macro expansion time - we can't easily elide the macro entirely on ClojureScript 🙄
   (when (:ns &env) (throw (ex-info "Illegal use of wreck.api/inline: ClojureScript is not supported" {})))
 
   (cond
@@ -340,15 +340,18 @@
 
     ; List i.e. code
     (list? regex-construction-form)
-      (if (= "wreck.api" (str (:ns (meta (resolve (first regex-construction-form))))))
-        (let [result (try
-                       (eval regex-construction-form)
-                       (catch java.lang.NoSuchMethodException nsme  ; Clojure compiler throws NoSuchMethodException when runtime state is referenced in regex-construction-form
-                         (throw (ex-info "Illegal use of wreck.api/inline: regex-construction-form referenced runtime state" {} nsme))))]
-          (if (regex? result)
-            result
-            (throw (ex-info "Illegal use of wreck.api/inline: evaluating regex-construction-form did not produce a regex" {}))))
-        (throw (ex-info "Illegal use of wreck.api/inline: regex-construction-form is not using wreck.api fns" {})))
+      (let [first-form (first regex-construction-form)]
+        (if (or (= "wreck.api"       (str (:ns (meta (resolve first-form)))))  ; Any fn from wreck.api is allowed
+                (= 'let              first-form)                               ; or clojure.core/let
+                (= 'clojure.core/let first-form))                              ;          "
+          (let [result (try
+                         (eval regex-construction-form)
+                         (catch java.lang.NoSuchMethodException nsme  ; Clojure compiler throws NoSuchMethodException when runtime state is referenced in regex-construction-form
+                           (throw (ex-info "Illegal use of wreck.api/inline: regex-construction-form referenced runtime state" {} nsme))))]
+            (if (regex? result)
+              result
+              (throw (ex-info "Illegal use of wreck.api/inline: evaluating regex-construction-form did not produce a regex" {}))))
+          (throw (ex-info "Illegal use of wreck.api/inline: regex-construction-form is not using wreck.api fns" {}))))
 
     ; nil
     (nil? regex-construction-form)
