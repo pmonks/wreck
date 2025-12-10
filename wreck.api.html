@@ -17,22 +17,22 @@
 <li><code>(?=res)</code></li>
 </ul>
 <p>Returns an empty regex (<code>#""</code>) if no <code>res</code> are provided, or they’re all <a href="wreck.api.html#var-empty.3F.27">empty?’</a>.</p>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L391">view source</a></div></div><div class="public anchor" id="var-.2Blb"><h3>+lb</h3><div class="usage"><code>(+lb &amp; res)</code></div><div class="doc"><div class="markdown"><p>As for <a href="wreck.api.html#var-join">join</a>, but encloses the joined <code>res</code> in a positive lookbehind:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L394">view source</a></div></div><div class="public anchor" id="var-.2Blb"><h3>+lb</h3><div class="usage"><code>(+lb &amp; res)</code></div><div class="doc"><div class="markdown"><p>As for <a href="wreck.api.html#var-join">join</a>, but encloses the joined <code>res</code> in a positive lookbehind:</p>
 <ul>
 <li><code>(?&lt;=res)</code></li>
 </ul>
 <p>Returns an empty regex (<code>#""</code>) if no <code>res</code> are provided, or they’re all <a href="wreck.api.html#var-empty.3F.27">empty?’</a>.</p>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L365">view source</a></div></div><div class="public anchor" id="var--la"><h3>-la</h3><div class="usage"><code>(-la &amp; res)</code></div><div class="doc"><div class="markdown"><p>As for <a href="wreck.api.html#var-join">join</a>, but encloses the joined <code>res</code> in a negative lookahead:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L368">view source</a></div></div><div class="public anchor" id="var--la"><h3>-la</h3><div class="usage"><code>(-la &amp; res)</code></div><div class="doc"><div class="markdown"><p>As for <a href="wreck.api.html#var-join">join</a>, but encloses the joined <code>res</code> in a negative lookahead:</p>
 <ul>
 <li><code>(?!res)</code></li>
 </ul>
 <p>Returns an empty regex (<code>#""</code>) if no <code>res</code> are provided, or they’re all <a href="wreck.api.html#var-empty.3F.27">empty?’</a>.</p>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L404">view source</a></div></div><div class="public anchor" id="var--lb"><h3>-lb</h3><div class="usage"><code>(-lb &amp; res)</code></div><div class="doc"><div class="markdown"><p>As for <a href="wreck.api.html#var-join">join</a>, but encloses the joined <code>res</code> in a negative lookbehind:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L407">view source</a></div></div><div class="public anchor" id="var--lb"><h3>-lb</h3><div class="usage"><code>(-lb &amp; res)</code></div><div class="doc"><div class="markdown"><p>As for <a href="wreck.api.html#var-join">join</a>, but encloses the joined <code>res</code> in a negative lookbehind:</p>
 <ul>
 <li><code>(?&lt;!res)</code></li>
 </ul>
 <p>Returns an empty regex (<code>#""</code>) if no <code>res</code> are provided, or they’re all <a href="wreck.api.html#var-empty.3F.27">empty?’</a>.</p>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L378">view source</a></div></div><div class="public anchor" id="var-.3D.27"><h3>='</h3><div class="usage"><code>(=' _)</code><code>(=' re1 re2)</code><code>(=' re1 re2 &amp; more)</code></div><div class="doc"><div class="markdown"><p>Equality for regexes, defined by having equal string representations and flags (including flags that cannot be embedded).</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L381">view source</a></div></div><div class="public anchor" id="var-.3D.27"><h3>='</h3><div class="usage"><code>(=' _)</code><code>(=' re1 re2)</code><code>(=' re1 re2 &amp; more)</code></div><div class="doc"><div class="markdown"><p>Equality for regexes, defined by having equal string representations and flags (including flags that cannot be embedded).</p>
 <p>Notes:</p>
 <ul>
 <li>Functionally equivalent regexes (e.g. <code>#"..."</code> and <code>#".{3}"</code> are <em>not</em> considered <code>='</code>.</li>
@@ -48,23 +48,23 @@
 <li>Duplicate elements in <code>res</code> will only appear once in the result. This equality comparison occurs <em>after</em> each re is run through <a href="wreck.api.html#var-embed-flags">embed-flags</a>.</li>
 <li>Does <em>not</em> wrap the result in a group, which, <a href="https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_04_08">because alternation has the lowest precedence in regexes</a>, runs the risk of behaving unexpectedly if the result is then combined with further regexes. tl;dr - one of the grouping variants should <em>almost always</em> be preferred.</li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L828">view source</a></div></div><div class="public anchor" id="var-alt-cg"><h3>alt-cg</h3><div class="usage"><code>(alt-cg &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-alt">alt</a> then <a href="wreck.api.html#var-cg">cg</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L831">view source</a></div></div><div class="public anchor" id="var-alt-cg"><h3>alt-cg</h3><div class="usage"><code>(alt-cg &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-alt">alt</a> then <a href="wreck.api.html#var-cg">cg</a>:</p>
 <ul>
 <li><code>(re|re|re|...)</code></li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L857">view source</a></div></div><div class="public anchor" id="var-alt-fgrp"><h3>alt-fgrp</h3><div class="usage"><code>(alt-fgrp flgs &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-alt">alt</a> then <a href="wreck.api.html#var-fgrp">fgrp</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L860">view source</a></div></div><div class="public anchor" id="var-alt-fgrp"><h3>alt-fgrp</h3><div class="usage"><code>(alt-fgrp flgs &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-alt">alt</a> then <a href="wreck.api.html#var-fgrp">fgrp</a>:</p>
 <ul>
 <li><code>(?flgs:re|re|re|...)</code></li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L871">view source</a></div></div><div class="public anchor" id="var-alt-grp"><h3>alt-grp</h3><div class="usage"><code>(alt-grp &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-alt">alt</a> then <a href="wreck.api.html#var-grp">grp</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L874">view source</a></div></div><div class="public anchor" id="var-alt-grp"><h3>alt-grp</h3><div class="usage"><code>(alt-grp &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-alt">alt</a> then <a href="wreck.api.html#var-grp">grp</a>:</p>
 <ul>
 <li><code>(?:re|re|re|...)</code></li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L850">view source</a></div></div><div class="public anchor" id="var-alt-ncg"><h3>alt-ncg</h3><div class="usage"><code>(alt-ncg nm &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-alt">alt</a> then <a href="wreck.api.html#var-ncg">ncg</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L853">view source</a></div></div><div class="public anchor" id="var-alt-ncg"><h3>alt-ncg</h3><div class="usage"><code>(alt-ncg nm &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-alt">alt</a> then <a href="wreck.api.html#var-ncg">ncg</a>:</p>
 <ul>
 <li><code>(?&lt;nm&gt;re|re|re|...)</code></li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L864">view source</a></div></div><div class="public anchor" id="var-and.27"><h3>and'</h3><div class="usage"><code>(and' a b)</code><code>(and' a b s)</code></div><div class="doc"><div class="markdown"><p>Returns an ‘and’ regex that will match <code>a</code> and <code>b</code> in any order, and with the separator regex <code>s</code> (if provided) between them:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L867">view source</a></div></div><div class="public anchor" id="var-and.27"><h3>and'</h3><div class="usage"><code>(and' a b)</code><code>(and' a b s)</code></div><div class="doc"><div class="markdown"><p>Returns an ‘and’ regex that will match <code>a</code> and <code>b</code> in any order, and with the separator regex <code>s</code> (if provided) between them:</p>
 <ul>
 <li><code>asb|bsa</code></li>
 </ul>
@@ -75,7 +75,7 @@
 <li>May optimise the expression (via de-duplication in <a href="wreck.api.html#var-alt">alt</a>).</li>
 <li>Does <em>not</em> wrap the result in a group, which, <a href="https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_04_08">because alternation has the lowest precedence in regexes</a>, runs the risk of behaving unexpectedly if the result is then combined with further regexes. tl;dr - one of the grouping variants should <em>almost always</em> be preferred.</li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L883">view source</a></div></div><div class="public anchor" id="var-and-cg"><h3>and-cg</h3><div class="usage"><code>(and-cg a b)</code><code>(and-cg a b s)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-and.27">and’</a> then <a href="wreck.api.html#var-cg">cg</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L886">view source</a></div></div><div class="public anchor" id="var-and-cg"><h3>and-cg</h3><div class="usage"><code>(and-cg a b)</code><code>(and-cg a b s)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-and.27">and’</a> then <a href="wreck.api.html#var-cg">cg</a>:</p>
 <ul>
 <li><code>(asb|bsa)</code></li>
 </ul>
@@ -84,7 +84,7 @@
 <li>Unlike most other <code>-cg</code> fns, this one does <em>not</em> accept any number of res.</li>
 <li>May optimise the expression (via de-duplication in <a href="wreck.api.html#var-alt">alt</a>).</li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L920">view source</a></div></div><div class="public anchor" id="var-and-fgrp"><h3>and-fgrp</h3><div class="usage"><code>(and-fgrp flgs a b)</code><code>(and-fgrp flgs a b s)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-and.27">and’</a> then <a href="wreck.api.html#var-fgrp">fgrp</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L923">view source</a></div></div><div class="public anchor" id="var-and-fgrp"><h3>and-fgrp</h3><div class="usage"><code>(and-fgrp flgs a b)</code><code>(and-fgrp flgs a b s)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-and.27">and’</a> then <a href="wreck.api.html#var-fgrp">fgrp</a>:</p>
 <ul>
 <li><code>(?flgs:asb|bsa)</code></li>
 </ul>
@@ -93,7 +93,7 @@
 <li>Unlike most other <code>-fgrp</code> fns, this one does <em>not</em> accept any number of res.</li>
 <li>May optimise the expression (via de-duplication in <a href="wreck.api.html#var-alt">alt</a>).</li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L946">view source</a></div></div><div class="public anchor" id="var-and-grp"><h3>and-grp</h3><div class="usage"><code>(and-grp a b)</code><code>(and-grp a b s)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-and.27">and’</a> then <a href="wreck.api.html#var-grp">grp</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L949">view source</a></div></div><div class="public anchor" id="var-and-grp"><h3>and-grp</h3><div class="usage"><code>(and-grp a b)</code><code>(and-grp a b s)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-and.27">and’</a> then <a href="wreck.api.html#var-grp">grp</a>:</p>
 <ul>
 <li><code>(?:asb|bsa)</code></li>
 </ul>
@@ -102,7 +102,7 @@
 <li>Unlike most other <code>-grp</code> fns, this one does <em>not</em> accept any number of res.</li>
 <li>May optimise the expression (via de-duplication in <a href="wreck.api.html#var-alt">alt</a>).</li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L907">view source</a></div></div><div class="public anchor" id="var-and-ncg"><h3>and-ncg</h3><div class="usage"><code>(and-ncg nm a b)</code><code>(and-ncg nm a b s)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-and.27">and’</a> then <a href="wreck.api.html#var-ncg">ncg</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L910">view source</a></div></div><div class="public anchor" id="var-and-ncg"><h3>and-ncg</h3><div class="usage"><code>(and-ncg nm a b)</code><code>(and-ncg nm a b s)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-and.27">and’</a> then <a href="wreck.api.html#var-ncg">ncg</a>:</p>
 <ul>
 <li><code>(?&lt;nm&gt;asb|bsa)</code></li>
 </ul>
@@ -111,12 +111,12 @@
 <li>Unlike most other <code>-ncg</code> fns, this one does <em>not</em> accept any number of res.</li>
 <li>May optimise the expression (via de-duplication in <a href="wreck.api.html#var-alt">alt</a>).</li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L933">view source</a></div></div><div class="public anchor" id="var-cg"><h3>cg</h3><div class="usage"><code>(cg &amp; res)</code></div><div class="doc"><div class="markdown"><p>As for <a href="wreck.api.html#var-grp">grp</a>, but emits a capturing group:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L936">view source</a></div></div><div class="public anchor" id="var-cg"><h3>cg</h3><div class="usage"><code>(cg &amp; res)</code></div><div class="doc"><div class="markdown"><p>As for <a href="wreck.api.html#var-grp">grp</a>, but emits a capturing group:</p>
 <ul>
 <li><code>(res)</code></li>
 </ul>
 <p>Returns an empty capturing group (<code>#"()"</code>) if no <code>res</code> are provided, or they’re all <a href="wreck.api.html#var-empty.3F.27">empty?’</a>. It does this to ensure that capturing groups are preserved during regex composition even if they’re empty, since silently dropping capturing groups will break (fragile) downstream code that uses indexes to access matched capturing group text. Because of this inherent fragility, it is strongly recommended that named capturing groups (<a href="wreck.api.html#var-ncg">ncg</a>) are used instead, and access to matched capturing group text is done via those names (e.g. using something like <a href="https://github.com/pmonks/rencg"><code>rencg</code></a>).</p>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L458">view source</a></div></div><div class="public anchor" id="var-chcl"><h3>chcl</h3><div class="usage"><code>(chcl &amp; res)</code></div><div class="doc"><div class="markdown"><p>As for <a href="wreck.api.html#var-join">join</a>, but encloses the joined <code>res</code> in a character class:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L461">view source</a></div></div><div class="public anchor" id="var-chcl"><h3>chcl</h3><div class="usage"><code>(chcl &amp; res)</code></div><div class="doc"><div class="markdown"><p>As for <a href="wreck.api.html#var-join">join</a>, but encloses the joined <code>res</code> in a character class:</p>
 <ul>
 <li><code>[res]</code></li>
 </ul>
@@ -125,7 +125,7 @@
 <ul>
 <li>⚠️ On ClojureScript nested character classes don’t work as one might expect, even though they will compile just fine.  For example, this code matches as expected on ClojureJVM, but does not on ClojureScript (despite the regex compiling): <code>(re-matches #"[[a-m][o-z]]+" "az")</code>.</li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L420">view source</a></div></div><div class="public anchor" id="var-embed-flags"><h3>embed-flags</h3><div class="usage"><code>(embed-flags re)</code></div><div class="doc"><div class="markdown"><p>Embeds any programmatic or ungrouped flags found in <code>re</code>. It does this by removing all flags from <code>re</code> then wrapping it in a flag group containing those flags that are embeddable (non-embeddable flags are silently dropped - use <a href="wreck.api.html#var-has-non-embeddable-flags.3F">has-non-embeddable-flags?</a> if you need to check for this).  Returns <code>re</code> if <code>re</code> contains no flags.</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L423">view source</a></div></div><div class="public anchor" id="var-embed-flags"><h3>embed-flags</h3><div class="usage"><code>(embed-flags re)</code></div><div class="doc"><div class="markdown"><p>Embeds any programmatic or ungrouped flags found in <code>re</code>. It does this by removing all flags from <code>re</code> then wrapping it in a flag group containing those flags that are embeddable (non-embeddable flags are silently dropped - use <a href="wreck.api.html#var-has-non-embeddable-flags.3F">has-non-embeddable-flags?</a> if you need to check for this).  Returns <code>re</code> if <code>re</code> contains no flags.</p>
 <p>For example on the JVM, both <code>(Pattern/compile "[abc]+" Pattern/CASE_INSENSITIVE)</code> and <code>#"(?i)[abc]+"</code> would become <code>#"(?i:[abc]+)"</code>.</p>
 <p>Similarly, on ClojureScript <code>(doto (js/RegExp.) (.compile "[abc]+" "i"))</code> would become <code>#"(?i:[abc]+)"</code>.</p>
 <p>Note:</p>
@@ -150,27 +150,27 @@
 <li><code>re{n}</code></li>
 </ul>
 <p>Returns an empty regex (<code>#""</code>) if <code>re</code> is <a href="wreck.api.html#var-empty.3F.27">empty?’</a>.</p>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L730">view source</a></div></div><div class="public anchor" id="var-exn-cg"><h3>exn-cg</h3><div class="usage"><code>(exn-cg n &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-cg">cg</a> then <a href="wreck.api.html#var-exn">exn</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L733">view source</a></div></div><div class="public anchor" id="var-exn-cg"><h3>exn-cg</h3><div class="usage"><code>(exn-cg n &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-cg">cg</a> then <a href="wreck.api.html#var-exn">exn</a>:</p>
 <ul>
 <li><code>(res){n}</code></li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L748">view source</a></div></div><div class="public anchor" id="var-exn-chcl"><h3>exn-chcl</h3><div class="usage"><code>(exn-chcl n &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-chcl">chcl</a> then <a href="wreck.api.html#var-exn">exn</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L751">view source</a></div></div><div class="public anchor" id="var-exn-chcl"><h3>exn-chcl</h3><div class="usage"><code>(exn-chcl n &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-chcl">chcl</a> then <a href="wreck.api.html#var-exn">exn</a>:</p>
 <ul>
 <li><code>[res]{n}</code></li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L769">view source</a></div></div><div class="public anchor" id="var-exn-fgrp"><h3>exn-fgrp</h3><div class="usage"><code>(exn-fgrp flgs n &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-fgrp">fgrp</a> then <a href="wreck.api.html#var-exn">exn</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L772">view source</a></div></div><div class="public anchor" id="var-exn-fgrp"><h3>exn-fgrp</h3><div class="usage"><code>(exn-fgrp flgs n &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-fgrp">fgrp</a> then <a href="wreck.api.html#var-exn">exn</a>:</p>
 <ul>
 <li><code>(?flgs:res){n}</code></li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L762">view source</a></div></div><div class="public anchor" id="var-exn-grp"><h3>exn-grp</h3><div class="usage"><code>(exn-grp n &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-grp">grp</a> then <a href="wreck.api.html#var-exn">exn</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L765">view source</a></div></div><div class="public anchor" id="var-exn-grp"><h3>exn-grp</h3><div class="usage"><code>(exn-grp n &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-grp">grp</a> then <a href="wreck.api.html#var-exn">exn</a>:</p>
 <ul>
 <li><code>(?:res){n}</code></li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L741">view source</a></div></div><div class="public anchor" id="var-exn-ncg"><h3>exn-ncg</h3><div class="usage"><code>(exn-ncg nm n &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-ncg">ncg</a> then <a href="wreck.api.html#var-exn">exn</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L744">view source</a></div></div><div class="public anchor" id="var-exn-ncg"><h3>exn-ncg</h3><div class="usage"><code>(exn-ncg nm n &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-ncg">ncg</a> then <a href="wreck.api.html#var-exn">exn</a>:</p>
 <ul>
 <li><code>(?&lt;nm&gt;res){n}</code></li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L755">view source</a></div></div><div class="public anchor" id="var-fgrp"><h3>fgrp</h3><div class="usage"><code>(fgrp flgs &amp; res)</code></div><div class="doc"><div class="markdown"><p>As for <a href="wreck.api.html#var-grp">grp</a>, but emits an embedded flag group with <code>flgs</code> (a <code>String</code>):</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L758">view source</a></div></div><div class="public anchor" id="var-fgrp"><h3>fgrp</h3><div class="usage"><code>(fgrp flgs &amp; res)</code></div><div class="doc"><div class="markdown"><p>As for <a href="wreck.api.html#var-grp">grp</a>, but emits an embedded flag group with <code>flgs</code> (a <code>String</code>):</p>
 <ul>
 <li><code>(?flgs:res)</code></li>
 </ul>
@@ -184,13 +184,13 @@
 <li>For the JVM, see the <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/regex/Pattern.html#special">‘special constructs’ section of the <code>java.util.regex.Pattern</code> JavaDoc</a> for the set of valid flag characters.</li>
 <li>For JavaScript, see the <a href="https://www.w3schools.com/js/js_regexp_flags.asp"><code>RegExp</code> flags reference</a> for the set of valid flag characters (while keeping in mind most of them can’t be embedded).</li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L489">view source</a></div></div><div class="public anchor" id="var-flags-grp"><h3>flags-grp</h3><h4 class="deprecated">deprecated</h4><div class="usage"></div><div class="doc"><div class="markdown"><p>See <a href="wreck.api.html#var-fgrp">fgrp</a></p>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L527">view source</a></div></div><div class="public anchor" id="var-grp"><h3>grp</h3><div class="usage"><code>(grp &amp; res)</code></div><div class="doc"><div class="markdown"><p>As for <a href="wreck.api.html#var-join">join</a>, but encloses the joined <code>res</code> in a single non-capturing group:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L492">view source</a></div></div><div class="public anchor" id="var-flags-grp"><h3>flags-grp</h3><h4 class="deprecated">deprecated</h4><div class="usage"></div><div class="doc"><div class="markdown"><p>See <a href="wreck.api.html#var-fgrp">fgrp</a></p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L530">view source</a></div></div><div class="public anchor" id="var-grp"><h3>grp</h3><div class="usage"><code>(grp &amp; res)</code></div><div class="doc"><div class="markdown"><p>As for <a href="wreck.api.html#var-join">join</a>, but encloses the joined <code>res</code> in a single non-capturing group:</p>
 <ul>
 <li><code>(?:res)</code></li>
 </ul>
 <p>Returns an empty regex (<code>#""</code>) if no <code>res</code> are provided, or they’re all <a href="wreck.api.html#var-empty.3F.27">empty?’</a>.</p>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L443">view source</a></div></div><div class="public anchor" id="var-has-non-embeddable-flags.3F"><h3>has-non-embeddable-flags?</h3><div class="usage"><code>(has-non-embeddable-flags? re)</code></div><div class="doc"><div class="markdown"><p>Does <code>re</code> have non-embeddable flags?</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L446">view source</a></div></div><div class="public anchor" id="var-has-non-embeddable-flags.3F"><h3>has-non-embeddable-flags?</h3><div class="usage"><code>(has-non-embeddable-flags? re)</code></div><div class="doc"><div class="markdown"><p>Does <code>re</code> have non-embeddable flags?</p>
 <p>Notes:</p>
 <ul>
 <li>On the JVM, the only non-embeddable flags are the programmatic flags <code>LITERAL</code> and <code>CANON_EQ</code>.</li>
@@ -228,107 +228,107 @@
 <li><code>re{n,m}</code></li>
 </ul>
 <p>Returns an empty regex (<code>#""</code>) if <code>re</code> is <a href="wreck.api.html#var-empty.3F.27">empty?’</a>.</p>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L779">view source</a></div></div><div class="public anchor" id="var-n2m-cg"><h3>n2m-cg</h3><div class="usage"><code>(n2m-cg n m &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-cg">cg</a> then <a href="wreck.api.html#var-n2m">n2m</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L782">view source</a></div></div><div class="public anchor" id="var-n2m-cg"><h3>n2m-cg</h3><div class="usage"><code>(n2m-cg n m &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-cg">cg</a> then <a href="wreck.api.html#var-n2m">n2m</a>:</p>
 <ul>
 <li><code>(res){n,m}</code></li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L797">view source</a></div></div><div class="public anchor" id="var-n2m-chcl"><h3>n2m-chcl</h3><div class="usage"><code>(n2m-chcl n m &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-chcl">chcl</a> then <a href="wreck.api.html#var-n2m">n2m</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L800">view source</a></div></div><div class="public anchor" id="var-n2m-chcl"><h3>n2m-chcl</h3><div class="usage"><code>(n2m-chcl n m &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-chcl">chcl</a> then <a href="wreck.api.html#var-n2m">n2m</a>:</p>
 <ul>
 <li><code>[res]{n,m}</code></li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L818">view source</a></div></div><div class="public anchor" id="var-n2m-fgrp"><h3>n2m-fgrp</h3><div class="usage"><code>(n2m-fgrp flgs n m &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-fgrp">fgrp</a> then <a href="wreck.api.html#var-n2m">n2m</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L821">view source</a></div></div><div class="public anchor" id="var-n2m-fgrp"><h3>n2m-fgrp</h3><div class="usage"><code>(n2m-fgrp flgs n m &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-fgrp">fgrp</a> then <a href="wreck.api.html#var-n2m">n2m</a>:</p>
 <ul>
 <li><code>(?flgs:res){n,m}</code></li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L811">view source</a></div></div><div class="public anchor" id="var-n2m-grp"><h3>n2m-grp</h3><div class="usage"><code>(n2m-grp n m &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-grp">grp</a> then <a href="wreck.api.html#var-n2m">n2m</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L814">view source</a></div></div><div class="public anchor" id="var-n2m-grp"><h3>n2m-grp</h3><div class="usage"><code>(n2m-grp n m &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-grp">grp</a> then <a href="wreck.api.html#var-n2m">n2m</a>:</p>
 <ul>
 <li><code>(?:res){n,m}</code></li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L790">view source</a></div></div><div class="public anchor" id="var-n2m-ncg"><h3>n2m-ncg</h3><div class="usage"><code>(n2m-ncg nm n m &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-ncg">ncg</a> then <a href="wreck.api.html#var-n2m">n2m</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L793">view source</a></div></div><div class="public anchor" id="var-n2m-ncg"><h3>n2m-ncg</h3><div class="usage"><code>(n2m-ncg nm n m &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-ncg">ncg</a> then <a href="wreck.api.html#var-n2m">n2m</a>:</p>
 <ul>
 <li><code>(?&lt;nm&gt;res){n,m}</code></li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L804">view source</a></div></div><div class="public anchor" id="var-ncg"><h3>ncg</h3><div class="usage"><code>(ncg nm &amp; res)</code></div><div class="doc"><div class="markdown"><p>As for <a href="wreck.api.html#var-grp">grp</a>, but emits a named capturing group named <code>nm</code>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L807">view source</a></div></div><div class="public anchor" id="var-ncg"><h3>ncg</h3><div class="usage"><code>(ncg nm &amp; res)</code></div><div class="doc"><div class="markdown"><p>As for <a href="wreck.api.html#var-grp">grp</a>, but emits a named capturing group named <code>nm</code>:</p>
 <ul>
 <li><code>(?&lt;nm&gt;res)</code></li>
 </ul>
 <p>Devolves to <a href="wreck.api.html#var-cg">cg</a> if <code>nm</code> is blank. Throws if <code>nm</code> is an invalid name for a named capturing group (alphanumeric only, must start with an alphabetical character, must be unique within the regex).</p>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L475">view source</a></div></div><div class="public anchor" id="var-nom"><h3>nom</h3><div class="usage"><code>(nom n re)</code></div><div class="doc"><div class="markdown"><p>Returns a regex where <code>re</code> will match <code>n</code> or more times:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L478">view source</a></div></div><div class="public anchor" id="var-nom"><h3>nom</h3><div class="usage"><code>(nom n re)</code></div><div class="doc"><div class="markdown"><p>Returns a regex where <code>re</code> will match <code>n</code> or more times:</p>
 <ul>
 <li><code>re{n,}</code></li>
 </ul>
 <p>Returns an empty regex (<code>#""</code>) if <code>re</code> is <a href="wreck.api.html#var-empty.3F.27">empty?’</a>.</p>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L681">view source</a></div></div><div class="public anchor" id="var-nom-cg"><h3>nom-cg</h3><div class="usage"><code>(nom-cg n &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-cg">cg</a> then <a href="wreck.api.html#var-nom">nom</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L684">view source</a></div></div><div class="public anchor" id="var-nom-cg"><h3>nom-cg</h3><div class="usage"><code>(nom-cg n &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-cg">cg</a> then <a href="wreck.api.html#var-nom">nom</a>:</p>
 <ul>
 <li><code>(res){n,}</code></li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L699">view source</a></div></div><div class="public anchor" id="var-nom-chcl"><h3>nom-chcl</h3><div class="usage"><code>(nom-chcl n &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-chcl">chcl</a> then <a href="wreck.api.html#var-nom">nom</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L702">view source</a></div></div><div class="public anchor" id="var-nom-chcl"><h3>nom-chcl</h3><div class="usage"><code>(nom-chcl n &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-chcl">chcl</a> then <a href="wreck.api.html#var-nom">nom</a>:</p>
 <ul>
 <li><code>[res]{n,}</code></li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L720">view source</a></div></div><div class="public anchor" id="var-nom-fgrp"><h3>nom-fgrp</h3><div class="usage"><code>(nom-fgrp flgs n &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-fgrp">fgrp</a> then <a href="wreck.api.html#var-nom">nom</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L723">view source</a></div></div><div class="public anchor" id="var-nom-fgrp"><h3>nom-fgrp</h3><div class="usage"><code>(nom-fgrp flgs n &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-fgrp">fgrp</a> then <a href="wreck.api.html#var-nom">nom</a>:</p>
 <ul>
 <li><code>(?flgs:res){n,}</code></li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L713">view source</a></div></div><div class="public anchor" id="var-nom-grp"><h3>nom-grp</h3><div class="usage"><code>(nom-grp n &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-grp">grp</a> then <a href="wreck.api.html#var-nom">nom</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L716">view source</a></div></div><div class="public anchor" id="var-nom-grp"><h3>nom-grp</h3><div class="usage"><code>(nom-grp n &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-grp">grp</a> then <a href="wreck.api.html#var-nom">nom</a>:</p>
 <ul>
 <li><code>(?:res){n,}</code></li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L692">view source</a></div></div><div class="public anchor" id="var-nom-ncg"><h3>nom-ncg</h3><div class="usage"><code>(nom-ncg nm n &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-ncg">ncg</a> then <a href="wreck.api.html#var-nom">nom</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L695">view source</a></div></div><div class="public anchor" id="var-nom-ncg"><h3>nom-ncg</h3><div class="usage"><code>(nom-ncg nm n &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-ncg">ncg</a> then <a href="wreck.api.html#var-nom">nom</a>:</p>
 <ul>
 <li><code>(?&lt;nm&gt;res){n,}</code></li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L706">view source</a></div></div><div class="public anchor" id="var-oom"><h3>oom</h3><div class="usage"><code>(oom re)</code></div><div class="doc"><div class="markdown"><p>Returns a regex where <code>re</code> will match one or more times:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L709">view source</a></div></div><div class="public anchor" id="var-oom"><h3>oom</h3><div class="usage"><code>(oom re)</code></div><div class="doc"><div class="markdown"><p>Returns a regex where <code>re</code> will match one or more times:</p>
 <ul>
 <li><code>re+</code></li>
 </ul>
 <p>Returns an empty regex (<code>#""</code>) if <code>re</code> is <a href="wreck.api.html#var-empty.3F.27">empty?’</a>.</p>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L632">view source</a></div></div><div class="public anchor" id="var-oom-cg"><h3>oom-cg</h3><div class="usage"><code>(oom-cg &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-cg">cg</a> then <a href="wreck.api.html#var-oom">oom</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L635">view source</a></div></div><div class="public anchor" id="var-oom-cg"><h3>oom-cg</h3><div class="usage"><code>(oom-cg &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-cg">cg</a> then <a href="wreck.api.html#var-oom">oom</a>:</p>
 <ul>
 <li><code>(res)+</code></li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L650">view source</a></div></div><div class="public anchor" id="var-oom-chcl"><h3>oom-chcl</h3><div class="usage"><code>(oom-chcl &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-chcl">chcl</a> then <a href="wreck.api.html#var-oom">oom</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L653">view source</a></div></div><div class="public anchor" id="var-oom-chcl"><h3>oom-chcl</h3><div class="usage"><code>(oom-chcl &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-chcl">chcl</a> then <a href="wreck.api.html#var-oom">oom</a>:</p>
 <ul>
 <li><code>[res]+</code></li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L671">view source</a></div></div><div class="public anchor" id="var-oom-fgrp"><h3>oom-fgrp</h3><div class="usage"><code>(oom-fgrp flgs &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-fgrp">fgrp</a> then <a href="wreck.api.html#var-oom">oom</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L674">view source</a></div></div><div class="public anchor" id="var-oom-fgrp"><h3>oom-fgrp</h3><div class="usage"><code>(oom-fgrp flgs &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-fgrp">fgrp</a> then <a href="wreck.api.html#var-oom">oom</a>:</p>
 <ul>
 <li><code>(?flgs:res)+</code></li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L664">view source</a></div></div><div class="public anchor" id="var-oom-grp"><h3>oom-grp</h3><div class="usage"><code>(oom-grp &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-grp">grp</a> then <a href="wreck.api.html#var-oom">oom</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L667">view source</a></div></div><div class="public anchor" id="var-oom-grp"><h3>oom-grp</h3><div class="usage"><code>(oom-grp &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-grp">grp</a> then <a href="wreck.api.html#var-oom">oom</a>:</p>
 <ul>
 <li><code>(?:res)+</code></li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L643">view source</a></div></div><div class="public anchor" id="var-oom-ncg"><h3>oom-ncg</h3><div class="usage"><code>(oom-ncg nm &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-ncg">ncg</a> then <a href="wreck.api.html#var-oom">oom</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L646">view source</a></div></div><div class="public anchor" id="var-oom-ncg"><h3>oom-ncg</h3><div class="usage"><code>(oom-ncg nm &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-ncg">ncg</a> then <a href="wreck.api.html#var-oom">oom</a>:</p>
 <ul>
 <li><code>(?&lt;nm&gt;res)+</code></li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L657">view source</a></div></div><div class="public anchor" id="var-opt"><h3>opt</h3><div class="usage"><code>(opt re)</code></div><div class="doc"><div class="markdown"><p>Returns a regex where <code>re</code> is optional:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L660">view source</a></div></div><div class="public anchor" id="var-opt"><h3>opt</h3><div class="usage"><code>(opt re)</code></div><div class="doc"><div class="markdown"><p>Returns a regex where <code>re</code> is optional:</p>
 <ul>
 <li><code>re?</code></li>
 </ul>
 <p>Returns an empty regex (<code>#""</code>) if <code>re</code> is <a href="wreck.api.html#var-empty.3F.27">empty?’</a>.</p>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L534">view source</a></div></div><div class="public anchor" id="var-opt-cg"><h3>opt-cg</h3><div class="usage"><code>(opt-cg &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-cg">cg</a> then <a href="wreck.api.html#var-opt">opt</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L537">view source</a></div></div><div class="public anchor" id="var-opt-cg"><h3>opt-cg</h3><div class="usage"><code>(opt-cg &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-cg">cg</a> then <a href="wreck.api.html#var-opt">opt</a>:</p>
 <ul>
 <li><code>(res)?</code></li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L552">view source</a></div></div><div class="public anchor" id="var-opt-chcl"><h3>opt-chcl</h3><div class="usage"><code>(opt-chcl &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-chcl">chcl</a> then <a href="wreck.api.html#var-opt">opt</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L555">view source</a></div></div><div class="public anchor" id="var-opt-chcl"><h3>opt-chcl</h3><div class="usage"><code>(opt-chcl &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-chcl">chcl</a> then <a href="wreck.api.html#var-opt">opt</a>:</p>
 <ul>
 <li><code>[res]?</code></li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L573">view source</a></div></div><div class="public anchor" id="var-opt-fgrp"><h3>opt-fgrp</h3><div class="usage"><code>(opt-fgrp flgs &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-fgrp">fgrp</a> then <a href="wreck.api.html#var-opt">opt</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L576">view source</a></div></div><div class="public anchor" id="var-opt-fgrp"><h3>opt-fgrp</h3><div class="usage"><code>(opt-fgrp flgs &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-fgrp">fgrp</a> then <a href="wreck.api.html#var-opt">opt</a>:</p>
 <ul>
 <li><code>(?flgs:res)?</code></li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L566">view source</a></div></div><div class="public anchor" id="var-opt-grp"><h3>opt-grp</h3><div class="usage"><code>(opt-grp &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-grp">grp</a> then <a href="wreck.api.html#var-opt">opt</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L569">view source</a></div></div><div class="public anchor" id="var-opt-grp"><h3>opt-grp</h3><div class="usage"><code>(opt-grp &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-grp">grp</a> then <a href="wreck.api.html#var-opt">opt</a>:</p>
 <ul>
 <li><code>(?:res)?</code></li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L545">view source</a></div></div><div class="public anchor" id="var-opt-ncg"><h3>opt-ncg</h3><div class="usage"><code>(opt-ncg nm &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-ncg">ncg</a> then <a href="wreck.api.html#var-opt">opt</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L548">view source</a></div></div><div class="public anchor" id="var-opt-ncg"><h3>opt-ncg</h3><div class="usage"><code>(opt-ncg nm &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-ncg">ncg</a> then <a href="wreck.api.html#var-opt">opt</a>:</p>
 <ul>
 <li><code>(?&lt;nm&gt;res)?</code></li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L559">view source</a></div></div><div class="public anchor" id="var-or.27"><h3>or'</h3><div class="usage"><code>(or' a b)</code><code>(or' a b s)</code></div><div class="doc"><div class="markdown"><p>Returns an ‘inclusive or’ regex that will match <code>a</code> or <code>b</code>, or both, in any order, and with the separator regex <code>s</code> (if provided) between them:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L562">view source</a></div></div><div class="public anchor" id="var-or.27"><h3>or'</h3><div class="usage"><code>(or' a b)</code><code>(or' a b s)</code></div><div class="doc"><div class="markdown"><p>Returns an ‘inclusive or’ regex that will match <code>a</code> or <code>b</code>, or both, in any order, and with the separator regex <code>s</code> (if provided) between them:</p>
 <ul>
 <li><code>asb|bsa|a|b</code></li>
 </ul>
@@ -339,7 +339,7 @@
 <li>May optimise the expression (via de-duplication in <a href="wreck.api.html#var-alt">alt</a>).</li>
 <li>Does <em>not</em> wrap the result in a group, which, <a href="https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_04_08">because alternation has the lowest precedence in regexes</a>, runs the risk of behaving unexpectedly if the result is then combined with further regexes. tl;dr - one of the grouping variants should <em>almost always</em> be preferred.</li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L961">view source</a></div></div><div class="public anchor" id="var-or-cg"><h3>or-cg</h3><div class="usage"><code>(or-cg a b)</code><code>(or-cg a b s)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-or.27">or’</a> then <a href="wreck.api.html#var-cg">cg</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L964">view source</a></div></div><div class="public anchor" id="var-or-cg"><h3>or-cg</h3><div class="usage"><code>(or-cg a b)</code><code>(or-cg a b s)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-or.27">or’</a> then <a href="wreck.api.html#var-cg">cg</a>:</p>
 <ul>
 <li><code>(asb|bsa|a|b)</code></li>
 </ul>
@@ -348,7 +348,7 @@
 <li>Unlike most other <code>-cg</code> fns, this one does <em>not</em> accept any number of res.</li>
 <li>May optimise the expression (via de-duplication in <a href="wreck.api.html#var-alt">alt</a>).</li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L998">view source</a></div></div><div class="public anchor" id="var-or-fgrp"><h3>or-fgrp</h3><div class="usage"><code>(or-fgrp flgs a b)</code><code>(or-fgrp flgs a b s)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-or.27">or’</a> then <a href="wreck.api.html#var-fgrp">fgrp</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L1001">view source</a></div></div><div class="public anchor" id="var-or-fgrp"><h3>or-fgrp</h3><div class="usage"><code>(or-fgrp flgs a b)</code><code>(or-fgrp flgs a b s)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-or.27">or’</a> then <a href="wreck.api.html#var-fgrp">fgrp</a>:</p>
 <ul>
 <li><code>(?flgs:asb|bsa|a|b)</code></li>
 </ul>
@@ -357,7 +357,7 @@
 <li>Unlike most other <code>-flgs</code> fns, this one does <em>not</em> accept any number of res.</li>
 <li>May optimise the expression (via de-duplication in <a href="wreck.api.html#var-alt">alt</a>).</li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L1024">view source</a></div></div><div class="public anchor" id="var-or-grp"><h3>or-grp</h3><div class="usage"><code>(or-grp a b)</code><code>(or-grp a b s)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-or.27">or’</a> then <a href="wreck.api.html#var-grp">grp</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L1027">view source</a></div></div><div class="public anchor" id="var-or-grp"><h3>or-grp</h3><div class="usage"><code>(or-grp a b)</code><code>(or-grp a b s)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-or.27">or’</a> then <a href="wreck.api.html#var-grp">grp</a>:</p>
 <ul>
 <li><code>(?:asb|bsa|a|b)</code></li>
 </ul>
@@ -366,7 +366,7 @@
 <li>Unlike most other <code>-grp</code> fns, this one does <em>not</em> accept any number of res.</li>
 <li>May optimise the expression (via de-duplication in <a href="wreck.api.html#var-alt">alt</a>).</li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L985">view source</a></div></div><div class="public anchor" id="var-or-ncg"><h3>or-ncg</h3><div class="usage"><code>(or-ncg nm a b)</code><code>(or-ncg nm a b s)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-or.27">or’</a> then <a href="wreck.api.html#var-ncg">ncg</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L988">view source</a></div></div><div class="public anchor" id="var-or-ncg"><h3>or-ncg</h3><div class="usage"><code>(or-ncg nm a b)</code><code>(or-ncg nm a b s)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-or.27">or’</a> then <a href="wreck.api.html#var-ncg">ncg</a>:</p>
 <ul>
 <li><code>(?&lt;nm&gt;asb|bsa|a|b)</code></li>
 </ul>
@@ -375,7 +375,7 @@
 <li>Unlike most other <code>-ncg</code> fns, this one does <em>not</em> accept any number of res.</li>
 <li>May optimise the expression (via de-duplication in <a href="wreck.api.html#var-alt">alt</a>).</li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L1011">view source</a></div></div><div class="public anchor" id="var-qot"><h3>qot</h3><div class="usage"><code>(qot re)</code></div><div class="doc"><div class="markdown"><p>Quotes <code>re</code>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L1014">view source</a></div></div><div class="public anchor" id="var-qot"><h3>qot</h3><div class="usage"><code>(qot re)</code></div><div class="doc"><div class="markdown"><p>Quotes <code>re</code>:</p>
 <ul>
 <li><code>\Qre\E</code></li>
 </ul>
@@ -401,7 +401,7 @@
 <li>May optimise the expression (via de-duplication in <a href="wreck.api.html#var-alt">alt</a>).</li>
 <li>Does <em>not</em> wrap the result in a group, which, <a href="https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_04_08">because alternation has the lowest precedence in regexes</a>, runs the risk of behaving unexpectedly if the result is then combined with further regexes. tl;dr - one of the grouping variants should <em>almost always</em> be preferred.</li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L1039">view source</a></div></div><div class="public anchor" id="var-xor-cg"><h3>xor-cg</h3><div class="usage"><code>(xor-cg a b)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-xor.27">xor’</a> then <a href="wreck.api.html#var-cg">cg</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L1042">view source</a></div></div><div class="public anchor" id="var-xor-cg"><h3>xor-cg</h3><div class="usage"><code>(xor-cg a b)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-xor.27">xor’</a> then <a href="wreck.api.html#var-cg">cg</a>:</p>
 <ul>
 <li><code>(a|b)</code></li>
 </ul>
@@ -410,7 +410,7 @@
 <li>Unlike most other <code>-cg</code> fns, this one does <em>not</em> accept any number of res.</li>
 <li>May optimise the expression (via de-duplication in <a href="wreck.api.html#var-alt">alt</a>).</li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L1073">view source</a></div></div><div class="public anchor" id="var-xor-fgrp"><h3>xor-fgrp</h3><div class="usage"><code>(xor-fgrp flgs a b)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-xor.27">xor’</a> then <a href="wreck.api.html#var-fgrp">fgrp</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L1076">view source</a></div></div><div class="public anchor" id="var-xor-fgrp"><h3>xor-fgrp</h3><div class="usage"><code>(xor-fgrp flgs a b)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-xor.27">xor’</a> then <a href="wreck.api.html#var-fgrp">fgrp</a>:</p>
 <ul>
 <li><code>(?flgs:a|b)</code></li>
 </ul>
@@ -419,7 +419,7 @@
 <li>Unlike most other <code>-fgrp</code> fns, this one does <em>not</em> accept any number of res.</li>
 <li>May optimise the expression (via de-duplication in <a href="wreck.api.html#var-alt">alt</a>).</li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L1097">view source</a></div></div><div class="public anchor" id="var-xor-grp"><h3>xor-grp</h3><div class="usage"><code>(xor-grp a b)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-xor.27">xor’</a> then <a href="wreck.api.html#var-grp">grp</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L1100">view source</a></div></div><div class="public anchor" id="var-xor-grp"><h3>xor-grp</h3><div class="usage"><code>(xor-grp a b)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-xor.27">xor’</a> then <a href="wreck.api.html#var-grp">grp</a>:</p>
 <ul>
 <li><code>(?:a|b)</code></li>
 </ul>
@@ -428,7 +428,7 @@
 <li>Unlike most other <code>-grp</code> fns, this one does <em>not</em> accept any number of res.</li>
 <li>May optimise the expression (via de-duplication in <a href="wreck.api.html#var-alt">alt</a>).</li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L1061">view source</a></div></div><div class="public anchor" id="var-xor-ncg"><h3>xor-ncg</h3><div class="usage"><code>(xor-ncg nm a b)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-xor.27">xor’</a> then <a href="wreck.api.html#var-ncg">ncg</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L1064">view source</a></div></div><div class="public anchor" id="var-xor-ncg"><h3>xor-ncg</h3><div class="usage"><code>(xor-ncg nm a b)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-xor.27">xor’</a> then <a href="wreck.api.html#var-ncg">ncg</a>:</p>
 <ul>
 <li><code>(?&lt;nm&gt;a|b)</code></li>
 </ul>
@@ -437,29 +437,29 @@
 <li>Unlike most other <code>-ncg</code> fns, this one does <em>not</em> accept any number of res.</li>
 <li>May optimise the expression (via de-duplication in <a href="wreck.api.html#var-alt">alt</a>).</li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L1085">view source</a></div></div><div class="public anchor" id="var-zom"><h3>zom</h3><div class="usage"><code>(zom re)</code></div><div class="doc"><div class="markdown"><p>Returns a regex where <code>re</code> will match zero or more times:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L1088">view source</a></div></div><div class="public anchor" id="var-zom"><h3>zom</h3><div class="usage"><code>(zom re)</code></div><div class="doc"><div class="markdown"><p>Returns a regex where <code>re</code> will match zero or more times:</p>
 <ul>
 <li><code>re*</code></li>
 </ul>
 <p>Returns an empty regex (<code>#""</code>) if <code>re</code> is <a href="wreck.api.html#var-empty.3F.27">empty?’</a>.</p>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L583">view source</a></div></div><div class="public anchor" id="var-zom-cg"><h3>zom-cg</h3><div class="usage"><code>(zom-cg &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-cg">cg</a> then <a href="wreck.api.html#var-zom">zom</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L586">view source</a></div></div><div class="public anchor" id="var-zom-cg"><h3>zom-cg</h3><div class="usage"><code>(zom-cg &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-cg">cg</a> then <a href="wreck.api.html#var-zom">zom</a>:</p>
 <ul>
 <li><code>(res)*</code></li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L601">view source</a></div></div><div class="public anchor" id="var-zom-chcl"><h3>zom-chcl</h3><div class="usage"><code>(zom-chcl &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-chcl">chcl</a> then <a href="wreck.api.html#var-zom">zom</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L604">view source</a></div></div><div class="public anchor" id="var-zom-chcl"><h3>zom-chcl</h3><div class="usage"><code>(zom-chcl &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-chcl">chcl</a> then <a href="wreck.api.html#var-zom">zom</a>:</p>
 <ul>
 <li><code>[res]*</code></li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L622">view source</a></div></div><div class="public anchor" id="var-zom-fgrp"><h3>zom-fgrp</h3><div class="usage"><code>(zom-fgrp flgs &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-fgrp">fgrp</a> then <a href="wreck.api.html#var-zom">zom</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L625">view source</a></div></div><div class="public anchor" id="var-zom-fgrp"><h3>zom-fgrp</h3><div class="usage"><code>(zom-fgrp flgs &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-fgrp">fgrp</a> then <a href="wreck.api.html#var-zom">zom</a>:</p>
 <ul>
 <li><code>(?flgs:res)*</code></li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L615">view source</a></div></div><div class="public anchor" id="var-zom-grp"><h3>zom-grp</h3><div class="usage"><code>(zom-grp &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-grp">grp</a> then <a href="wreck.api.html#var-zom">zom</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L618">view source</a></div></div><div class="public anchor" id="var-zom-grp"><h3>zom-grp</h3><div class="usage"><code>(zom-grp &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-grp">grp</a> then <a href="wreck.api.html#var-zom">zom</a>:</p>
 <ul>
 <li><code>(?:res)*</code></li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L594">view source</a></div></div><div class="public anchor" id="var-zom-ncg"><h3>zom-ncg</h3><div class="usage"><code>(zom-ncg nm &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-ncg">ncg</a> then <a href="wreck.api.html#var-zom">zom</a>:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L597">view source</a></div></div><div class="public anchor" id="var-zom-ncg"><h3>zom-ncg</h3><div class="usage"><code>(zom-ncg nm &amp; res)</code></div><div class="doc"><div class="markdown"><p><a href="wreck.api.html#var-ncg">ncg</a> then <a href="wreck.api.html#var-zom">zom</a>:</p>
 <ul>
 <li><code>(?&lt;nm&gt;res)*</code></li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L608">view source</a></div></div></div></body></html>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/wreck/blob/release/src/wreck/api.cljc#L611">view source</a></div></div></div></body></html>
