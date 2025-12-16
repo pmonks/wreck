@@ -504,7 +504,7 @@
     `(?i)`) have no explicit scope and so cannot be reliably used to compose
     larger regexes.  `wreck` makes a best effort to always convert such
     'unscoped' flags into their embedded (scoped) equivalents (using
-    [[embed-flags]]) when composing larger regexes , but using `fgrp` voids
+    [[embed-flags]]) when composing larger regexes, but using `fgrp` voids
     potential footguns.
   * Removes any ungrouped embedded flags in `re` (e.g. `(?i)ab`), but does _not_
     add them to `flgs` if they aren't already there.
