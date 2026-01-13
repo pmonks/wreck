@@ -527,7 +527,7 @@
         (apply grp res)
         (wi/set-flags exp flgs)))))
 
-(def ^:deprecated flags-grp
+(def ^:deprecated ^:no-doc flags-grp
   "See [[fgrp]]"
   fgrp)
 
