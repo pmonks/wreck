@@ -188,10 +188,10 @@
    (and (= (wi/raw-flags re1) (wi/raw-flags  re2))  ; Check flags first, because that's fast
         (= (wi/raw-str   re1) (wi/raw-str    re2))))
   ([re1 re2 & more]
-   (if (=' re1 re2)  ; Naive recursion to 2-arg version of =' (which doesn't recurse further)
+   (if (=' re1 re2)  ; Naive recursion to 2-arg version of =' (which doesn't recurse further) - can't recur as this isn't a tail position, nor can we recur to a different arity version of the function
      (if (next more)
        (recur re2 (first more) (rest more))
-       (=' re2 (first more)))  ; Naive recursion to 2-arg version of =' (which doesn't recurse further)
+       (=' re2 (first more)))  ; Naive recursion to 2-arg version of =' (which doesn't recurse further) - can't recur to a different arity version of the function
      false)))
 
 (defn- distinct'
