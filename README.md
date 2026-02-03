@@ -181,7 +181,7 @@ $ deps-try com.github.pmonks/wreck
 ;; A more complex JVM-specific example that composes a longer regex from just a few easy-to-
 ;; read statements (from the unit tests)
 
-; Whitespace - ASCII & Unicode (likly redundant, though Unicode categories can be surprising)
+; Whitespace - ASCII & Unicode (likely redundant, though Unicode categories can be surprising)
 (def ws  (re/chcl #"\p{Space}\p{IsWhitespace}"))
 ;=> #"[\p{Space}\p{IsWhitespace}]"
 (def ows (re/zom ws))
