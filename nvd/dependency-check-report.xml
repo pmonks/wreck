@@ -4,16 +4,16 @@
         <engineVersion>12.2.0</engineVersion>
         <dataSource>
             <name>NVD API Last Checked</name>
-            <timestamp>2026-01-27T04:04:27Z</timestamp>
+            <timestamp>2026-02-03T04:32:53Z</timestamp>
         </dataSource>
         <dataSource>
             <name>NVD API Last Modified</name>
-            <timestamp>2026-01-27T02:16:01Z</timestamp>
+            <timestamp>2026-02-03T04:15:56Z</timestamp>
         </dataSource>
     </scanInfo>
     <projectInfo>
-        <name>com.github.pmonks/wreck 1.0.160-SNAPSHOT</name>
-        <reportDate>2026-01-27T04:04:36.157741635Z</reportDate>
+        <name>com.github.pmonks/wreck 1.0.161-SNAPSHOT</name>
+        <reportDate>2026-02-03T04:33:03.931213243Z</reportDate>
         <credits>This product uses the NVD API but is not endorsed or certified by the NVD. This report contains data retrieved from the National Vulnerability Database: https://nvd.nist.gov, Github Advisory Database (via NPM Audit API): https://github.com/advisories/, and the RetireJS community.</credits>
     </projectInfo>
     <dependencies>
