@@ -149,11 +149,11 @@ $ deps-try com.github.pmonks/wreck
 
 ;; Alternation
 
-(re/alt #"foo" #"bar")  ; Be careful using this fn as alternation has the lowest
-;=> #"foo|bar"          ; precedence in regexes
+(re/alt #"foo" #"bar")  ; Be careful using this fn as alternation has the lowest precedence in
+;=> #"foo|bar"          ; regexes
 
 (re/alt-grp #"foo" #"bar")
-;=> #"(?:foo|bar)"
+;=> #"(?:foo|bar)"      ; Using a group eliminates any ambiguity about how this will compose
 
 ; There are -cg, -ncg, and -fgrp variants of this fn as well, and all are variadic
 
@@ -198,11 +198,12 @@ $ deps-try com.github.pmonks/wreck
 ;=>   \p{IsWhitespace}]*/[\p{Space}\p{IsWhitespace}]*|[\p{Space}\p{IsWhitespace}]+or
 ;=>   [\p{Space}\p{IsWhitespace}]+)Lesser|Lesser|Library)"
 
+; A regex that matches various common formulations of the name of the GNU LGPL license
 (def lgpl-re (re/join
                (re/-lb #"\w")                             ; No word character before
                (re/fgrp "i"                               ; Flags (in a group)
                  (re/alt-ncg "lgpl"                       ; Alternations, in NCG called "lgpl"
-                   "LGPL"                                 ; LGPL literal (string)
+                   "LGPL"                                 ; LGPL literal
                    (re/join "GNU" mws lorl-re mws "GPL")  ; GNU <lorl regex> GPL
                    (re/join "GNU" mws lorl-re)            ; GNU <lorl regex>
                    (re/join lorl-re mws "GPL")))          ; <lorl regex> GPL
@@ -221,7 +222,7 @@ $ deps-try com.github.pmonks/wreck
 ;=>   \p{IsWhitespace}]+or[\p{Space}\p{IsWhitespace}]+)Lesser|Lesser|Library)[\p{Space}
 ;=>   \p{IsWhitespace}]+GPL))(?!\w)"
 
-; Which would you rather maintain?  😉
+; Which form would you rather maintain?  😉
 ```
 
 ## Contributor Information
