@@ -92,7 +92,7 @@
   * On the JVM, the only non-embeddable flags are the programmatic flags
     `LITERAL` and `CANON_EQ`.
   * On JavaScript, this is every flag _except_ `i`, `m`, and `s`."
-  [re]
+  ^Boolean [re]
   (if-let [^String flgs (wi/raw-flags re)]
 #?(:clj
     (boolean (seq (filter (complement zero?) (map #(bit-and flgs %) non-embeddable-flags))))
@@ -155,7 +155,7 @@
 
   * ClojureScript already has a `regexp?` predicate in `cljs.core`, but
     ClojureJVM doesn't.  See [this ask.clojure.org post](https://ask.clojure.org/index.php/1127/add-clojure-core-pattern-predicate)."
-  [x]
+  ^Boolean [x]
   (wi/regex? x))  ; Ideally should eliminate this redundant call
 
 (defn str'
@@ -166,7 +166,7 @@
   Notes:
 
   * Embeds flags (as per [[embed-flags]])."
-  [x]
+  ^String [x]
   (when x
     (-> x
         embed-flags
@@ -183,11 +183,11 @@
   * Some regexes may not be `='` initially due to differing flag sets, but after
     being run through [[embed-flags]] may become `='`, due to non-embeddable
     flags being silently dropped (see [[embed-flags]] for details)."
-  ([_] true)
-  ([re1 re2]
+  (^Boolean [_] true)
+  (^Boolean [re1 re2]
    (and (= (wi/raw-flags re1) (wi/raw-flags  re2))  ; Check flags first, because that's fast
         (= (wi/raw-str   re1) (wi/raw-str    re2))))
-  ([re1 re2 & more]
+  (^Boolean [re1 re2 & more]
    (if (=' re1 re2)  ; Naive recursion to 2-arg version of =' (which doesn't recurse further) - can't recur as this isn't a tail position, nor can we recur to a different arity version of the function
      (if (next more)
        (recur re2 (first more) (rest more))
@@ -222,7 +222,7 @@
   Notes:
 
   * Takes flags (if any) into account."
-  [re]
+  ^Boolean [re]
   (or (nil? re)
       (=' empty-regex re)))
 
@@ -249,7 +249,7 @@
 
   * unlike most other fns in this namespace, this one does _not_ support a regex
     as an input, nor return a regex as an output"
-  [^String s]
+  ^String [^String s]
   (when s
     (s/escape s {\< "\\<"
                  \( "\\("
@@ -276,11 +276,17 @@
 
   * `\\Qre\\E`
 
-  Returns an empty regex (`#\"\"`) if `re` is [[empty?']]."
+  Returns an empty regex (`#\"\"`) if `re` is [[empty?']].
+
+  Notes:
+
+  * This syntax is JVM-specific and the resulting regex will not work as
+    expected in ClojureScript."
   [re]
   (if (empty?' re)
     empty-regex
-    (join "\\Q" re "\\E")))
+    #?(:clj  (re-pattern (java.util.regex.Pattern/quote (str' re)))
+       :cljs (join "\\Q" re "\\E"))))
 
 
 ;; REGEX LITERAL INLINING (JVM only)

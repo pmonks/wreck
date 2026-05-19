@@ -262,6 +262,8 @@
     (is (=' #"\Q2\E" (qot 2)))
 #?(:clj  (is (=' #"\Q2.0\E" (qot 2.0)))
    :cljs (is (=' #"\Q2\E" (qot 2.0))))  ; JavaScript is 🤡🤡🤡
+#?(:clj  (is (=' #"\Qfoo\E\\E\Qbar\E"           (qot "foo\\Ebar")))   ; Tricky corner case on the JVM
+   :cljs (is (=' (re-pattern "\\Qfoo\\Ebar\\E") (qot "foo\\Ebar"))))  ; JavaScript is 🤡🤡🤡
     (is (=' #"\Qtrue\E" (qot true)))
     (is (=' #"\Qfoo\E" (qot #"foo")))  ; Technically quoting regexes is a Bad Idea™, but we test a simple example just in case
     (is (=' #"\Q.*\E"  (qot ".*")))))

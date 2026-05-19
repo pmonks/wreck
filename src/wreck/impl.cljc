@@ -24,7 +24,7 @@
 
   * ClojureScript already has a `regexp?` predicate in `cljs.core`, but
     ClojureJVM doesn't.  See [this ask.clojure.org post](https://ask.clojure.org/index.php/1127/add-clojure-core-pattern-predicate)."
-  [x]
+  ^Boolean [x]
   (instance? #?(:clj java.util.regex.Pattern :cljs js/RegExp) x))
 
 ; We have to do this chicanery because regexes and strings don't round-trip in JavaScript  🙄
@@ -44,7 +44,7 @@
   Note:
 
   * Ignores all programmatic (non-embedded) flags in the regex."
-  [x]
+  ^String [x]
   (when x
 #?(:clj
      (str x)  ; No special handling needed on the JVM
@@ -94,7 +94,7 @@
   * on the JVM, flags that don't have an embedded equivalent (as of JVM 25,
     `LITERAL` and `CANON_EQ`) will be silently dropped.  Use
     [[has-non-embeddable-flags?]] if you need to check for this."
-  [re]
+  ^String [re]
   (when-let [flgs (raw-flags re)]
 #?(:cljs
       ; JavaScript flags are a string in sorted order, so we can just return it directly
