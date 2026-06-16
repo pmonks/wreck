@@ -22,8 +22,8 @@
                         "url": "https://github.com/dependency-check/DependencyCheck/"
         },
 
-        "end_time": "2026-06-09T06:29:10",
-                "start_time": "2026-06-09T06:29:10",
+        "end_time": "2026-06-16T11:52:10",
+                "start_time": "2026-06-16T11:52:10",
                 "status":  "success"  ,
                 "type": "dependency_scanning"
 
