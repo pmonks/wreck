@@ -8,55 +8,55 @@ Downloading: com/fasterxml/jackson/jackson-bom/2.20.1/jackson-bom-2.20.1.pom fro
 Downloading: us/springett/cpe-parser/3.0.1/cpe-parser-3.0.1.pom from central
 Downloading: org/owasp/dependency-check-utils/12.2.0/dependency-check-utils-12.2.0.pom from central
 Downloading: io/github/jeremylong/open-vulnerability-clients/9.0.2/open-vulnerability-clients-9.0.2.pom from central
-Downloading: org/apache/commons/commons-compress/1.27.1/commons-compress-1.27.1.pom from central
 Downloading: org/assertj/assertj-bom/3.27.6/assertj-bom-3.27.6.pom from central
 Downloading: commons-io/commons-io/2.21.0/commons-io-2.21.0.pom from central
-Downloading: org/apache/commons/commons-lang3/3.20.0/commons-lang3-3.20.0.pom from central
+Downloading: org/apache/commons/commons-compress/1.27.1/commons-compress-1.27.1.pom from central
 Downloading: org/junit/junit-bom/5.14.1/junit-bom-5.14.1.pom from central
-Downloading: org/apache/commons/commons-text/1.15.0/commons-text-1.15.0.pom from central
 Downloading: org/apache/commons/commons-parent/91/commons-parent-91.pom from central
-Downloading: org/apache/commons/commons-parent/92/commons-parent-92.pom from central
+Downloading: org/apache/commons/commons-lang3/3.20.0/commons-lang3-3.20.0.pom from central
+Downloading: org/apache/commons/commons-text/1.15.0/commons-text-1.15.0.pom from central
 Downloading: org/apache/commons/commons-dbcp2/2.14.0/commons-dbcp2-2.14.0.pom from central
-Downloading: org/apache/commons/commons-parent/93/commons-parent-93.pom from central
+Downloading: org/apache/commons/commons-parent/92/commons-parent-92.pom from central
 Downloading: org/apache/lucene/lucene-core/9.12.3/lucene-core-9.12.3.pom from central
+Downloading: org/apache/commons/commons-parent/93/commons-parent-93.pom from central
 Downloading: org/apache/lucene/lucene-analysis-common/9.12.3/lucene-analysis-common-9.12.3.pom from central
-Downloading: org/slf4j/jul-to-slf4j/1.7.36/jul-to-slf4j-1.7.36.pom from central
 Downloading: org/apache/lucene/lucene-queryparser/9.12.3/lucene-queryparser-9.12.3.pom from central
+Downloading: org/slf4j/jul-to-slf4j/1.7.36/jul-to-slf4j-1.7.36.pom from central
 Downloading: com/h2database/h2/2.4.240/h2-2.4.240.pom from central
 Downloading: org/eclipse/parsson/jakarta.json/1.1.7/jakarta.json-1.1.7.pom from central
 Downloading: org/jsoup/jsoup/1.22.1/jsoup-1.22.1.pom from central
-Downloading: com/fasterxml/jackson/datatype/jackson-datatype-jsr310/2.20.1/jackson-datatype-jsr310-2.20.1.pom from central
 Downloading: com/fasterxml/jackson/core/jackson-databind/2.20.1/jackson-databind-2.20.1.pom from central
+Downloading: com/fasterxml/jackson/datatype/jackson-datatype-jsr310/2.20.1/jackson-datatype-jsr310-2.20.1.pom from central
 Downloading: org/eclipse/parsson/parsson-bundles/1.1.7/parsson-bundles-1.1.7.pom from central
+Downloading: com/fasterxml/jackson/jackson-base/2.20.1/jackson-base-2.20.1.pom from central
 Downloading: com/fasterxml/jackson/module/jackson-modules-java8/2.20.1/jackson-modules-java8-2.20.1.pom from central
 Downloading: com/fasterxml/jackson/module/jackson-module-blackbird/2.20.1/jackson-module-blackbird-2.20.1.pom from central
 Downloading: org/eclipse/parsson/project/1.1.7/project-1.1.7.pom from central
-Downloading: com/fasterxml/jackson/jackson-base/2.20.1/jackson-base-2.20.1.pom from central
-Downloading: com/fasterxml/jackson/module/jackson-modules-base/2.20.1/jackson-modules-base-2.20.1.pom from central
 Downloading: org/eclipse/ee4j/project/1.0.9/project-1.0.9.pom from central
-Downloading: com/google/guava/guava/33.5.0-jre/guava-33.5.0-jre.pom from central
+Downloading: com/fasterxml/jackson/module/jackson-modules-base/2.20.1/jackson-modules-base-2.20.1.pom from central
 Downloading: com/fasterxml/jackson/dataformat/jackson-dataformat-yaml/2.20.1/jackson-dataformat-yaml-2.20.1.pom from central
+Downloading: com/google/guava/guava/33.5.0-jre/guava-33.5.0-jre.pom from central
 Downloading: com/fasterxml/jackson/dataformat/jackson-dataformats-text/2.20.1/jackson-dataformats-text-2.20.1.pom from central
 Downloading: com/google/guava/guava-parent/33.5.0-jre/guava-parent-33.5.0-jre.pom from central
 Downloading: commons-validator/commons-validator/1.10.1/commons-validator-1.10.1.pom from central
 Downloading: org/apache/httpcomponents/core5/httpcore5/5.3.6/httpcore5-5.3.6.pom from central
 Downloading: org/apache/httpcomponents/client5/httpclient5/5.5.1/httpclient5-5.5.1.pom from central
-Downloading: com/fasterxml/jackson/core/jackson-core/2.20.1/jackson-core-2.20.1.pom from central
 Downloading: org/apache/httpcomponents/core5/httpcore5-parent/5.3.6/httpcore5-parent-5.3.6.pom from central
+Downloading: com/fasterxml/jackson/core/jackson-core/2.20.1/jackson-core-2.20.1.pom from central
 Downloading: org/apache/httpcomponents/client5/httpclient5-parent/5.5.1/httpclient5-parent-5.5.1.pom from central
 Downloading: org/apache/httpcomponents/client5/httpclient5-cache/5.5.1/httpclient5-cache-5.5.1.pom from central
 Downloading: org/junit/junit-bom/5.13.0/junit-bom-5.13.0.pom from central
-Downloading: org/apache/lucene/lucene-queries/9.12.3/lucene-queries-9.12.3.pom from central
-Downloading: org/apache/commons/commons-pool2/2.13.0/commons-pool2-2.13.0.pom from central
 Downloading: commons-codec/commons-codec/1.17.1/commons-codec-1.17.1.pom from central
 Downloading: org/apache/lucene/lucene-sandbox/9.12.3/lucene-sandbox-9.12.3.pom from central
+Downloading: org/apache/lucene/lucene-queries/9.12.3/lucene-queries-9.12.3.pom from central
+Downloading: org/apache/commons/commons-pool2/2.13.0/commons-pool2-2.13.0.pom from central
 Downloading: org/apache/commons/commons-parent/71/commons-parent-71.pom from central
 Downloading: com/google/j2objc/j2objc-annotations/3.1/j2objc-annotations-3.1.pom from central
 Downloading: org/apache/httpcomponents/core5/httpcore5-h2/5.3.6/httpcore5-h2-5.3.6.pom from central
 Downloading: org/apache/lucene/lucene-facet/9.12.3/lucene-facet-9.12.3.pom from central
+Downloading: com/fasterxml/jackson/module/jackson-module-blackbird/2.20.1/jackson-module-blackbird-2.20.1.jar from central
 Downloading: org/apache/httpcomponents/core5/httpcore5-h2/5.3.6/httpcore5-h2-5.3.6.jar from central
 Downloading: commons-codec/commons-codec/1.17.1/commons-codec-1.17.1.jar from central
-Downloading: com/fasterxml/jackson/module/jackson-module-blackbird/2.20.1/jackson-module-blackbird-2.20.1.jar from central
 Downloading: org/apache/commons/commons-compress/1.27.1/commons-compress-1.27.1.jar from central
 Downloading: com/google/errorprone/error_prone_annotations/2.46.0/error_prone_annotations-2.46.0.jar from central
 Downloading: org/apache/commons/commons-lang3/3.20.0/commons-lang3-3.20.0.jar from central
@@ -64,319 +64,393 @@ Downloading: commons-validator/commons-validator/1.10.1/commons-validator-1.10.1
 Downloading: com/fasterxml/jackson/core/jackson-databind/2.20.1/jackson-databind-2.20.1.jar from central
 Downloading: org/apache/commons/commons-dbcp2/2.14.0/commons-dbcp2-2.14.0.jar from central
 Downloading: org/apache/commons/commons-pool2/2.13.0/commons-pool2-2.13.0.jar from central
-Downloading: org/apache/lucene/lucene-analysis-common/9.12.3/lucene-analysis-common-9.12.3.jar from central
 Downloading: com/fasterxml/jackson/dataformat/jackson-dataformat-yaml/2.20.1/jackson-dataformat-yaml-2.20.1.jar from central
+Downloading: org/apache/lucene/lucene-analysis-common/9.12.3/lucene-analysis-common-9.12.3.jar from central
 Downloading: com/h2database/h2/2.4.240/h2-2.4.240.jar from central
-Downloading: commons-io/commons-io/2.21.0/commons-io-2.21.0.jar from central
 Downloading: org/apache/httpcomponents/client5/httpclient5-cache/5.5.1/httpclient5-cache-5.5.1.jar from central
+Downloading: commons-io/commons-io/2.21.0/commons-io-2.21.0.jar from central
 Downloading: org/owasp/dependency-check-core/12.2.0/dependency-check-core-12.2.0.jar from central
 Downloading: com/fasterxml/jackson/core/jackson-core/2.20.1/jackson-core-2.20.1.jar from central
 Downloading: org/slf4j/jul-to-slf4j/1.7.36/jul-to-slf4j-1.7.36.jar from central
 Downloading: org/owasp/dependency-check-utils/12.2.0/dependency-check-utils-12.2.0.jar from central
-Downloading: org/apache/lucene/lucene-queryparser/9.12.3/lucene-queryparser-9.12.3.jar from central
-Downloading: org/apache/lucene/lucene-core/9.12.3/lucene-core-9.12.3.jar from central
 Downloading: org/apache/lucene/lucene-facet/9.12.3/lucene-facet-9.12.3.jar from central
+Downloading: org/apache/lucene/lucene-core/9.12.3/lucene-core-9.12.3.jar from central
+Downloading: org/apache/lucene/lucene-queryparser/9.12.3/lucene-queryparser-9.12.3.jar from central
 Downloading: org/apache/commons/commons-text/1.15.0/commons-text-1.15.0.jar from central
 Downloading: nvd-clojure/nvd-clojure/5.3.0/nvd-clojure-5.3.0.jar from clojars
 Downloading: us/springett/cpe-parser/3.0.1/cpe-parser-3.0.1.jar from central
 Downloading: org/apache/lucene/lucene-queries/9.12.3/lucene-queries-9.12.3.jar from central
-Downloading: com/google/guava/guava/33.5.0-jre/guava-33.5.0-jre.jar from central
 Downloading: com/google/j2objc/j2objc-annotations/3.1/j2objc-annotations-3.1.jar from central
-Downloading: org/apache/lucene/lucene-sandbox/9.12.3/lucene-sandbox-9.12.3.jar from central
-Downloading: org/eclipse/parsson/jakarta.json/1.1.7/jakarta.json-1.1.7.jar from central
+Downloading: com/google/guava/guava/33.5.0-jre/guava-33.5.0-jre.jar from central
 Downloading: io/github/jeremylong/open-vulnerability-clients/9.0.2/open-vulnerability-clients-9.0.2.jar from central
+Downloading: org/eclipse/parsson/jakarta.json/1.1.7/jakarta.json-1.1.7.jar from central
+Downloading: org/apache/lucene/lucene-sandbox/9.12.3/lucene-sandbox-9.12.3.jar from central
 Downloading: org/apache/httpcomponents/client5/httpclient5/5.5.1/httpclient5-5.5.1.jar from central
 Downloading: org/jsoup/jsoup/1.22.1/jsoup-1.22.1.jar from central
-Downloading: com/fasterxml/jackson/datatype/jackson-datatype-jsr310/2.20.1/jackson-datatype-jsr310-2.20.1.jar from central
 Downloading: org/apache/httpcomponents/core5/httpcore5/5.3.6/httpcore5-5.3.6.jar from central
-[2026-06-16 07:31:58.856] INFO nvd-clojure - User-provided config: {:delete-config? false, :group "com.github.pmonks", :name "wreck", :version "1.0.168-SNAPSHOT", :nvd {:output-dir "../target/nvd"}}
-[2026-06-16 07:31:59.235] WARN NexusAnalyzer - Disabling Nexus analyzer - please specify the URL to a Nexus Server
-[2026-06-16 07:31:59.596] INFO Engine - Checking for updates
-[2026-06-16 07:32:15.477] INFO NvdApiDataSource - NVD API has 358,228 records in this update
-[2026-06-16 07:36:27.016] INFO NvdApiDataSource - Downloaded 10,000/358,228 (3%)
-[2026-06-16 07:42:34.881] INFO NvdApiDataSource - Downloaded 20,000/358,228 (6%)
-[2026-06-16 07:47:57.782] INFO NvdApiDataSource - Downloaded 30,000/358,228 (8%)
-[2026-06-16 07:55:37.374] INFO NvdApiDataSource - Downloaded 40,000/358,228 (11%)
-[2026-06-16 08:01:38.597] INFO NvdApiDataSource - Downloaded 50,000/358,228 (14%)
-[2026-06-16 08:11:45.884] INFO NvdApiDataSource - Downloaded 60,000/358,228 (17%)
-[2026-06-16 08:22:15.309] INFO NvdApiDataSource - Downloaded 70,000/358,232 (20%)
-[2026-06-16 08:33:48.294] INFO NvdApiDataSource - Downloaded 80,000/358,232 (22%)
-[2026-06-16 08:38:39.409] INFO NvdApiDataSource - Downloaded 90,000/358,232 (25%)
-[2026-06-16 08:49:45.292] INFO NvdApiDataSource - Downloaded 100,000/358,232 (28%)
-[2026-06-16 09:02:36.702] INFO NvdApiDataSource - Downloaded 110,000/358,232 (31%)
-[2026-06-16 09:10:37.514] INFO NvdApiDataSource - Downloaded 120,000/358,232 (33%)
-[2026-06-16 09:23:05.965] INFO NvdApiDataSource - Downloaded 130,000/358,232 (36%)
-[2026-06-16 09:37:14.463] INFO NvdApiDataSource - Downloaded 140,000/358,232 (39%)
-[2026-06-16 09:43:12.958] INFO NvdApiDataSource - Downloaded 150,000/358,232 (42%)
-[2026-06-16 09:55:41.019] INFO NvdApiDataSource - Downloaded 160,000/358,232 (45%)
-[2026-06-16 10:04:14.968] INFO AsyncHttpRequestRetryExec - ex-0000000084 recoverable I/O exception (org.apache.hc.core5.http2.H2StreamResetException) caught when sending request to https://services.nvd.nist.gov:443;request will be automatically re-executed in 0 MILLISECONDS (exec count 2)
-[2026-06-16 10:04:15.339] INFO AsyncHttpRequestRetryExec - ex-0000000084 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 10000 MILLISECONDS (exec count 3)
-[2026-06-16 10:04:25.429] INFO AsyncHttpRequestRetryExec - ex-0000000084 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 15000 MILLISECONDS (exec count 4)
-[2026-06-16 10:04:58.576] INFO NvdApiDataSource - Downloaded 170,000/358,232 (47%)
-[2026-06-16 10:13:22.506] INFO NvdApiDataSource - Downloaded 180,000/358,232 (50%)
-[2026-06-16 10:21:37.980] INFO NvdApiDataSource - Downloaded 190,000/358,253 (53%)
-[2026-06-16 10:27:53.775] INFO NvdApiDataSource - Downloaded 200,000/358,253 (56%)
-[2026-06-16 10:34:44.578] INFO NvdApiDataSource - Downloaded 210,000/358,253 (59%)
-[2026-06-16 10:40:27.431] INFO NvdApiDataSource - Downloaded 220,000/358,253 (61%)
-[2026-06-16 10:45:37.257] INFO NvdApiDataSource - Downloaded 230,000/358,253 (64%)
-[2026-06-16 10:52:19.143] INFO NvdApiDataSource - Downloaded 240,000/358,253 (67%)
-[2026-06-16 10:58:36.928] INFO NvdApiDataSource - Downloaded 250,000/358,253 (70%)
-[2026-06-16 11:04:13.315] INFO NvdApiDataSource - Downloaded 260,000/358,253 (73%)
-[2026-06-16 11:09:05.697] INFO NvdApiDataSource - Downloaded 270,000/358,253 (75%)
-[2026-06-16 11:14:58.919] INFO NvdApiDataSource - Downloaded 280,000/358,253 (78%)
-[2026-06-16 11:21:40.263] INFO NvdApiDataSource - Downloaded 290,000/358,253 (81%)
-[2026-06-16 11:25:22.002] INFO NvdApiDataSource - Downloaded 300,000/358,253 (84%)
-[2026-06-16 11:30:32.785] INFO NvdApiDataSource - Downloaded 310,000/358,253 (87%)
-[2026-06-16 11:34:29.958] INFO NvdApiDataSource - Downloaded 320,000/358,253 (89%)
-[2026-06-16 11:38:00.119] INFO NvdApiDataSource - Downloaded 330,000/358,253 (92%)
-[2026-06-16 11:43:40.468] INFO NvdApiDataSource - Downloaded 340,000/358,253 (95%)
-[2026-06-16 11:47:50.589] ERROR NvdApiProcessor - Failed to process CVE-2026-6785
-org.owasp.dependencycheck.data.nvdcve.DatabaseException: Error updating 'CVE-2026-6785'; Value too long for column "URL CHARACTER VARYING(1000)": "'https://bugzilla.mozilla.org/buglist.cgi?bug_id=1935995%2C1999158%2C2015952%2C2... (1585)"; SQL statement:
-INSERT INTO reference (cveid, name, url, source) VALUES (?, ?, ?, ?) [22001-240]
-	at org.owasp.dependencycheck.data.nvdcve.CveDB.updateVulnerability(CveDB.java:1104)
-	at org.owasp.dependencycheck.data.update.nvd.api.NvdApiProcessor.updateCveDb(NvdApiProcessor.java:119)
-	at org.owasp.dependencycheck.data.update.nvd.api.NvdApiProcessor.call(NvdApiProcessor.java:96)
-	at org.owasp.dependencycheck.data.update.nvd.api.NvdApiProcessor.call(NvdApiProcessor.java:40)
-	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
-	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
-	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
-	at java.base/java.lang.Thread.run(Thread.java:1474)
-[2026-06-16 11:47:50.591] ERROR NvdApiProcessor - Failed to process CVE-2026-6786
-org.owasp.dependencycheck.data.nvdcve.DatabaseException: Error updating 'CVE-2026-6786'; Value too long for column "URL CHARACTER VARYING(1000)": "'https://bugzilla.mozilla.org/buglist.cgi?bug_id=2010727%2C2019004%2C2019224%2C2... (1115)"; SQL statement:
-INSERT INTO reference (cveid, name, url, source) VALUES (?, ?, ?, ?) [22001-240]
-	at org.owasp.dependencycheck.data.nvdcve.CveDB.updateVulnerability(CveDB.java:1104)
-	at org.owasp.dependencycheck.data.update.nvd.api.NvdApiProcessor.updateCveDb(NvdApiProcessor.java:119)
-	at org.owasp.dependencycheck.data.update.nvd.api.NvdApiProcessor.call(NvdApiProcessor.java:96)
-	at org.owasp.dependencycheck.data.update.nvd.api.NvdApiProcessor.call(NvdApiProcessor.java:40)
-	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
-	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
-	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
-	at java.base/java.lang.Thread.run(Thread.java:1474)
-[2026-06-16 11:48:38.661] INFO NvdApiDataSource - Downloaded 350,000/358,253 (98%)
-[2026-06-16 11:52:03.190] INFO NvdApiDataSource - Downloaded 358,253/358,253 (100%)
-[2026-06-16 11:52:03.191] INFO NvdApiDataSource - Completed processing batch 1/180 (1%) in 1,208ms
-[2026-06-16 11:52:03.191] INFO NvdApiDataSource - Completed processing batch 2/180 (1%) in 982ms
-[2026-06-16 11:52:03.191] INFO NvdApiDataSource - Completed processing batch 3/180 (2%) in 850ms
-[2026-06-16 11:52:03.191] INFO NvdApiDataSource - Completed processing batch 4/180 (2%) in 591ms
-[2026-06-16 11:52:03.191] INFO NvdApiDataSource - Completed processing batch 5/180 (3%) in 747ms
-[2026-06-16 11:52:03.191] INFO NvdApiDataSource - Completed processing batch 6/180 (3%) in 656ms
-[2026-06-16 11:52:03.191] INFO NvdApiDataSource - Completed processing batch 7/180 (4%) in 570ms
-[2026-06-16 11:52:03.191] INFO NvdApiDataSource - Completed processing batch 8/180 (4%) in 590ms
-[2026-06-16 11:52:03.191] INFO NvdApiDataSource - Completed processing batch 9/180 (5%) in 532ms
-[2026-06-16 11:52:03.191] INFO NvdApiDataSource - Completed processing batch 10/180 (6%) in 591ms
-[2026-06-16 11:52:03.191] INFO NvdApiDataSource - Completed processing batch 11/180 (6%) in 495ms
-[2026-06-16 11:52:03.192] INFO NvdApiDataSource - Completed processing batch 12/180 (7%) in 529ms
-[2026-06-16 11:52:03.192] INFO NvdApiDataSource - Completed processing batch 13/180 (7%) in 560ms
-[2026-06-16 11:52:03.192] INFO NvdApiDataSource - Completed processing batch 14/180 (8%) in 542ms
-[2026-06-16 11:52:03.192] INFO NvdApiDataSource - Completed processing batch 15/180 (8%) in 572ms
-[2026-06-16 11:52:03.192] INFO NvdApiDataSource - Completed processing batch 16/180 (9%) in 631ms
-[2026-06-16 11:52:03.192] INFO NvdApiDataSource - Completed processing batch 17/180 (9%) in 719ms
-[2026-06-16 11:52:03.192] INFO NvdApiDataSource - Completed processing batch 18/180 (10%) in 638ms
-[2026-06-16 11:52:03.192] INFO NvdApiDataSource - Completed processing batch 19/180 (11%) in 768ms
-[2026-06-16 11:52:03.192] INFO NvdApiDataSource - Completed processing batch 20/180 (11%) in 766ms
-[2026-06-16 11:52:03.192] INFO NvdApiDataSource - Completed processing batch 21/180 (12%) in 805ms
-[2026-06-16 11:52:03.192] INFO NvdApiDataSource - Completed processing batch 22/180 (12%) in 845ms
-[2026-06-16 11:52:03.192] INFO NvdApiDataSource - Completed processing batch 23/180 (13%) in 1,174ms
-[2026-06-16 11:52:03.192] INFO NvdApiDataSource - Completed processing batch 24/180 (13%) in 1,087ms
-[2026-06-16 11:52:03.192] INFO NvdApiDataSource - Completed processing batch 25/180 (14%) in 909ms
-[2026-06-16 11:52:03.192] INFO NvdApiDataSource - Completed processing batch 26/180 (14%) in 1,117ms
-[2026-06-16 11:52:03.193] INFO NvdApiDataSource - Completed processing batch 27/180 (15%) in 1,071ms
-[2026-06-16 11:52:03.193] INFO NvdApiDataSource - Completed processing batch 28/180 (16%) in 1,238ms
-[2026-06-16 11:52:03.193] INFO NvdApiDataSource - Completed processing batch 29/180 (16%) in 863ms
-[2026-06-16 11:52:03.193] INFO NvdApiDataSource - Completed processing batch 30/180 (17%) in 939ms
-[2026-06-16 11:52:03.193] INFO NvdApiDataSource - Completed processing batch 31/180 (17%) in 809ms
-[2026-06-16 11:52:03.193] INFO NvdApiDataSource - Completed processing batch 32/180 (18%) in 722ms
-[2026-06-16 11:52:03.193] INFO NvdApiDataSource - Completed processing batch 33/180 (18%) in 528ms
-[2026-06-16 11:52:03.193] INFO NvdApiDataSource - Completed processing batch 34/180 (19%) in 742ms
-[2026-06-16 11:52:03.193] INFO NvdApiDataSource - Completed processing batch 35/180 (19%) in 579ms
-[2026-06-16 11:52:03.193] INFO NvdApiDataSource - Completed processing batch 36/180 (20%) in 517ms
-[2026-06-16 11:52:03.193] INFO NvdApiDataSource - Completed processing batch 37/180 (21%) in 448ms
-[2026-06-16 11:52:03.193] INFO NvdApiDataSource - Completed processing batch 38/180 (21%) in 914ms
-[2026-06-16 11:52:03.193] INFO NvdApiDataSource - Completed processing batch 39/180 (22%) in 491ms
-[2026-06-16 11:52:03.194] INFO NvdApiDataSource - Completed processing batch 40/180 (22%) in 440ms
-[2026-06-16 11:52:03.194] INFO NvdApiDataSource - Completed processing batch 41/180 (23%) in 477ms
-[2026-06-16 11:52:03.194] INFO NvdApiDataSource - Completed processing batch 42/180 (23%) in 348ms
-[2026-06-16 11:52:03.194] INFO NvdApiDataSource - Completed processing batch 43/180 (24%) in 404ms
-[2026-06-16 11:52:03.194] INFO NvdApiDataSource - Completed processing batch 44/180 (24%) in 91ms
-[2026-06-16 11:52:03.194] INFO NvdApiDataSource - Completed processing batch 45/180 (25%) in 105ms
-[2026-06-16 11:52:03.194] INFO NvdApiDataSource - Completed processing batch 46/180 (26%) in 420ms
-[2026-06-16 11:52:03.194] INFO NvdApiDataSource - Completed processing batch 47/180 (26%) in 603ms
-[2026-06-16 11:52:03.194] INFO NvdApiDataSource - Completed processing batch 48/180 (27%) in 433ms
-[2026-06-16 11:52:03.194] INFO NvdApiDataSource - Completed processing batch 49/180 (27%) in 382ms
-[2026-06-16 11:52:03.194] INFO NvdApiDataSource - Completed processing batch 50/180 (28%) in 505ms
-[2026-06-16 11:52:03.194] INFO NvdApiDataSource - Completed processing batch 51/180 (28%) in 328ms
-[2026-06-16 11:52:03.194] INFO NvdApiDataSource - Completed processing batch 52/180 (29%) in 201ms
-[2026-06-16 11:52:03.195] INFO NvdApiDataSource - Completed processing batch 53/180 (29%) in 308ms
-[2026-06-16 11:52:03.195] INFO NvdApiDataSource - Completed processing batch 54/180 (30%) in 333ms
-[2026-06-16 11:52:03.195] INFO NvdApiDataSource - Completed processing batch 55/180 (31%) in 399ms
-[2026-06-16 11:52:03.195] INFO NvdApiDataSource - Completed processing batch 56/180 (31%) in 333ms
-[2026-06-16 11:52:03.195] INFO NvdApiDataSource - Completed processing batch 57/180 (32%) in 313ms
-[2026-06-16 11:52:03.195] INFO NvdApiDataSource - Completed processing batch 58/180 (32%) in 469ms
-[2026-06-16 11:52:03.195] INFO NvdApiDataSource - Completed processing batch 59/180 (33%) in 317ms
-[2026-06-16 11:52:03.195] INFO NvdApiDataSource - Completed processing batch 60/180 (33%) in 424ms
-[2026-06-16 11:52:03.195] INFO NvdApiDataSource - Completed processing batch 61/180 (34%) in 357ms
-[2026-06-16 11:52:03.195] INFO NvdApiDataSource - Completed processing batch 62/180 (34%) in 365ms
-[2026-06-16 11:52:03.195] INFO NvdApiDataSource - Completed processing batch 63/180 (35%) in 315ms
-[2026-06-16 11:52:03.195] INFO NvdApiDataSource - Completed processing batch 64/180 (36%) in 315ms
-[2026-06-16 11:52:03.195] INFO NvdApiDataSource - Completed processing batch 65/180 (36%) in 328ms
-[2026-06-16 11:52:03.195] INFO NvdApiDataSource - Completed processing batch 66/180 (37%) in 505ms
-[2026-06-16 11:52:03.195] INFO NvdApiDataSource - Completed processing batch 67/180 (37%) in 300ms
-[2026-06-16 11:52:03.195] INFO NvdApiDataSource - Completed processing batch 68/180 (38%) in 287ms
-[2026-06-16 11:52:03.196] INFO NvdApiDataSource - Completed processing batch 69/180 (38%) in 311ms
-[2026-06-16 11:52:03.196] INFO NvdApiDataSource - Completed processing batch 70/180 (39%) in 343ms
-[2026-06-16 11:52:03.196] INFO NvdApiDataSource - Completed processing batch 71/180 (39%) in 309ms
-[2026-06-16 11:52:03.196] INFO NvdApiDataSource - Completed processing batch 72/180 (40%) in 480ms
-[2026-06-16 11:52:03.196] INFO NvdApiDataSource - Completed processing batch 73/180 (41%) in 296ms
-[2026-06-16 11:52:03.196] INFO NvdApiDataSource - Completed processing batch 74/180 (41%) in 376ms
-[2026-06-16 11:52:03.196] INFO NvdApiDataSource - Completed processing batch 75/180 (42%) in 331ms
-[2026-06-16 11:52:03.196] INFO NvdApiDataSource - Completed processing batch 76/180 (42%) in 374ms
-[2026-06-16 11:52:03.196] INFO NvdApiDataSource - Completed processing batch 77/180 (43%) in 290ms
-[2026-06-16 11:52:03.196] INFO NvdApiDataSource - Completed processing batch 78/180 (43%) in 286ms
-[2026-06-16 11:52:03.196] INFO NvdApiDataSource - Completed processing batch 79/180 (44%) in 287ms
-[2026-06-16 11:52:03.196] INFO NvdApiDataSource - Completed processing batch 80/180 (44%) in 364ms
-[2026-06-16 11:52:03.196] INFO NvdApiDataSource - Completed processing batch 81/180 (45%) in 333ms
-[2026-06-16 11:52:03.197] INFO NvdApiDataSource - Completed processing batch 82/180 (46%) in 331ms
-[2026-06-16 11:52:03.197] INFO NvdApiDataSource - Completed processing batch 83/180 (46%) in 446ms
-[2026-06-16 11:52:03.197] INFO NvdApiDataSource - Completed processing batch 84/180 (47%) in 345ms
-[2026-06-16 11:52:03.197] INFO NvdApiDataSource - Completed processing batch 85/180 (47%) in 294ms
-[2026-06-16 11:52:03.197] INFO NvdApiDataSource - Completed processing batch 86/180 (48%) in 322ms
-[2026-06-16 11:52:03.197] INFO NvdApiDataSource - Completed processing batch 87/180 (48%) in 507ms
-[2026-06-16 11:52:03.197] INFO NvdApiDataSource - Completed processing batch 88/180 (49%) in 275ms
-[2026-06-16 11:52:03.197] INFO NvdApiDataSource - Completed processing batch 89/180 (49%) in 219ms
-[2026-06-16 11:52:03.197] INFO NvdApiDataSource - Completed processing batch 90/180 (50%) in 314ms
-[2026-06-16 11:52:03.197] INFO NvdApiDataSource - Completed processing batch 91/180 (51%) in 313ms
-[2026-06-16 11:52:03.197] INFO NvdApiDataSource - Completed processing batch 92/180 (51%) in 498ms
-[2026-06-16 11:52:03.197] INFO NvdApiDataSource - Completed processing batch 93/180 (52%) in 422ms
-[2026-06-16 11:52:03.197] INFO NvdApiDataSource - Completed processing batch 94/180 (52%) in 303ms
-[2026-06-16 11:52:03.197] INFO NvdApiDataSource - Completed processing batch 95/180 (53%) in 313ms
-[2026-06-16 11:52:03.197] INFO NvdApiDataSource - Completed processing batch 96/180 (53%) in 294ms
-[2026-06-16 11:52:03.198] INFO NvdApiDataSource - Completed processing batch 97/180 (54%) in 450ms
-[2026-06-16 11:52:03.198] INFO NvdApiDataSource - Completed processing batch 98/180 (54%) in 295ms
-[2026-06-16 11:52:03.198] INFO NvdApiDataSource - Completed processing batch 99/180 (55%) in 265ms
-[2026-06-16 11:52:03.198] INFO NvdApiDataSource - Completed processing batch 100/180 (56%) in 513ms
-[2026-06-16 11:52:03.198] INFO NvdApiDataSource - Completed processing batch 101/180 (56%) in 267ms
-[2026-06-16 11:52:03.198] INFO NvdApiDataSource - Completed processing batch 102/180 (57%) in 242ms
-[2026-06-16 11:52:03.198] INFO NvdApiDataSource - Completed processing batch 103/180 (57%) in 272ms
-[2026-06-16 11:52:03.198] INFO NvdApiDataSource - Completed processing batch 104/180 (58%) in 320ms
-[2026-06-16 11:52:03.198] INFO NvdApiDataSource - Completed processing batch 105/180 (58%) in 252ms
-[2026-06-16 11:52:03.198] INFO NvdApiDataSource - Completed processing batch 106/180 (59%) in 248ms
-[2026-06-16 11:52:03.198] INFO NvdApiDataSource - Completed processing batch 107/180 (59%) in 542ms
-[2026-06-16 11:52:03.198] INFO NvdApiDataSource - Completed processing batch 108/180 (60%) in 236ms
-[2026-06-16 11:52:03.198] INFO NvdApiDataSource - Completed processing batch 109/180 (61%) in 323ms
-[2026-06-16 11:52:03.199] INFO NvdApiDataSource - Completed processing batch 110/180 (61%) in 490ms
-[2026-06-16 11:52:03.199] INFO NvdApiDataSource - Completed processing batch 111/180 (62%) in 312ms
-[2026-06-16 11:52:03.199] INFO NvdApiDataSource - Completed processing batch 112/180 (62%) in 290ms
-[2026-06-16 11:52:03.199] INFO NvdApiDataSource - Completed processing batch 113/180 (63%) in 235ms
-[2026-06-16 11:52:03.199] INFO NvdApiDataSource - Completed processing batch 114/180 (63%) in 306ms
-[2026-06-16 11:52:03.199] INFO NvdApiDataSource - Completed processing batch 115/180 (64%) in 312ms
-[2026-06-16 11:52:03.199] INFO NvdApiDataSource - Completed processing batch 116/180 (64%) in 314ms
-[2026-06-16 11:52:03.199] INFO NvdApiDataSource - Completed processing batch 117/180 (65%) in 290ms
-[2026-06-16 11:52:03.199] INFO NvdApiDataSource - Completed processing batch 118/180 (66%) in 267ms
-[2026-06-16 11:52:03.199] INFO NvdApiDataSource - Completed processing batch 119/180 (66%) in 294ms
-[2026-06-16 11:52:03.199] INFO NvdApiDataSource - Completed processing batch 120/180 (67%) in 280ms
-[2026-06-16 11:52:03.199] INFO NvdApiDataSource - Completed processing batch 121/180 (67%) in 223ms
-[2026-06-16 11:52:03.199] INFO NvdApiDataSource - Completed processing batch 122/180 (68%) in 202ms
-[2026-06-16 11:52:03.199] INFO NvdApiDataSource - Completed processing batch 123/180 (68%) in 193ms
-[2026-06-16 11:52:03.199] INFO NvdApiDataSource - Completed processing batch 124/180 (69%) in 154ms
-[2026-06-16 11:52:03.199] INFO NvdApiDataSource - Completed processing batch 125/180 (69%) in 176ms
-[2026-06-16 11:52:03.199] INFO NvdApiDataSource - Completed processing batch 126/180 (70%) in 169ms
-[2026-06-16 11:52:03.200] INFO NvdApiDataSource - Completed processing batch 127/180 (71%) in 219ms
-[2026-06-16 11:52:03.200] INFO NvdApiDataSource - Completed processing batch 128/180 (71%) in 239ms
-[2026-06-16 11:52:03.200] INFO NvdApiDataSource - Completed processing batch 129/180 (72%) in 224ms
-[2026-06-16 11:52:03.200] INFO NvdApiDataSource - Completed processing batch 130/180 (72%) in 245ms
-[2026-06-16 11:52:03.200] INFO NvdApiDataSource - Completed processing batch 131/180 (73%) in 244ms
-[2026-06-16 11:52:03.200] INFO NvdApiDataSource - Completed processing batch 132/180 (73%) in 247ms
-[2026-06-16 11:52:03.200] INFO NvdApiDataSource - Completed processing batch 133/180 (74%) in 256ms
-[2026-06-16 11:52:03.200] INFO NvdApiDataSource - Completed processing batch 134/180 (74%) in 266ms
-[2026-06-16 11:52:03.200] INFO NvdApiDataSource - Completed processing batch 135/180 (75%) in 224ms
-[2026-06-16 11:52:03.200] INFO NvdApiDataSource - Completed processing batch 136/180 (76%) in 174ms
-[2026-06-16 11:52:03.200] INFO NvdApiDataSource - Completed processing batch 137/180 (76%) in 149ms
-[2026-06-16 11:52:03.200] INFO NvdApiDataSource - Completed processing batch 138/180 (77%) in 154ms
-[2026-06-16 11:52:03.200] INFO NvdApiDataSource - Completed processing batch 139/180 (77%) in 172ms
-[2026-06-16 11:52:03.200] INFO NvdApiDataSource - Completed processing batch 140/180 (78%) in 195ms
-[2026-06-16 11:52:03.200] INFO NvdApiDataSource - Completed processing batch 141/180 (78%) in 225ms
-[2026-06-16 11:52:03.200] INFO NvdApiDataSource - Completed processing batch 142/180 (79%) in 142ms
-[2026-06-16 11:52:03.201] INFO NvdApiDataSource - Completed processing batch 143/180 (79%) in 212ms
-[2026-06-16 11:52:03.201] INFO NvdApiDataSource - Completed processing batch 144/180 (80%) in 136ms
-[2026-06-16 11:52:03.201] INFO NvdApiDataSource - Completed processing batch 145/180 (81%) in 216ms
-[2026-06-16 11:52:03.201] INFO NvdApiDataSource - Completed processing batch 146/180 (81%) in 194ms
-[2026-06-16 11:52:03.201] INFO NvdApiDataSource - Completed processing batch 147/180 (82%) in 212ms
-[2026-06-16 11:52:03.201] INFO NvdApiDataSource - Completed processing batch 148/180 (82%) in 173ms
-[2026-06-16 11:52:03.201] INFO NvdApiDataSource - Completed processing batch 149/180 (83%) in 193ms
-[2026-06-16 11:52:03.201] INFO NvdApiDataSource - Completed processing batch 150/180 (83%) in 207ms
-[2026-06-16 11:52:03.201] INFO NvdApiDataSource - Completed processing batch 151/180 (84%) in 195ms
-[2026-06-16 11:52:03.201] INFO NvdApiDataSource - Completed processing batch 152/180 (84%) in 177ms
-[2026-06-16 11:52:03.201] INFO NvdApiDataSource - Completed processing batch 153/180 (85%) in 205ms
-[2026-06-16 11:52:03.201] INFO NvdApiDataSource - Completed processing batch 154/180 (86%) in 206ms
-[2026-06-16 11:52:03.201] INFO NvdApiDataSource - Completed processing batch 155/180 (86%) in 203ms
-[2026-06-16 11:52:03.201] INFO NvdApiDataSource - Completed processing batch 156/180 (87%) in 168ms
-[2026-06-16 11:52:03.201] INFO NvdApiDataSource - Completed processing batch 157/180 (87%) in 174ms
-[2026-06-16 11:52:03.201] INFO NvdApiDataSource - Completed processing batch 158/180 (88%) in 192ms
-[2026-06-16 11:52:03.202] INFO NvdApiDataSource - Completed processing batch 159/180 (88%) in 167ms
-[2026-06-16 11:52:03.202] INFO NvdApiDataSource - Completed processing batch 160/180 (89%) in 190ms
-[2026-06-16 11:52:03.202] INFO NvdApiDataSource - Completed processing batch 161/180 (89%) in 181ms
-[2026-06-16 11:52:03.202] INFO NvdApiDataSource - Completed processing batch 162/180 (90%) in 194ms
-[2026-06-16 11:52:03.202] INFO NvdApiDataSource - Completed processing batch 163/180 (91%) in 107ms
-[2026-06-16 11:52:03.202] INFO NvdApiDataSource - Completed processing batch 164/180 (91%) in 232ms
-[2026-06-16 11:52:03.202] INFO NvdApiDataSource - Completed processing batch 165/180 (92%) in 152ms
-[2026-06-16 11:52:03.202] INFO NvdApiDataSource - Completed processing batch 166/180 (92%) in 239ms
-[2026-06-16 11:52:03.202] INFO NvdApiDataSource - Completed processing batch 167/180 (93%) in 148ms
-[2026-06-16 11:52:03.202] INFO NvdApiDataSource - Completed processing batch 168/180 (93%) in 231ms
-[2026-06-16 11:52:03.202] INFO NvdApiDataSource - Completed processing batch 169/180 (94%) in 239ms
-[2026-06-16 11:52:03.202] INFO NvdApiDataSource - Completed processing batch 170/180 (94%) in 207ms
-[2026-06-16 11:52:03.202] INFO NvdApiDataSource - Completed processing batch 171/180 (95%) in 221ms
-[2026-06-16 11:52:03.202] INFO NvdApiDataSource - Completed processing batch 172/180 (96%) in 214ms
-[2026-06-16 11:52:03.202] INFO NvdApiDataSource - Completed processing batch 173/180 (96%) in 160ms
-[2026-06-16 11:52:03.202] INFO NvdApiDataSource - Completed processing batch 174/180 (97%) in 197ms
-[2026-06-16 11:52:03.202] INFO NvdApiDataSource - Completed processing batch 175/180 (97%) in 192ms
-[2026-06-16 11:52:03.202] INFO NvdApiDataSource - Completed processing batch 176/180 (98%) in 199ms
-[2026-06-16 11:52:03.203] INFO NvdApiDataSource - Completed processing batch 177/180 (98%) in 133ms
-[2026-06-16 11:52:03.203] INFO NvdApiDataSource - Completed processing batch 178/180 (99%) in 135ms
-[2026-06-16 11:52:03.203] INFO NvdApiDataSource - Completed processing batch 179/180 (99%) in 119ms
-[2026-06-16 11:52:03.203] INFO NvdApiDataSource - Completed processing batch 180/180 (100%) in 23ms
-[2026-06-16 11:52:03.416] INFO KnownExploitedDataSource - Updating CISA Known Exploited Vulnerability list: https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json
-[2026-06-16 11:52:03.668] INFO CveDB - Begin database defrag
-[2026-06-16 11:52:08.586] INFO CveDB - End database defrag (4924 ms)
-[2026-06-16 11:52:08.605] INFO Engine - Check for updates complete (15609009 ms)
-[2026-06-16 11:52:08.700] INFO Engine - 
+Downloading: com/fasterxml/jackson/datatype/jackson-datatype-jsr310/2.20.1/jackson-datatype-jsr310-2.20.1.jar from central
+[2026-06-23 06:12:36.688] INFO nvd-clojure - User-provided config: {:delete-config? false, :group "com.github.pmonks", :name "wreck", :version "1.0.168-SNAPSHOT", :nvd {:output-dir "../target/nvd"}}
+[2026-06-23 06:12:37.577] WARN NexusAnalyzer - Disabling Nexus analyzer - please specify the URL to a Nexus Server
+[2026-06-23 06:12:38.015] INFO Engine - Checking for updates
+[2026-06-23 06:13:41.145] INFO NvdApiDataSource - NVD API has 359,854 records in this update
+[2026-06-23 06:16:33.962] INFO NvdApiDataSource - Downloaded 10,000/359,854 (3%)
+[2026-06-23 06:22:05.695] INFO AsyncHttpRequestRetryExec - ex-0000000011 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 5000 MILLISECONDS (exec count 2)
+[2026-06-23 06:22:06.058] INFO NvdApiDataSource - Downloaded 20,000/359,854 (6%)
+[2026-06-23 06:22:10.714] INFO AsyncHttpRequestRetryExec - ex-0000000011 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 10000 MILLISECONDS (exec count 3)
+[2026-06-23 06:22:20.728] INFO AsyncHttpRequestRetryExec - ex-0000000011 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 15000 MILLISECONDS (exec count 4)
+[2026-06-23 06:22:35.743] INFO AsyncHttpRequestRetryExec - ex-0000000011 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 20000 MILLISECONDS (exec count 5)
+[2026-06-23 06:23:13.283] WARN NvdApiRetryStrategy - NVD API request failures are occurring; retrying request for the 5th time
+[2026-06-23 06:27:13.170] INFO AsyncHttpRequestRetryExec - ex-0000000014 recoverable I/O exception (org.apache.hc.core5.http2.H2StreamResetException) caught when sending request to https://services.nvd.nist.gov:443;request will be automatically re-executed in 0 MILLISECONDS (exec count 2)
+[2026-06-23 06:28:52.047] INFO AsyncHttpRequestRetryExec - ex-0000000015 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 5000 MILLISECONDS (exec count 2)
+[2026-06-23 06:30:22.752] INFO NvdApiDataSource - Downloaded 30,000/359,854 (8%)
+[2026-06-23 06:31:53.764] INFO AsyncHttpRequestRetryExec - ex-0000000017 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 5000 MILLISECONDS (exec count 2)
+[2026-06-23 06:31:58.793] INFO AsyncHttpRequestRetryExec - ex-0000000017 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 10000 MILLISECONDS (exec count 3)
+[2026-06-23 06:35:28.501] INFO AsyncHttpRequestRetryExec - ex-0000000019 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 5000 MILLISECONDS (exec count 2)
+[2026-06-23 06:35:33.531] INFO AsyncHttpRequestRetryExec - ex-0000000019 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 10000 MILLISECONDS (exec count 3)
+[2026-06-23 06:35:43.556] INFO AsyncHttpRequestRetryExec - ex-0000000019 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 15000 MILLISECONDS (exec count 4)
+[2026-06-23 06:39:03.706] INFO NvdApiDataSource - Downloaded 40,000/359,854 (11%)
+[2026-06-23 06:47:44.940] INFO NvdApiDataSource - Downloaded 50,000/359,854 (14%)
+[2026-06-23 06:56:37.031] INFO NvdApiDataSource - Downloaded 60,000/359,854 (17%)
+[2026-06-23 07:01:03.285] INFO AsyncHttpRequestRetryExec - ex-0000000032 recoverable I/O exception (org.apache.hc.core5.http2.H2StreamResetException) caught when sending request to https://services.nvd.nist.gov:443;request will be automatically re-executed in 0 MILLISECONDS (exec count 2)
+[2026-06-23 07:06:18.184] INFO NvdApiDataSource - Downloaded 70,000/359,854 (19%)
+[2026-06-23 07:07:58.876] INFO AsyncHttpRequestRetryExec - ex-0000000036 recoverable I/O exception (org.apache.hc.core5.http2.H2StreamResetException) caught when sending request to https://services.nvd.nist.gov:443;request will be automatically re-executed in 0 MILLISECONDS (exec count 2)
+[2026-06-23 07:10:14.361] INFO AsyncHttpRequestRetryExec - ex-0000000038 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 5000 MILLISECONDS (exec count 2)
+[2026-06-23 07:11:34.474] INFO AsyncHttpRequestRetryExec - ex-0000000039 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 5000 MILLISECONDS (exec count 2)
+[2026-06-23 07:14:33.082] INFO AsyncHttpRequestRetryExec - ex-0000000041 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 5000 MILLISECONDS (exec count 2)
+[2026-06-23 07:14:33.380] INFO NvdApiDataSource - Downloaded 80,000/359,854 (22%)
+[2026-06-23 07:18:28.896] INFO AsyncHttpRequestRetryExec - ex-0000000046 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 5000 MILLISECONDS (exec count 2)
+[2026-06-23 07:18:29.155] INFO NvdApiDataSource - Downloaded 90,000/359,859 (25%)
+[2026-06-23 07:23:26.269] INFO AsyncHttpRequestRetryExec - ex-0000000050 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 5000 MILLISECONDS (exec count 2)
+[2026-06-23 07:24:20.709] INFO NvdApiDataSource - Downloaded 100,000/359,859 (28%)
+[2026-06-23 07:29:45.218] INFO NvdApiDataSource - Downloaded 110,000/359,859 (31%)
+[2026-06-23 07:31:32.346] INFO AsyncHttpRequestRetryExec - ex-0000000058 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 5000 MILLISECONDS (exec count 2)
+[2026-06-23 07:31:37.373] INFO AsyncHttpRequestRetryExec - ex-0000000058 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 10000 MILLISECONDS (exec count 3)
+[2026-06-23 07:32:56.166] INFO AsyncHttpRequestRetryExec - ex-0000000059 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 5000 MILLISECONDS (exec count 2)
+[2026-06-23 07:33:01.390] INFO AsyncHttpRequestRetryExec - ex-0000000059 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 10000 MILLISECONDS (exec count 3)
+[2026-06-23 07:33:11.407] INFO AsyncHttpRequestRetryExec - ex-0000000059 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 15000 MILLISECONDS (exec count 4)
+[2026-06-23 07:34:55.193] INFO NvdApiDataSource - Downloaded 120,000/359,859 (33%)
+[2026-06-23 07:37:00.113] INFO AsyncHttpRequestRetryExec - ex-0000000063 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 5000 MILLISECONDS (exec count 2)
+[2026-06-23 07:37:05.422] INFO AsyncHttpRequestRetryExec - ex-0000000063 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 10000 MILLISECONDS (exec count 3)
+[2026-06-23 07:41:54.579] INFO NvdApiDataSource - Downloaded 130,000/359,859 (36%)
+[2026-06-23 07:46:24.831] INFO AsyncHttpRequestRetryExec - ex-0000000069 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 5000 MILLISECONDS (exec count 2)
+[2026-06-23 07:46:29.854] INFO AsyncHttpRequestRetryExec - ex-0000000069 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 10000 MILLISECONDS (exec count 3)
+[2026-06-23 07:49:24.825] INFO AsyncHttpRequestRetryExec - ex-0000000070 recoverable I/O exception (org.apache.hc.core5.http2.H2StreamResetException) caught when sending request to https://services.nvd.nist.gov:443;request will be automatically re-executed in 0 MILLISECONDS (exec count 2)
+[2026-06-23 07:50:31.265] INFO NvdApiDataSource - Downloaded 140,000/359,859 (39%)
+[2026-06-23 07:58:09.199] INFO NvdApiDataSource - Downloaded 150,000/359,859 (42%)
+[2026-06-23 08:02:48.085] INFO AsyncHttpRequestRetryExec - ex-0000000080 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 5000 MILLISECONDS (exec count 2)
+[2026-06-23 08:02:53.108] INFO AsyncHttpRequestRetryExec - ex-0000000080 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 10000 MILLISECONDS (exec count 3)
+[2026-06-23 08:03:03.136] INFO AsyncHttpRequestRetryExec - ex-0000000080 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 15000 MILLISECONDS (exec count 4)
+[2026-06-23 08:04:18.420] INFO NvdApiDataSource - Downloaded 160,000/359,859 (44%)
+[2026-06-23 08:11:07.815] INFO AsyncHttpRequestRetryExec - ex-0000000085 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 5000 MILLISECONDS (exec count 2)
+[2026-06-23 08:11:12.833] INFO AsyncHttpRequestRetryExec - ex-0000000085 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 10000 MILLISECONDS (exec count 3)
+[2026-06-23 08:11:22.850] INFO AsyncHttpRequestRetryExec - ex-0000000085 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 15000 MILLISECONDS (exec count 4)
+[2026-06-23 08:11:37.867] INFO AsyncHttpRequestRetryExec - ex-0000000085 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 20000 MILLISECONDS (exec count 5)
+[2026-06-23 08:12:57.933] WARN NvdApiRetryStrategy - NVD API request failures are occurring; retrying request for the 5th time
+[2026-06-23 08:12:57.933] INFO AsyncHttpRequestRetryExec - ex-0000000085 recoverable I/O exception (org.apache.hc.core5.http2.H2StreamResetException) caught when sending request to https://services.nvd.nist.gov:443;request will be automatically re-executed in 0 MILLISECONDS (exec count 6)
+[2026-06-23 08:13:39.109] WARN NvdApiRetryStrategy - NVD API request failures are occurring; retrying request for the 6th time
+[2026-06-23 08:14:53.737] INFO NvdApiDataSource - Downloaded 170,000/359,859 (47%)
+[2026-06-23 08:15:57.171] INFO AsyncHttpRequestRetryExec - ex-0000000087 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 5000 MILLISECONDS (exec count 2)
+[2026-06-23 08:16:02.402] INFO AsyncHttpRequestRetryExec - ex-0000000087 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 10000 MILLISECONDS (exec count 3)
+[2026-06-23 08:16:12.422] INFO AsyncHttpRequestRetryExec - ex-0000000087 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 15000 MILLISECONDS (exec count 4)
+[2026-06-23 08:19:03.390] INFO AsyncHttpRequestRetryExec - ex-0000000088 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 5000 MILLISECONDS (exec count 2)
+[2026-06-23 08:23:00.930] INFO AsyncHttpRequestRetryExec - ex-0000000091 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 5000 MILLISECONDS (exec count 2)
+[2026-06-23 08:23:00.931] INFO NvdApiDataSource - Downloaded 180,000/359,861 (50%)
+[2026-06-23 08:23:05.950] INFO AsyncHttpRequestRetryExec - ex-0000000091 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 10000 MILLISECONDS (exec count 3)
+[2026-06-23 08:23:15.970] INFO AsyncHttpRequestRetryExec - ex-0000000091 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 15000 MILLISECONDS (exec count 4)
+[2026-06-23 08:25:47.842] INFO AsyncHttpRequestRetryExec - ex-0000000092 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 5000 MILLISECONDS (exec count 2)
+[2026-06-23 08:25:52.857] INFO AsyncHttpRequestRetryExec - ex-0000000092 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 10000 MILLISECONDS (exec count 3)
+[2026-06-23 08:26:02.876] INFO AsyncHttpRequestRetryExec - ex-0000000092 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 15000 MILLISECONDS (exec count 4)
+[2026-06-23 08:27:58.973] INFO AsyncHttpRequestRetryExec - ex-0000000093 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 5000 MILLISECONDS (exec count 2)
+[2026-06-23 08:28:04.603] INFO AsyncHttpRequestRetryExec - ex-0000000093 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 10000 MILLISECONDS (exec count 3)
+[2026-06-23 08:28:14.622] INFO AsyncHttpRequestRetryExec - ex-0000000093 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 15000 MILLISECONDS (exec count 4)
+[2026-06-23 08:33:49.735] INFO AsyncHttpRequestRetryExec - ex-0000000094 recoverable I/O exception (org.apache.hc.core5.http2.H2StreamResetException) caught when sending request to https://services.nvd.nist.gov:443;request will be automatically re-executed in 0 MILLISECONDS (exec count 2)
+[2026-06-23 08:36:27.536] INFO AsyncHttpRequestRetryExec - ex-0000000096 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 5000 MILLISECONDS (exec count 2)
+[2026-06-23 08:36:27.749] INFO NvdApiDataSource - Downloaded 190,000/359,861 (53%)
+[2026-06-23 08:38:08.513] WARN NvdApiRetryStrategy - Retrying request /rest/json/cves/2.0?resultsPerPage=2000&startIndex=190000 : 2nd time
+[2026-06-23 08:38:08.513] INFO AsyncHttpRequestRetryExec - ex-0000000096 recoverable I/O exception (org.apache.hc.core5.http2.H2StreamResetException) caught when sending request to https://services.nvd.nist.gov:443;request will be automatically re-executed in 0 MILLISECONDS (exec count 3)
+[2026-06-23 08:40:45.595] INFO AsyncHttpRequestRetryExec - ex-0000000097 recoverable I/O exception (org.apache.hc.core5.http2.H2StreamResetException) caught when sending request to https://services.nvd.nist.gov:443;request will be automatically re-executed in 0 MILLISECONDS (exec count 2)
+[2026-06-23 08:47:21.358] INFO NvdApiDataSource - Downloaded 200,000/359,861 (56%)
+[2026-06-23 08:52:46.853] INFO AsyncHttpRequestRetryExec - ex-0000000104 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 5000 MILLISECONDS (exec count 2)
+[2026-06-23 08:52:51.880] INFO AsyncHttpRequestRetryExec - ex-0000000104 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 10000 MILLISECONDS (exec count 3)
+[2026-06-23 08:53:01.903] INFO AsyncHttpRequestRetryExec - ex-0000000104 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 15000 MILLISECONDS (exec count 4)
+[2026-06-23 08:54:43.245] WARN NvdApiRetryStrategy - Retrying request /rest/json/cves/2.0?resultsPerPage=2000&startIndex=206000 : 4th time
+[2026-06-23 08:54:43.246] INFO AsyncHttpRequestRetryExec - ex-0000000104 recoverable I/O exception (org.apache.hc.core5.http2.H2StreamResetException) caught when sending request to https://services.nvd.nist.gov:443;request will be automatically re-executed in 0 MILLISECONDS (exec count 5)
+[2026-06-23 08:55:14.810] WARN NvdApiRetryStrategy - NVD API request failures are occurring; retrying request for the 5th time
+[2026-06-23 08:58:23.549] INFO NvdApiDataSource - Downloaded 210,000/359,861 (58%)
+[2026-06-23 09:00:48.900] INFO AsyncHttpRequestRetryExec - ex-0000000107 recoverable I/O exception (org.apache.hc.core5.http2.H2StreamResetException) caught when sending request to https://services.nvd.nist.gov:443;request will be automatically re-executed in 0 MILLISECONDS (exec count 2)
+[2026-06-23 09:00:48.963] INFO AsyncHttpRequestRetryExec - ex-0000000107 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 10000 MILLISECONDS (exec count 3)
+[2026-06-23 09:00:58.983] INFO AsyncHttpRequestRetryExec - ex-0000000107 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 15000 MILLISECONDS (exec count 4)
+[2026-06-23 09:01:14.002] INFO AsyncHttpRequestRetryExec - ex-0000000107 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 20000 MILLISECONDS (exec count 5)
+[2026-06-23 09:02:27.823] WARN NvdApiRetryStrategy - NVD API request failures are occurring; retrying request for the 5th time
+[2026-06-23 09:06:35.324] INFO AsyncHttpRequestRetryExec - ex-0000000109 recoverable I/O exception (org.apache.hc.core5.http2.H2StreamResetException) caught when sending request to https://services.nvd.nist.gov:443;request will be automatically re-executed in 0 MILLISECONDS (exec count 2)
+[2026-06-23 09:06:35.380] INFO AsyncHttpRequestRetryExec - ex-0000000109 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 10000 MILLISECONDS (exec count 3)
+[2026-06-23 09:12:14.774] INFO AsyncHttpRequestRetryExec - ex-0000000110 recoverable I/O exception (org.apache.hc.core5.http2.H2StreamResetException) caught when sending request to https://services.nvd.nist.gov:443;request will be automatically re-executed in 0 MILLISECONDS (exec count 2)
+[2026-06-23 09:12:14.832] INFO AsyncHttpRequestRetryExec - ex-0000000110 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 10000 MILLISECONDS (exec count 3)
+[2026-06-23 09:12:24.848] INFO AsyncHttpRequestRetryExec - ex-0000000110 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 15000 MILLISECONDS (exec count 4)
+[2026-06-23 09:15:01.901] WARN NvdApiRetryStrategy - Retrying request /rest/json/cves/2.0?resultsPerPage=2000&startIndex=218000 : 4th time
+[2026-06-23 09:15:01.902] INFO AsyncHttpRequestRetryExec - ex-0000000110 recoverable I/O exception (org.apache.hc.core5.http2.H2StreamResetException) caught when sending request to https://services.nvd.nist.gov:443;request will be automatically re-executed in 0 MILLISECONDS (exec count 5)
+[2026-06-23 09:15:26.237] WARN NvdApiRetryStrategy - NVD API request failures are occurring; retrying request for the 5th time
+[2026-06-23 09:17:10.781] INFO AsyncHttpRequestRetryExec - ex-0000000111 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 5000 MILLISECONDS (exec count 2)
+[2026-06-23 09:17:11.377] INFO NvdApiDataSource - Downloaded 220,000/359,861 (61%)
+[2026-06-23 09:21:11.233] INFO AsyncHttpRequestRetryExec - ex-0000000114 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 5000 MILLISECONDS (exec count 2)
+[2026-06-23 09:21:16.461] INFO AsyncHttpRequestRetryExec - ex-0000000114 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 10000 MILLISECONDS (exec count 3)
+[2026-06-23 09:25:47.775] INFO AsyncHttpRequestRetryExec - ex-0000000116 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 5000 MILLISECONDS (exec count 2)
+[2026-06-23 09:25:48.021] INFO NvdApiDataSource - Downloaded 230,000/359,862 (64%)
+[2026-06-23 09:27:11.128] INFO AsyncHttpRequestRetryExec - ex-0000000117 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 5000 MILLISECONDS (exec count 2)
+[2026-06-23 09:27:16.380] INFO AsyncHttpRequestRetryExec - ex-0000000117 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 10000 MILLISECONDS (exec count 3)
+[2026-06-23 09:29:49.710] INFO AsyncHttpRequestRetryExec - ex-0000000118 recoverable I/O exception (org.apache.hc.core5.http2.H2StreamResetException) caught when sending request to https://services.nvd.nist.gov:443;request will be automatically re-executed in 0 MILLISECONDS (exec count 2)
+[2026-06-23 09:30:49.810] WARN NvdApiRetryStrategy - Retrying request /rest/json/cves/2.0?resultsPerPage=2000&startIndex=234000 : 2nd time
+[2026-06-23 09:30:49.811] INFO AsyncHttpRequestRetryExec - ex-0000000118 recoverable I/O exception (org.apache.hc.core5.http2.H2StreamResetException) caught when sending request to https://services.nvd.nist.gov:443;request will be automatically re-executed in 0 MILLISECONDS (exec count 3)
+[2026-06-23 09:30:49.842] INFO AsyncHttpRequestRetryExec - ex-0000000118 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 15000 MILLISECONDS (exec count 4)
+[2026-06-23 09:31:55.681] INFO AsyncHttpRequestRetryExec - ex-0000000119 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 5000 MILLISECONDS (exec count 2)
+[2026-06-23 09:32:00.695] INFO AsyncHttpRequestRetryExec - ex-0000000119 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 10000 MILLISECONDS (exec count 3)
+[2026-06-23 09:34:35.189] INFO NvdApiDataSource - Downloaded 240,000/359,862 (67%)
+[2026-06-23 09:35:53.639] INFO AsyncHttpRequestRetryExec - ex-0000000121 recoverable I/O exception (org.apache.hc.core5.http2.H2StreamResetException) caught when sending request to https://services.nvd.nist.gov:443;request will be automatically re-executed in 0 MILLISECONDS (exec count 2)
+[2026-06-23 09:35:53.686] INFO AsyncHttpRequestRetryExec - ex-0000000121 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 10000 MILLISECONDS (exec count 3)
+[2026-06-23 09:36:03.708] INFO AsyncHttpRequestRetryExec - ex-0000000121 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 15000 MILLISECONDS (exec count 4)
+[2026-06-23 09:37:18.772] WARN NvdApiRetryStrategy - Retrying request /rest/json/cves/2.0?resultsPerPage=2000&startIndex=240000 : 4th time
+[2026-06-23 09:37:18.772] INFO AsyncHttpRequestRetryExec - ex-0000000121 recoverable I/O exception (org.apache.hc.core5.http2.H2StreamResetException) caught when sending request to https://services.nvd.nist.gov:443;request will be automatically re-executed in 0 MILLISECONDS (exec count 5)
+[2026-06-23 09:37:53.534] WARN NvdApiRetryStrategy - NVD API request failures are occurring; retrying request for the 5th time
+[2026-06-23 09:38:10.403] INFO AsyncHttpRequestRetryExec - ex-0000000122 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 5000 MILLISECONDS (exec count 2)
+[2026-06-23 09:38:15.418] INFO AsyncHttpRequestRetryExec - ex-0000000122 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 10000 MILLISECONDS (exec count 3)
+[2026-06-23 09:39:25.484] WARN NvdApiRetryStrategy - Retrying request /rest/json/cves/2.0?resultsPerPage=2000&startIndex=242000 : 3rd time
+[2026-06-23 09:39:25.484] INFO AsyncHttpRequestRetryExec - ex-0000000122 recoverable I/O exception (org.apache.hc.core5.http2.H2StreamResetException) caught when sending request to https://services.nvd.nist.gov:443;request will be automatically re-executed in 0 MILLISECONDS (exec count 4)
+[2026-06-23 09:39:25.513] INFO AsyncHttpRequestRetryExec - ex-0000000122 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 20000 MILLISECONDS (exec count 5)
+[2026-06-23 09:39:45.525] WARN NvdApiRetryStrategy - NVD API request failures are occurring; retrying request for the 5th time
+[2026-06-23 09:39:45.525] INFO AsyncHttpRequestRetryExec - ex-0000000122 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 12500 MILLISECONDS (exec count 6)
+[2026-06-23 09:39:58.040] WARN NvdApiRetryStrategy - NVD API request failures are occurring; retrying request for the 6th time
+[2026-06-23 09:39:58.040] INFO AsyncHttpRequestRetryExec - ex-0000000122 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 15000 MILLISECONDS (exec count 7)
+[2026-06-23 09:40:13.053] WARN NvdApiRetryStrategy - NVD API request failures are occurring; retrying request for the 7th time
+[2026-06-23 09:40:13.053] INFO AsyncHttpRequestRetryExec - ex-0000000122 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 17500 MILLISECONDS (exec count 8)
+[2026-06-23 09:40:30.569] WARN NvdApiRetryStrategy - NVD API request failures are occurring; retrying request for the 8th time
+[2026-06-23 09:40:30.569] INFO AsyncHttpRequestRetryExec - ex-0000000122 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 20000 MILLISECONDS (exec count 9)
+[2026-06-23 09:40:50.582] WARN NvdApiRetryStrategy - NVD API request failures are occurring; retrying request for the 9th time
+[2026-06-23 09:40:50.582] INFO AsyncHttpRequestRetryExec - ex-0000000122 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 22500 MILLISECONDS (exec count 10)
+[2026-06-23 09:41:13.093] WARN NvdApiRetryStrategy - NVD API request failures are occurring; retrying request for the 10th time
+[2026-06-23 09:41:13.093] INFO AsyncHttpRequestRetryExec - ex-0000000122 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 25000 MILLISECONDS (exec count 11)
+[2026-06-23 09:41:38.893] WARN NvdApiRetryStrategy - NVD API request failures are occurring; retrying request for the 11th time
+[2026-06-23 09:43:00.324] INFO NvdApiDataSource - Downloaded 250,000/359,862 (69%)
+[2026-06-23 09:47:30.552] INFO NvdApiDataSource - Downloaded 260,000/359,862 (72%)
+[2026-06-23 09:49:08.694] INFO NvdApiDataSource - Downloaded 270,000/359,862 (75%)
+[2026-06-23 09:52:32.105] INFO NvdApiDataSource - Downloaded 280,000/359,862 (78%)
+[2026-06-23 09:57:19.235] INFO NvdApiDataSource - Downloaded 290,000/359,862 (81%)
+[2026-06-23 10:00:52.791] INFO NvdApiDataSource - Downloaded 300,000/359,862 (83%)
+[2026-06-23 10:03:18.958] INFO AsyncHttpRequestRetryExec - ex-0000000152 recoverable I/O exception (org.apache.hc.core5.http2.H2StreamResetException) caught when sending request to https://services.nvd.nist.gov:443;request will be automatically re-executed in 0 MILLISECONDS (exec count 2)
+[2026-06-23 10:03:18.997] INFO AsyncHttpRequestRetryExec - ex-0000000152 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 10000 MILLISECONDS (exec count 3)
+[2026-06-23 10:07:17.324] INFO NvdApiDataSource - Downloaded 310,000/359,862 (86%)
+[2026-06-23 10:11:20.724] INFO NvdApiDataSource - Downloaded 320,000/359,862 (89%)
+[2026-06-23 10:16:03.101] INFO NvdApiDataSource - Downloaded 330,000/359,862 (92%)
+[2026-06-23 10:19:57.105] INFO AsyncHttpRequestRetryExec - ex-0000000168 recoverable I/O exception (org.apache.hc.core5.http2.H2StreamResetException) caught when sending request to https://services.nvd.nist.gov:443;request will be automatically re-executed in 0 MILLISECONDS (exec count 2)
+[2026-06-23 10:19:57.351] INFO AsyncHttpRequestRetryExec - ex-0000000168 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 10000 MILLISECONDS (exec count 3)
+[2026-06-23 10:20:07.371] INFO AsyncHttpRequestRetryExec - ex-0000000168 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 15000 MILLISECONDS (exec count 4)
+[2026-06-23 10:20:22.390] INFO AsyncHttpRequestRetryExec - ex-0000000168 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 20000 MILLISECONDS (exec count 5)
+[2026-06-23 10:20:57.026] WARN NvdApiRetryStrategy - NVD API request failures are occurring; retrying request for the 5th time
+[2026-06-23 10:21:22.653] INFO AsyncHttpRequestRetryExec - ex-0000000169 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 5000 MILLISECONDS (exec count 2)
+[2026-06-23 10:21:27.667] INFO AsyncHttpRequestRetryExec - ex-0000000169 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 10000 MILLISECONDS (exec count 3)
+[2026-06-23 10:21:37.685] INFO AsyncHttpRequestRetryExec - ex-0000000169 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 15000 MILLISECONDS (exec count 4)
+[2026-06-23 10:21:52.705] INFO AsyncHttpRequestRetryExec - ex-0000000169 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 20000 MILLISECONDS (exec count 5)
+[2026-06-23 10:22:12.721] WARN NvdApiRetryStrategy - NVD API request failures are occurring; retrying request for the 5th time
+[2026-06-23 10:22:12.721] INFO AsyncHttpRequestRetryExec - ex-0000000169 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 12500 MILLISECONDS (exec count 6)
+[2026-06-23 10:22:25.235] WARN NvdApiRetryStrategy - NVD API request failures are occurring; retrying request for the 6th time
+[2026-06-23 10:22:25.236] INFO AsyncHttpRequestRetryExec - ex-0000000169 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 15000 MILLISECONDS (exec count 7)
+[2026-06-23 10:22:40.254] WARN NvdApiRetryStrategy - NVD API request failures are occurring; retrying request for the 7th time
+[2026-06-23 10:22:40.254] INFO AsyncHttpRequestRetryExec - ex-0000000169 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 17500 MILLISECONDS (exec count 8)
+[2026-06-23 10:22:57.771] WARN NvdApiRetryStrategy - NVD API request failures are occurring; retrying request for the 8th time
+[2026-06-23 10:22:57.771] INFO AsyncHttpRequestRetryExec - ex-0000000169 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 20000 MILLISECONDS (exec count 9)
+[2026-06-23 10:23:17.787] WARN NvdApiRetryStrategy - NVD API request failures are occurring; retrying request for the 9th time
+[2026-06-23 10:23:17.788] INFO AsyncHttpRequestRetryExec - ex-0000000169 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 22500 MILLISECONDS (exec count 10)
+[2026-06-23 10:23:40.301] WARN NvdApiRetryStrategy - NVD API request failures are occurring; retrying request for the 10th time
+[2026-06-23 10:23:40.302] INFO AsyncHttpRequestRetryExec - ex-0000000169 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 25000 MILLISECONDS (exec count 11)
+[2026-06-23 10:24:05.319] WARN NvdApiRetryStrategy - NVD API request failures are occurring; retrying request for the 11th time
+[2026-06-23 10:24:05.337] INFO AsyncHttpRequestRetryExec - ex-0000000170 https://services.nvd.nist.gov:443 responded with status 503; request will be automatically re-executed in 5000 MILLISECONDS (exec count 2)
+[2026-06-23 10:24:05.812] ERROR Engine - Error updating the NVD Data
+org.owasp.dependencycheck.data.update.exception.UpdateException: Error updating the NVD Data
+	at org.owasp.dependencycheck.data.update.NvdApiDataSource.processApi(NvdApiDataSource.java:387)
+	at org.owasp.dependencycheck.data.update.NvdApiDataSource.update(NvdApiDataSource.java:128)
+	at org.owasp.dependencycheck.Engine.doUpdates(Engine.java:902)
+	at org.owasp.dependencycheck.Engine.initializeAndUpdateDatabase(Engine.java:707)
+	at org.owasp.dependencycheck.Engine.analyzeDependencies(Engine.java:634)
+	at nvd.task.check$scan_and_analyze$fn__780.invoke(check.clj:69)
+	at nvd.task.check$scan_and_analyze.invokeStatic(check.clj:68)
+	at nvd.task.check$scan_and_analyze.invoke(check.clj:63)
+	at nvd.task.check$impl.invokeStatic(check.clj:106)
+	at nvd.task.check$impl.invoke(check.clj:98)
+	at nvd.task.check$_main.invokeStatic(check.clj:145)
+	at nvd.task.check$_main.doInvoke(check.clj:114)
+	at clojure.lang.RestFn.applyTo(RestFn.java:140)
+	at clojure.lang.Var.applyTo(Var.java:707)
+	at clojure.core$apply.invokeStatic(core.clj:667)
+	at clojure.main$main_opt.invokeStatic(main.clj:515)
+	at clojure.main$main_opt.invoke(main.clj:511)
+	at clojure.main$main.invokeStatic(main.clj:665)
+	at clojure.main$main.doInvoke(main.clj:617)
+	at clojure.lang.RestFn.applyTo(RestFn.java:140)
+	at clojure.lang.Var.applyTo(Var.java:707)
+	at clojure.main.main(main.java:40)
+Caused by: io.github.jeremylong.openvulnerability.client.nvd.NvdApiException: NVD Returned Status Code: 503
+	at io.github.jeremylong.openvulnerability.client.nvd.NvdCveClient._next(NvdCveClient.java:445)
+	at io.github.jeremylong.openvulnerability.client.nvd.NvdCveClient.next(NvdCveClient.java:356)
+	at org.owasp.dependencycheck.data.update.NvdApiDataSource.processApi(NvdApiDataSource.java:343)
+	... 21 more
+[2026-06-23 10:24:05.958] INFO KnownExploitedDataSource - Updating CISA Known Exploited Vulnerability list: https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json
+[2026-06-23 10:24:06.294] INFO CveDB - Begin database defrag
+[2026-06-23 10:24:11.180] INFO CveDB - End database defrag (4889 ms)
+[2026-06-23 10:24:11.210] WARN Engine - Unable to update 1 or more Cached Web DataSource, using local data instead. Results may not include recent vulnerabilities.
+[2026-06-23 10:24:11.210] ERROR Engine - Unable to continue dependency-check analysis.
+{:clojure.main/message
+ "Execution error (ExceptionInfo) at nvd.task.check/scan-and-analyze$fn (check.clj:74).\norg.owasp.dependencycheck.exception.ExceptionCollection\n",
+ :clojure.main/triage
+ {:clojure.error/class clojure.lang.ExceptionInfo,
+  :clojure.error/line 74,
+  :clojure.error/cause
+  "org.owasp.dependencycheck.exception.ExceptionCollection",
+  :clojure.error/symbol nvd.task.check/scan-and-analyze$fn,
+  :clojure.error/source "check.clj",
+  :clojure.error/phase :execution},
+ :clojure.main/trace
+ {:via
+  [{:type clojure.lang.ExceptionInfo,
+    :message "org.owasp.dependencycheck.exception.ExceptionCollection",
+    :data {:exceptions [#error {
+ :cause "NVD Returned Status Code: 503"
+ :via
+ [{:type org.owasp.dependencycheck.data.update.exception.UpdateException
+   :message "Error updating the NVD Data"
+   :at [org.owasp.dependencycheck.data.update.NvdApiDataSource processApi "NvdApiDataSource.java" 387]}
+  {:type io.github.jeremylong.openvulnerability.client.nvd.NvdApiException
+   :message "NVD Returned Status Code: 503"
+   :at [io.github.jeremylong.openvulnerability.client.nvd.NvdCveClient _next "NvdCveClient.java" 445]}]
+ :trace
+ [[io.github.jeremylong.openvulnerability.client.nvd.NvdCveClient _next "NvdCveClient.java" 445]
+  [io.github.jeremylong.openvulnerability.client.nvd.NvdCveClient next "NvdCveClient.java" 356]
+  [org.owasp.dependencycheck.data.update.NvdApiDataSource processApi "NvdApiDataSource.java" 343]
+  [org.owasp.dependencycheck.data.update.NvdApiDataSource update "NvdApiDataSource.java" 128]
+  [org.owasp.dependencycheck.Engine doUpdates "Engine.java" 902]
+  [org.owasp.dependencycheck.Engine initializeAndUpdateDatabase "Engine.java" 707]
+  [org.owasp.dependencycheck.Engine analyzeDependencies "Engine.java" 634]
+  [nvd.task.check$scan_and_analyze$fn__780 invoke "check.clj" 69]
+  [nvd.task.check$scan_and_analyze invokeStatic "check.clj" 68]
+  [nvd.task.check$scan_and_analyze invoke "check.clj" 63]
+  [nvd.task.check$impl invokeStatic "check.clj" 106]
+  [nvd.task.check$impl invoke "check.clj" 98]
+  [nvd.task.check$_main invokeStatic "check.clj" 145]
+  [nvd.task.check$_main doInvoke "check.clj" 114]
+  [clojure.lang.RestFn applyTo "RestFn.java" 140]
+  [clojure.lang.Var applyTo "Var.java" 707]
+  [clojure.core$apply invokeStatic "core.clj" 667]
+  [clojure.main$main_opt invokeStatic "main.clj" 515]
+  [clojure.main$main_opt invoke "main.clj" 511]
+  [clojure.main$main invokeStatic "main.clj" 665]
+  [clojure.main$main doInvoke "main.clj" 617]
+  [clojure.lang.RestFn applyTo "RestFn.java" 140]
+  [clojure.lang.Var applyTo "Var.java" 707]
+  [clojure.main main "main.java" 40]]} #error {
+ :cause "No documents exist"
+ :via
+ [{:type org.owasp.dependencycheck.exception.NoDataException
+   :message "No documents exist"
+   :at [org.owasp.dependencycheck.Engine ensureDataExists "Engine.java" 1159]}]
+ :trace
+ [[org.owasp.dependencycheck.Engine ensureDataExists "Engine.java" 1159]
+  [org.owasp.dependencycheck.Engine analyzeDependencies "Engine.java" 638]
+  [nvd.task.check$scan_and_analyze$fn__780 invoke "check.clj" 69]
+  [nvd.task.check$scan_and_analyze invokeStatic "check.clj" 68]
+  [nvd.task.check$scan_and_analyze invoke "check.clj" 63]
+  [nvd.task.check$impl invokeStatic "check.clj" 106]
+  [nvd.task.check$impl invoke "check.clj" 98]
+  [nvd.task.check$_main invokeStatic "check.clj" 145]
+  [nvd.task.check$_main doInvoke "check.clj" 114]
+  [clojure.lang.RestFn applyTo "RestFn.java" 140]
+  [clojure.lang.Var applyTo "Var.java" 707]
+  [clojure.core$apply invokeStatic "core.clj" 667]
+  [clojure.main$main_opt invokeStatic "main.clj" 515]
+  [clojure.main$main_opt invoke "main.clj" 511]
+  [clojure.main$main invokeStatic "main.clj" 665]
+  [clojure.main$main doInvoke "main.clj" 617]
+  [clojure.lang.RestFn applyTo "RestFn.java" 140]
+  [clojure.lang.Var applyTo "Var.java" 707]
+  [clojure.main main "main.java" 40]]}]},
+    :at
+    [nvd.task.check$scan_and_analyze$fn__780 invoke "check.clj" 74]}],
+  :trace
+  [[nvd.task.check$scan_and_analyze$fn__780 invoke "check.clj" 74]
+   [nvd.task.check$scan_and_analyze invokeStatic "check.clj" 68]
+   [nvd.task.check$scan_and_analyze invoke "check.clj" 63]
+   [nvd.task.check$impl invokeStatic "check.clj" 106]
+   [nvd.task.check$impl invoke "check.clj" 98]
+   [nvd.task.check$_main invokeStatic "check.clj" 145]
+   [nvd.task.check$_main doInvoke "check.clj" 114]
+   [clojure.lang.RestFn applyTo "RestFn.java" 140]
+   [clojure.lang.Var applyTo "Var.java" 707]
+   [clojure.core$apply invokeStatic "core.clj" 667]
+   [clojure.main$main_opt invokeStatic "main.clj" 515]
+   [clojure.main$main_opt invoke "main.clj" 511]
+   [clojure.main$main invokeStatic "main.clj" 665]
+   [clojure.main$main doInvoke "main.clj" 617]
+   [clojure.lang.RestFn applyTo "RestFn.java" 140]
+   [clojure.lang.Var applyTo "Var.java" 707]
+   [clojure.main main "main.java" 40]],
+  :cause "org.owasp.dependencycheck.exception.ExceptionCollection",
+  :data {:exceptions [#error {
+ :cause "NVD Returned Status Code: 503"
+ :via
+ [{:type org.owasp.dependencycheck.data.update.exception.UpdateException
+   :message "Error updating the NVD Data"
+   :at [org.owasp.dependencycheck.data.update.NvdApiDataSource processApi "NvdApiDataSource.java" 387]}
+  {:type io.github.jeremylong.openvulnerability.client.nvd.NvdApiException
+   :message "NVD Returned Status Code: 503"
+   :at [io.github.jeremylong.openvulnerability.client.nvd.NvdCveClient _next "NvdCveClient.java" 445]}]
+ :trace
+ [[io.github.jeremylong.openvulnerability.client.nvd.NvdCveClient _next "NvdCveClient.java" 445]
+  [io.github.jeremylong.openvulnerability.client.nvd.NvdCveClient next "NvdCveClient.java" 356]
+  [org.owasp.dependencycheck.data.update.NvdApiDataSource processApi "NvdApiDataSource.java" 343]
+  [org.owasp.dependencycheck.data.update.NvdApiDataSource update "NvdApiDataSource.java" 128]
+  [org.owasp.dependencycheck.Engine doUpdates "Engine.java" 902]
+  [org.owasp.dependencycheck.Engine initializeAndUpdateDatabase "Engine.java" 707]
+  [org.owasp.dependencycheck.Engine analyzeDependencies "Engine.java" 634]
+  [nvd.task.check$scan_and_analyze$fn__780 invoke "check.clj" 69]
+  [nvd.task.check$scan_and_analyze invokeStatic "check.clj" 68]
+  [nvd.task.check$scan_and_analyze invoke "check.clj" 63]
+  [nvd.task.check$impl invokeStatic "check.clj" 106]
+  [nvd.task.check$impl invoke "check.clj" 98]
+  [nvd.task.check$_main invokeStatic "check.clj" 145]
+  [nvd.task.check$_main doInvoke "check.clj" 114]
+  [clojure.lang.RestFn applyTo "RestFn.java" 140]
+  [clojure.lang.Var applyTo "Var.java" 707]
+  [clojure.core$apply invokeStatic "core.clj" 667]
+  [clojure.main$main_opt invokeStatic "main.clj" 515]
+  [clojure.main$main_opt invoke "main.clj" 511]
+  [clojure.main$main invokeStatic "main.clj" 665]
+  [clojure.main$main doInvoke "main.clj" 617]
+  [clojure.lang.RestFn applyTo "RestFn.java" 140]
+  [clojure.lang.Var applyTo "Var.java" 707]
+  [clojure.main main "main.java" 40]]} #error {
+ :cause "No documents exist"
+ :via
+ [{:type org.owasp.dependencycheck.exception.NoDataException
+   :message "No documents exist"
+   :at [org.owasp.dependencycheck.Engine ensureDataExists "Engine.java" 1159]}]
+ :trace
+ [[org.owasp.dependencycheck.Engine ensureDataExists "Engine.java" 1159]
+  [org.owasp.dependencycheck.Engine analyzeDependencies "Engine.java" 638]
+  [nvd.task.check$scan_and_analyze$fn__780 invoke "check.clj" 69]
+  [nvd.task.check$scan_and_analyze invokeStatic "check.clj" 68]
+  [nvd.task.check$scan_and_analyze invoke "check.clj" 63]
+  [nvd.task.check$impl invokeStatic "check.clj" 106]
+  [nvd.task.check$impl invoke "check.clj" 98]
+  [nvd.task.check$_main invokeStatic "check.clj" 145]
+  [nvd.task.check$_main doInvoke "check.clj" 114]
+  [clojure.lang.RestFn applyTo "RestFn.java" 140]
+  [clojure.lang.Var applyTo "Var.java" 707]
+  [clojure.core$apply invokeStatic "core.clj" 667]
+  [clojure.main$main_opt invokeStatic "main.clj" 515]
+  [clojure.main$main_opt invoke "main.clj" 511]
+  [clojure.main$main invokeStatic "main.clj" 665]
+  [clojure.main$main doInvoke "main.clj" 617]
+  [clojure.lang.RestFn applyTo "RestFn.java" 140]
+  [clojure.lang.Var applyTo "Var.java" 707]
+  [clojure.main main "main.java" 40]]}]}}}
 
-Dependency-Check is an open source tool performing a best effort analysis of 3rd party dependencies; false positives and false negatives may exist in the analysis performed by the tool. Use of the tool and the reporting provided constitutes acceptance for use in an AS IS condition, and there are NO warranties, implied or otherwise, with regard to the analysis or its use. Any use of the tool and the reporting provided is at the user's risk. In no event shall the copyright holder or OWASP be held liable for any damages whatsoever arising out of or in connection with the use of this tool, the analysis performed, or the resulting report.
+Execution error (ExceptionInfo) at nvd.task.check/scan-and-analyze$fn (check.clj:74).
+org.owasp.dependencycheck.exception.ExceptionCollection
 
-
-   About ODC: https://dependency-check.github.io/DependencyCheck/general/internals.html
-   False Positives: https://dependency-check.github.io/DependencyCheck/general/suppression.html
-
-
-[2026-06-16 11:52:08.700] INFO Engine - Analysis Started
-[2026-06-16 11:52:08.825] INFO Engine - Finished Archive Analyzer (0 seconds)
-[2026-06-16 11:52:08.829] INFO Engine - Finished File Name Analyzer (0 seconds)
-[2026-06-16 11:52:08.923] INFO Engine - Finished Jar Analyzer (0 seconds)
-[2026-06-16 11:52:08.938] INFO Engine - Finished Central Analyzer (0 seconds)
-[2026-06-16 11:52:08.939] INFO Engine - Finished Dependency Merging Analyzer (0 seconds)
-[2026-06-16 11:52:08.987] INFO Engine - Finished Hint Analyzer (0 seconds)
-[2026-06-16 11:52:08.989] INFO Engine - Finished Version Filter Analyzer (0 seconds)
-WARNING: A restricted method in java.lang.foreign.Linker has been called
-WARNING: java.lang.foreign.Linker::downcallHandle has been called by org.apache.lucene.store.PosixNativeAccess in an unnamed module (file:/home/runner/.m2/repository/org/apache/lucene/lucene-core/9.12.3/lucene-core-9.12.3.jar)
-WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
-WARNING: Restricted methods will be blocked in a future release unless native access is enabled
-
-[2026-06-16 11:52:09.208] INFO MemorySegmentIndexInputProvider - Using MemorySegmentIndexInput and native madvise support with Java 21 or later; to disable start with -Dorg.apache.lucene.store.MMapDirectory.enableMemorySegments=false
-[2026-06-16 11:52:09.259] WARN VectorizationProvider - You are running with Java 23 or later. To make full use of the Vector API, please update Apache Lucene.
-[2026-06-16 11:52:10.423] INFO CPEAnalyzer - Created CPE Index (1 seconds)
-[2026-06-16 11:52:10.673] INFO Engine - Finished CPE Analyzer (1 seconds)
-[2026-06-16 11:52:10.677] INFO Engine - Finished False Positive Analyzer (0 seconds)
-[2026-06-16 11:52:10.683] INFO Engine - Finished NVD CVE Analyzer (0 seconds)
-[2026-06-16 11:52:10.683] WARN OssIndexAnalyzer - Disabling OSS Index analyzer due to missing user/password credentials. Authentication is now required: https://ossindex.sonatype.org/doc/auth-required
-[2026-06-16 11:52:10.683] INFO Engine - Finished Vulnerability Suppression Analyzer (0 seconds)
-[2026-06-16 11:52:10.697] INFO Engine - Finished Known Exploited Vulnerability Analyzer (0 seconds)
-[2026-06-16 11:52:10.697] INFO Engine - Finished Dependency Bundling Analyzer (0 seconds)
-[2026-06-16 11:52:10.698] INFO Engine - Finished Unused Suppression Rule Analyzer (0 seconds)
-[2026-06-16 11:52:10.707] INFO Engine - Analysis Complete (2 seconds)
-[2026-06-16 11:52:10.742] INFO ReportGenerator - Writing XML report to: /home/runner/work/wreck/wreck/.nvd/../target/nvd/dependency-check-report.xml
-[2026-06-16 11:52:10.820] INFO ReportGenerator - Writing HTML report to: /home/runner/work/wreck/wreck/.nvd/../target/nvd/dependency-check-report.html
-[2026-06-16 11:52:10.886] INFO ReportGenerator - Writing JSON report to: /home/runner/work/wreck/wreck/.nvd/../target/nvd/dependency-check-report.json
-[2026-06-16 11:52:10.910] INFO ReportGenerator - Writing CSV report to: /home/runner/work/wreck/wreck/.nvd/../target/nvd/dependency-check-report.csv
-[2026-06-16 11:52:10.912] INFO ReportGenerator - Writing SARIF report to: /home/runner/work/wreck/wreck/.nvd/../target/nvd/dependency-check-report.sarif
-[2026-06-16 11:52:10.919] INFO ReportGenerator - Writing JENKINS report to: /home/runner/work/wreck/wreck/.nvd/../target/nvd/dependency-check-jenkins.html
-[2026-06-16 11:52:10.936] INFO ReportGenerator - Writing JUNIT report to: /home/runner/work/wreck/wreck/.nvd/../target/nvd/dependency-check-junit.xml
-[2026-06-16 11:52:10.945] INFO ReportGenerator - Writing GITLAB report to: /home/runner/work/wreck/wreck/.nvd/../target/nvd/dependency-check-gitlab.json
