@@ -5,11 +5,11 @@
         "dataSource": [
 {
                 "name": "NVD API Last Checked",
-                "timestamp": "2026-07-21T11:17:47Z"
+                "timestamp": "2026-07-28T05:21:49Z"
             }
 ,{
                 "name": "NVD API Last Modified",
-                "timestamp": "2026-07-21T10:50:51Z"
+                "timestamp": "2026-07-28T05:17:17Z"
             }
         ]
 
@@ -17,7 +17,7 @@
     },
     "projectInfo": {
         "name": "com.github.pmonks\/wreck 1.0.168-SNAPSHOT",
-        "reportDate": "2026-07-21T11:17:53.692836913Z",
+        "reportDate": "2026-07-28T05:21:58.811308273Z",
         "credits": {
             "NVD": "This product uses the NVD API but is not endorsed or certified by the NVD. This report contains data retrieved from the National Vulnerability Database: https://nvd.nist.gov",
             "CISA": "This report may contain data retrieved from the CISA Known Exploited Vulnerability Catalog: https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
